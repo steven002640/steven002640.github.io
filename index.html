@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW"> 
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +14,9 @@
             --tech-color: #fbbc05;
             --finance-color: #673ab7;
             --intl-color: #00bcd4;
+            --software-color: #9c27b0;
+            --hardware-color: #4caf50;
+            --startup-color: #ff9800;
             --light: #f8f9fa;
             --dark: #202124;
             --gray: #5f6368;
@@ -138,11 +141,40 @@
             align-items: center;
             gap: 10px;
             box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .category-btn:active::after {
+            width: 300px;
+            height: 300px;
         }
         
         .category-btn.active {
             color: white;
             transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        .category-btn i {
+            transition: transform 0.3s ease;
+        }
+        
+        .category-btn:hover i {
+            transform: scale(1.2);
         }
         
         .category-btn.ai { background: var(--ai-color); color: white; }
@@ -150,13 +182,51 @@
         .category-btn.finance { background: var(--finance-color); color: white; }
         .category-btn.intl { background: var(--intl-color); color: white; }
         .category-btn.all { background: var(--primary); color: white; }
-        .category-btn.software { background: #9c27b0; color: white; }
-        .category-btn.hardware { background: #4caf50; color: white; }
-        .category-btn.startup { background: #ff9800; color: white; }
+        .category-btn.software { background: var(--software-color); color: white; }
+        .category-btn.hardware { background: var(--hardware-color); color: white; }
+        .category-btn.startup { background: var(--startup-color); color: white; }
         
         .category-btn:hover:not(.active) {
             opacity: 0.9;
             transform: translateY(-2px);
+        }
+        
+        /* 分類統計顯示 */
+        .category-stats {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .category-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            cursor: pointer;
+            background: rgba(66, 133, 244, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .category-stat:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow);
+        }
+        
+        /* 過濾訊息 */
+        .filter-message {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-weight: 600;
+            color: #333;
         }
         
         /* 控制面板 */
@@ -234,6 +304,9 @@
         .category-tech { background: var(--tech-color); }
         .category-finance { background: var(--finance-color); }
         .category-intl { background: var(--intl-color); }
+        .category-software { background: var(--software-color); }
+        .category-hardware { background: var(--hardware-color); }
+        .category-startup { background: var(--startup-color); }
         
         .news-badge {
             background: #f0f0f0;
@@ -313,6 +386,30 @@
             100% { transform: rotate(360deg); }
         }
         
+        /* 錯誤訊息 */
+        .error-message {
+            background: #ffebee;
+            color: var(--ai-color);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid var(--ai-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        /* 系統狀態 */
+        .system-status {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
         /* 響應式設計 */
         @media (max-width: 1200px) {
             .news-container { grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); }
@@ -325,6 +422,7 @@
             .category-btn { justify-content: center; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .container { padding: 10px; }
+            .system-status { flex-direction: column; gap: 10px; }
         }
         
         @media (max-width: 480px) {
@@ -367,6 +465,17 @@
             </div>
         </div>
         
+        <!-- 系統狀態 -->
+        <div class="system-status">
+            <div>
+                <i class="fas fa-satellite-dish"></i>
+                <span id="systemInfo">正在連接新聞系統...</span>
+            </div>
+            <div id="updateTime" style="color: var(--gray); font-size: 0.9rem;">
+                最後更新: --
+            </div>
+        </div>
+        
         <!-- 分類標籤 -->
         <div class="category-tabs">
             <button class="category-btn all active" onclick="filterNews('all')">
@@ -395,9 +504,17 @@
             </button>
         </div>
         
+        <!-- 過濾訊息 -->
+        <div class="filter-message" id="filterMessage" style="display: none;"></div>
+        
+        <!-- 分類統計顯示 -->
+        <div class="category-stats" id="categoryStats">
+            <!-- 分類統計會動態生成在這裡 -->
+        </div>
+        
         <!-- 控制按鈕 -->
         <div class="controls">
-            <button class="btn" onclick="loadNews()">
+            <button class="btn" onclick="loadNews()" id="loadBtn">
                 <i class="fas fa-sync-alt"></i> 更新新聞
             </button>
             <button class="btn" onclick="testConnection()">
@@ -409,6 +526,15 @@
             <button class="btn" onclick="forceUpdate()">
                 <i class="fas fa-bolt"></i> 強制更新
             </button>
+            <button class="btn" onclick="showSources()">
+                <i class="fas fa-list"></i> 新聞來源
+            </button>
+        </div>
+        
+        <!-- 錯誤訊息 -->
+        <div class="error-message" id="errorMessage" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div id="errorText"></div>
         </div>
         
         <!-- 載入指示器 -->
@@ -424,9 +550,9 @@
     </div>
 
     <script>
-        // 系統設定
+        // 系統設定 - 已整合你的API
         const CONFIG = {
-            API_URL: '你的API網址',  // 替換為你的GAS部署URL
+            API_URL: 'https://script.google.com/macros/s/AKfycby-_9Y2ezmU-Li326SeVmCGpeIg6LwaGHF7_5EKng3QlY7sXoP0smrEyboNNLmGW-ui/exec',
             CATEGORIES: {
                 'AI資訊': { color: '#ea4335', icon: 'fa-brain' },
                 '科技發展': { color: '#fbbc05', icon: 'fa-microchip' },
@@ -434,7 +560,8 @@
                 '國際大事': { color: '#00bcd4', icon: 'fa-globe-americas' },
                 '軟體應用': { color: '#9c27b0', icon: 'fa-code' },
                 '硬體設備': { color: '#4caf50', icon: 'fa-server' },
-                '新創動態': { color: '#ff9800', icon: 'fa-rocket' }
+                '新創動態': { color: '#ff9800', icon: 'fa-rocket' },
+                '其他': { color: '#666', icon: 'fa-newspaper' }
             }
         };
         
@@ -445,12 +572,15 @@
         // 頁面載入
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🤖 AI新聞系統啟動');
+            updateSystemInfo('系統啟動中...');
             loadNews();
         });
         
         // 載入新聞
         async function loadNews() {
             showLoading(true);
+            hideError();
+            updateSystemInfo('正在載入新聞資料...');
             
             try {
                 const response = await fetch(CONFIG.API_URL + '?action=getNews');
@@ -459,14 +589,18 @@
                 if (result.success) {
                     allNews = result.data.news;
                     updateStats(result.data.systemInfo);
+                    updateCategoryDisplay(allNews);
                     displayNews(allNews);
+                    updateSystemInfo(`已載入 ${allNews.length} 則新聞`);
+                    updateLastUpdateTime(result.metadata.timestamp);
                     console.log(`✅ 載入 ${allNews.length} 則新聞`);
                 } else {
                     throw new Error(result.error || 'API錯誤');
                 }
             } catch (error) {
                 console.error('❌ 載入失敗:', error);
-                alert('新聞載入失敗，請檢查API連線');
+                showError(`新聞載入失敗: ${error.message}`);
+                updateSystemInfo('載入失敗，請檢查網路連線');
             } finally {
                 showLoading(false);
             }
@@ -486,13 +620,93 @@
             if (category === 'all') {
                 filteredNews = allNews;
             } else {
-                filteredNews = allNews.filter(item => 
-                    item.mainCategory === category || item.categories.includes(category)
-                );
+                filteredNews = allNews.filter(item => {
+                    // 檢查主要分類
+                    if (item.mainCategory === category) return true;
+                    // 檢查分類陣列
+                    if (item.categories && item.categories.includes(category)) return true;
+                    return false;
+                });
             }
             
             displayNews(filteredNews);
             updateCategoryStats(filteredNews, category);
+            showFilterMessage(category, filteredNews.length);
+        }
+        
+        // 顯示過濾訊息
+        function showFilterMessage(category, count) {
+            const messageEl = document.getElementById('filterMessage');
+            
+            if (category === 'all') {
+                messageEl.style.display = 'none';
+            } else {
+                messageEl.style.display = 'block';
+                messageEl.innerHTML = `
+                    <i class="fas fa-filter"></i> 已篩選: <strong>${category}</strong> (${count} 則)
+                    <button onclick="clearFilter()" style="
+                        margin-left: 15px;
+                        padding: 5px 15px;
+                        background: var(--primary);
+                        color: white;
+                        border: none;
+                        border-radius: 20px;
+                        cursor: pointer;
+                        font-size: 0.9rem;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                        <i class="fas fa-times"></i> 清除篩選
+                    </button>
+                `;
+            }
+        }
+        
+        // 清除篩選
+        function clearFilter() {
+            const allBtn = document.querySelector('.category-btn.all');
+            allBtn.click();
+        }
+        
+        // 更新分類統計顯示
+        function updateCategoryDisplay(news) {
+            const categoryCounts = {};
+            
+            // 計算每個分類的新聞數
+            Object.keys(CONFIG.CATEGORIES).forEach(cat => {
+                categoryCounts[cat] = 0;
+            });
+            
+            news.forEach(item => {
+                if (item.mainCategory && CONFIG.CATEGORIES[item.mainCategory]) {
+                    categoryCounts[item.mainCategory]++;
+                }
+            });
+            
+            // 更新統計顯示
+            const statsEl = document.getElementById('categoryStats');
+            if (statsEl) {
+                let html = '';
+                Object.entries(categoryCounts).forEach(([cat, count]) => {
+                    if (count > 0) {
+                        const catInfo = CONFIG.CATEGORIES[cat];
+                        html += `
+                            <div class="category-stat" style="border-left-color: ${catInfo.color}; background: ${catInfo.color}15;" 
+                                 onclick="filterNews('${cat}')">
+                                <i class="fas ${catInfo.icon}" style="color: ${catInfo.color};"></i>
+                                <span style="font-weight: 600;">${cat}</span>
+                                <span style="
+                                    background: ${catInfo.color};
+                                    color: white;
+                                    padding: 2px 8px;
+                                    border-radius: 10px;
+                                    font-size: 0.85rem;
+                                ">${count}</span>
+                            </div>
+                        `;
+                    }
+                });
+                statsEl.innerHTML = html;
+            }
         }
         
         // 顯示新聞
@@ -520,10 +734,11 @@
                     <div class="news-card">
                         <div class="news-header">
                             <div class="news-category" style="background: ${categoryInfo.color};">
-                                <i class="fas ${categoryInfo.icon}"></i> ${item.mainCategory}
+                                <i class="fas ${categoryInfo.icon}"></i> ${item.mainCategory || '其他'}
                             </div>
                             <div class="news-badge">
                                 ${isAI ? '🤖 ' : ''}${isInternational ? '🌍 ' : ''}${item.source}
+                                ${!item.isReal ? ' <i class="fas fa-clone" style="color: #999;"></i>' : ''}
                             </div>
                         </div>
                         <div class="news-content">
@@ -532,7 +747,7 @@
                             <div class="news-meta">
                                 <div class="news-source">
                                     <i class="fas fa-rss"></i> ${item.source}
-                                    <small style="color: #999; margin-left: 8px;">${item.isReal ? '真實' : '模擬'}</small>
+                                    <small style="color: #999; margin-left: 8px;">${item.isReal ? '真實' : '模擬'} • ${item.language === 'zh' ? '中文' : '英文'}</small>
                                 </div>
                                 <div class="news-date">
                                     ${formatDate(item.date)}
@@ -577,7 +792,7 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    alert(`✅ 連線成功！\n版本: ${result.version}\n新聞源: ${result.config.totalSources}個\n目標新聞: ${result.config.targetNews}則`);
+                    alert(`✅ 連線成功！\n版本: ${result.version}\n新聞源: ${result.config.totalSources}個\n目標新聞: ${result.config.targetNews}則\n分類數量: ${result.config.categories.length}種`);
                 } else {
                     alert('❌ 連線測試失敗');
                 }
@@ -595,23 +810,30 @@
             
             const categories = {};
             const sources = {};
+            const countries = {};
             
             allNews.forEach(item => {
                 categories[item.mainCategory] = (categories[item.mainCategory] || 0) + 1;
                 sources[item.source] = (sources[item.source] || 0) + 1;
+                countries[item.country] = (countries[item.country] || 0) + 1;
             });
             
-            let message = `📊 詳細統計\n\n`;
-            message += `總新聞數: ${allNews.length}\n`;
-            message += `真實新聞: ${allNews.filter(n => n.isReal).length}\n`;
-            message += `模擬新聞: ${allNews.filter(n => !n.isReal).length}\n\n`;
-            message += `分類分布:\n`;
+            const realCount = allNews.filter(n => n.isReal).length;
+            const mockCount = allNews.filter(n => !n.isReal).length;
+            
+            let message = `📊 詳細統計報告\n\n`;
+            message += `總新聞數: ${allNews.length} 則\n`;
+            message += `真實新聞: ${realCount} 則\n`;
+            message += `模擬新聞: ${mockCount} 則\n`;
+            message += `模擬比例: ${Math.round((mockCount / allNews.length) * 100)}%\n\n`;
+            message += `📈 分類分布:\n`;
             Object.entries(categories).forEach(([cat, count]) => {
-                message += `  ${cat}: ${count} 則\n`;
+                const percentage = Math.round((count / allNews.length) * 100);
+                message += `  ${cat}: ${count} 則 (${percentage}%)\n`;
             });
-            message += `\n來源分布:\n`;
-            Object.entries(sources).slice(0, 10).forEach(([src, count]) => {
-                message += `  ${src}: ${count} 則\n`;
+            message += `\n🌍 國家分布:\n`;
+            Object.entries(countries).forEach(([country, count]) => {
+                message += `  ${country}: ${count} 則\n`;
             });
             
             alert(message);
@@ -620,6 +842,8 @@
         // 強制更新
         async function forceUpdate() {
             showLoading(true);
+            updateSystemInfo('強制更新中...');
+            
             try {
                 const response = await fetch(CONFIG.API_URL + '?action=getNews&force=true');
                 const result = await response.json();
@@ -627,19 +851,75 @@
                 if (result.success) {
                     allNews = result.data.news;
                     updateStats(result.data.systemInfo);
+                    updateCategoryDisplay(allNews);
                     displayNews(allNews);
+                    updateSystemInfo(`強制更新完成，共 ${allNews.length} 則新聞`);
                     alert(`✅ 強制更新完成\n共 ${allNews.length} 則新聞`);
+                } else {
+                    throw new Error(result.error || '更新失敗');
                 }
             } catch (error) {
-                alert('❌ 更新失敗');
+                alert('❌ 更新失敗: ' + error.message);
             } finally {
                 showLoading(false);
             }
         }
         
+        // 顯示新聞來源
+        function showSources() {
+            const sources = [...new Set(allNews.map(item => item.source))];
+            
+            let message = `📡 新聞來源列表\n\n`;
+            message += `總共有 ${sources.length} 個新聞源\n\n`;
+            
+            sources.forEach((source, index) => {
+                const count = allNews.filter(item => item.source === source).length;
+                message += `${index + 1}. ${source}: ${count} 則\n`;
+            });
+            
+            message += `\n📊 來源類型:\n`;
+            const sourceTypes = {};
+            allNews.forEach(item => {
+                sourceTypes[item.sourceType] = (sourceTypes[item.sourceType] || 0) + 1;
+            });
+            Object.entries(sourceTypes).forEach(([type, count]) => {
+                message += `  ${type}: ${count} 則\n`;
+            });
+            
+            alert(message);
+        }
+        
         // 工具函數
         function showLoading(show) {
             document.getElementById('loading').style.display = show ? 'block' : 'none';
+            const loadBtn = document.getElementById('loadBtn');
+            if (loadBtn) {
+                loadBtn.disabled = show;
+                loadBtn.innerHTML = show ? 
+                    '<i class="fas fa-spinner fa-spin"></i> 載入中...' : 
+                    '<i class="fas fa-sync-alt"></i> 更新新聞';
+            }
+        }
+        
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').style.display = 'flex';
+        }
+        
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+        
+        function updateSystemInfo(info) {
+            document.getElementById('systemInfo').textContent = info;
+        }
+        
+        function updateLastUpdateTime(timestamp) {
+            const timeStr = timestamp ? 
+                new Date(timestamp).toLocaleString('zh-TW') : 
+                '尚未更新';
+            document.getElementById('updateTime').innerHTML = 
+                `<i class="fas fa-clock"></i> 最後更新: ${timeStr}`;
         }
         
         function formatDate(dateStr) {
@@ -663,9 +943,26 @@
             return div.innerHTML;
         }
         
+        // 自動更新功能
+        let autoUpdateInterval;
+        function startAutoUpdate(interval = 300000) { // 5分鐘
+            if (autoUpdateInterval) {
+                clearInterval(autoUpdateInterval);
+            }
+            autoUpdateInterval = setInterval(() => {
+                console.log('🔄 自動更新新聞...');
+                loadNews();
+            }, interval);
+            console.log(`⏰ 已設定自動更新，間隔: ${interval / 1000} 秒`);
+        }
+        
+        // 初始化完成後啟動自動更新
+        setTimeout(() => {
+            startAutoUpdate();
+        }, 5000);
+        
         // 初始化
         console.log('系統準備就緒');
     </script>
 </body>
 </html>
-
