@@ -1,999 +1,671 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>📰 全球新聞收集系統</title>
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-   <style>
-       /* 基礎樣式重置 */
-       * {
-           margin: 0;
-           padding: 0;
-           box-sizing: border-box;
-       }
-      
-       :root {
-           --primary: #4285f4;
-           --primary-dark: #3367d6;
-           --secondary: #34a853;
-           --secondary-dark: #2d8c47;
-           --danger: #ea4335;
-           --warning: #fbbc05;
-           --light: #f8f9fa;
-           --dark: #202124;
-           --gray: #5f6368;
-           --light-gray: #dadce0;
-           --card-shadow: 0 2px 8px rgba(0,0,0,0.1);
-           --card-shadow-hover: 0 8px 24px rgba(0,0,0,0.15);
-           --transition: all 0.3s ease;
-       }
-      
-       body {
-           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
-           background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-           color: var(--dark);
-           line-height: 1.6;
-           min-height: 100vh;
-           padding: 20px;
-       }
-      
-       .container {
-           max-width: 1600px;
-           margin: 0 auto;
-       }
-      
-       /* 頁首樣式 */
-       .header {
-           background: white;
-           border-radius: 16px;
-           padding: 30px;
-           margin-bottom: 30px;
-           box-shadow: var(--card-shadow);
-           text-align: center;
-           position: relative;
-           overflow: hidden;
-       }
-      
-       .header::before {
-           content: '';
-           position: absolute;
-           top: 0;
-           left: 0;
-           width: 100%;
-           height: 4px;
-           background: linear-gradient(90deg, var(--primary), var(--secondary), var(--warning), var(--danger));
-       }
-      
-       .header h1 {
-           font-size: 2.5rem;
-           margin-bottom: 10px;
-           color: var(--dark);
-       }
-      
-       .header p {
-           color: var(--gray);
-           font-size: 1.1rem;
-           max-width: 800px;
-           margin: 0 auto;
-       }
-      
-       /* 來源標籤 */
-       .source-tag {
-           display: inline-block;
-           padding: 4px 12px;
-           margin: 5px;
-           background: var(--light);
-           border-radius: 20px;
-           font-size: 0.85rem;
-           color: var(--gray);
-           border: 1px solid var(--light-gray);
-       }
-      
-       .source-tag.tw { border-left: 4px solid var(--secondary); }
-       .source-tag.intl { border-left: 4px solid var(--primary); }
-      
-       /* 控制面板 */
-       .controls {
-           display: flex;
-           gap: 12px;
-           margin-bottom: 30px;
-           flex-wrap: wrap;
-           justify-content: center;
-       }
-      
-       .btn {
-           padding: 12px 24px;
-           border: none;
-           border-radius: 8px;
-           font-size: 1rem;
-           font-weight: 600;
-           cursor: pointer;
-           transition: var(--transition);
-           display: inline-flex;
-           align-items: center;
-           gap: 8px;
-       }
-      
-       .btn-primary {
-           background: var(--primary);
-           color: white;
-       }
-      
-       .btn-primary:hover {
-           background: var(--primary-dark);
-           transform: translateY(-2px);
-           box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
-       }
-      
-       .btn-secondary {
-           background: var(--secondary);
-           color: white;
-       }
-      
-       .btn-secondary:hover {
-           background: var(--secondary-dark);
-           transform: translateY(-2px);
-           box-shadow: 0 4px 12px rgba(52, 168, 83, 0.3);
-       }
-      
-       .btn-outline {
-           background: white;
-           color: var(--primary);
-           border: 2px solid var(--primary);
-       }
-      
-       .btn-outline:hover {
-           background: var(--primary);
-           color: white;
-       }
-      
-       /* 狀態顯示 */
-       .status-bar {
-           display: grid;
-           grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-           gap: 20px;
-           margin-bottom: 30px;
-       }
-      
-       .status-card {
-           background: white;
-           padding: 20px;
-           border-radius: 12px;
-           box-shadow: var(--card-shadow);
-           text-align: center;
-           transition: var(--transition);
-       }
-      
-       .status-card:hover {
-           transform: translateY(-5px);
-           box-shadow: var(--card-shadow-hover);
-       }
-      
-       .status-icon {
-           font-size: 2.5rem;
-           margin-bottom: 15px;
-       }
-      
-       .status-value {
-           font-size: 2.2rem;
-           font-weight: 700;
-           color: var(--primary);
-           margin-bottom: 5px;
-       }
-      
-       .status-label {
-           color: var(--gray);
-           font-size: 0.95rem;
-       }
-      
-       /* 載入動畫 */
-       .loading {
-           text-align: center;
-           padding: 60px 20px;
-           background: white;
-           border-radius: 16px;
-           box-shadow: var(--card-shadow);
-           margin-bottom: 30px;
-       }
-      
-       .loader {
-           width: 60px;
-           height: 60px;
-           border: 5px solid #f3f3f3;
-           border-top: 5px solid var(--primary);
-           border-radius: 50%;
-           animation: spin 1s linear infinite;
-           margin: 0 auto 25px;
-       }
-      
-       @keyframes spin {
-           0% { transform: rotate(0deg); }
-           100% { transform: rotate(360deg); }
-       }
-      
-       /* 錯誤訊息 */
-       .error-message {
-           background: #ffebee;
-           color: var(--danger);
-           padding: 20px;
-           border-radius: 12px;
-           margin-bottom: 30px;
-           border-left: 5px solid var(--danger);
-           display: flex;
-           align-items: center;
-           gap: 12px;
-       }
-      
-       /* 新聞來源統計 */
-       .sources-stats {
-           background: white;
-           border-radius: 16px;
-           padding: 25px;
-           margin-bottom: 30px;
-           box-shadow: var(--card-shadow);
-       }
-      
-       .sources-grid {
-           display: grid;
-           grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-           gap: 15px;
-           margin-top: 20px;
-       }
-      
-       .source-item {
-           display: flex;
-           justify-content: space-between;
-           padding: 12px;
-           background: var(--light);
-           border-radius: 8px;
-           border-left: 4px solid var(--primary);
-       }
-      
-       .source-name {
-           font-weight: 600;
-       }
-      
-       .source-count {
-           background: var(--primary);
-           color: white;
-           padding: 2px 8px;
-           border-radius: 12px;
-           font-size: 0.85rem;
-       }
-      
-       /* 新聞卡片 */
-       .news-grid {
-           display: grid;
-           grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-           gap: 25px;
-           margin-bottom: 40px;
-       }
-      
-       .news-card {
-           background: white;
-           border-radius: 16px;
-           overflow: hidden;
-           box-shadow: var(--card-shadow);
-           transition: var(--transition);
-           display: flex;
-           flex-direction: column;
-           height: 100%;
-       }
-      
-       .news-card:hover {
-           transform: translateY(-8px);
-           box-shadow: var(--card-shadow-hover);
-       }
-      
-       .news-category {
-           padding: 10px 20px;
-           color: white;
-           font-weight: 600;
-           text-align: center;
-       }
-      
-       .category-tech { background: var(--primary); }
-       .category-finance { background: var(--secondary); }
-       .category-politics { background: #9c27b0; }
-       .category-health { background: #00bcd4; }
-       .category-environment { background: #4caf50; }
-       .category-education { background: #ff9800; }
-       .category-sports { background: #e91e63; }
-       .category-entertainment { background: #673ab7; }
-       .category-world { background: #2196f3; }
-       .category-other { background: var(--gray); }
-      
-       .news-content {
-           padding: 25px;
-           flex-grow: 1;
-           display: flex;
-           flex-direction: column;
-       }
-      
-       .news-title {
-           font-size: 1.3rem;
-           font-weight: 600;
-           margin-bottom: 15px;
-           color: var(--dark);
-           line-height: 1.4;
-       }
-      
-       .news-summary {
-           color: var(--gray);
-           margin-bottom: 20px;
-           line-height: 1.6;
-           font-size: 0.95rem;
-           flex-grow: 1;
-       }
-      
-       .news-meta {
-           display: flex;
-           justify-content: space-between;
-           align-items: center;
-           font-size: 0.9rem;
-           color: var(--gray);
-           padding-top: 20px;
-           border-top: 1px solid var(--light-gray);
-           margin-top: auto;
-       }
-      
-       .news-source {
-           font-weight: 600;
-           color: var(--primary);
-           display: flex;
-           align-items: center;
-           gap: 6px;
-       }
-      
-       .news-date {
-           color: var(--gray);
-       }
-      
-       .news-link {
-           display: inline-flex;
-           align-items: center;
-           gap: 6px;
-           color: var(--primary);
-           text-decoration: none;
-           font-weight: 600;
-           transition: var(--transition);
-           margin-top: 15px;
-       }
-      
-       .news-link:hover {
-           color: var(--primary-dark);
-           gap: 10px;
-       }
-      
-       /* 頁尾 */
-       .footer {
-           text-align: center;
-           padding: 25px;
-           color: var(--gray);
-           font-size: 0.9rem;
-           background: white;
-           border-radius: 16px;
-           box-shadow: var(--card-shadow);
-           margin-top: 40px;
-       }
-      
-       /* 響應式設計 */
-       @media (max-width: 768px) {
-           .header h1 { font-size: 2rem; }
-           .news-grid { grid-template-columns: 1fr; }
-           .status-bar { grid-template-columns: 1fr 1fr; }
-           .controls { flex-direction: column; }
-           .btn { justify-content: center; }
-           body { padding: 15px; }
-           .sources-grid { grid-template-columns: 1fr 1fr; }
-       }
-      
-       @media (max-width: 480px) {
-           .status-bar { grid-template-columns: 1fr; }
-           .header h1 { font-size: 1.8rem; }
-           .header { padding: 20px; }
-           body { padding: 10px; }
-           .sources-grid { grid-template-columns: 1fr; }
-       }
-   </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 全球AI科技新聞系統</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4285f4;
+            --primary-dark: #3367d6;
+            --secondary: #34a853;
+            --ai-color: #ea4335;
+            --tech-color: #fbbc05;
+            --finance-color: #673ab7;
+            --intl-color: #00bcd4;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            --card-shadow-hover: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        
+        /* 頁首 */
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--ai-color), var(--tech-color), var(--finance-color), var(--intl-color));
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, var(--primary), var(--ai-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            color: var(--gray);
+            font-size: 1.2rem;
+            max-width: 900px;
+            margin: 0 auto 20px;
+        }
+        
+        /* 統計卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-shadow-hover);
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* 分類按鈕 */
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .category-btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .category-btn.active {
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .category-btn.ai { background: var(--ai-color); color: white; }
+        .category-btn.tech { background: var(--tech-color); color: var(--dark); }
+        .category-btn.finance { background: var(--finance-color); color: white; }
+        .category-btn.intl { background: var(--intl-color); color: white; }
+        .category-btn.all { background: var(--primary); color: white; }
+        .category-btn.software { background: #9c27b0; color: white; }
+        .category-btn.hardware { background: #4caf50; color: white; }
+        .category-btn.startup { background: #ff9800; color: white; }
+        
+        .category-btn:hover:not(.active) {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        /* 控制面板 */
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* 新聞卡片 */
+        .news-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .news-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .news-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--card-shadow-hover);
+        }
+        
+        .news-header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .news-category {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .category-ai { background: var(--ai-color); }
+        .category-tech { background: var(--tech-color); }
+        .category-finance { background: var(--finance-color); }
+        .category-intl { background: var(--intl-color); }
+        
+        .news-badge {
+            background: #f0f0f0;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .news-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .news-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--dark);
+            line-height: 1.4;
+        }
+        
+        .news-summary {
+            color: var(--gray);
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 1rem;
+            flex-grow: 1;
+        }
+        
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            margin-top: auto;
+        }
+        
+        .news-source {
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .news-date {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* 載入動畫 */
+        .loading {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            margin: 30px 0;
+        }
+        
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 響應式設計 */
+        @media (max-width: 1200px) {
+            .news-container { grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2.2rem; }
+            .news-container { grid-template-columns: 1fr; }
+            .category-tabs { flex-direction: column; }
+            .category-btn { justify-content: center; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .container { padding: 10px; }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 { font-size: 1.8rem; }
+            .header { padding: 25px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            body { padding: 10px; }
+        }
+    </style>
 </head>
 <body>
-   <div class="container">
-       <!-- 頁首 -->
-       <div class="header">
-           <h1><i class="fas fa-globe-americas"></i> 全球新聞收集系統</h1>
-           <p>收集全球 8 大新聞來源，即時更新 50+ 則最新新聞</p>
-           <div style="margin-top: 15px;">
-               <span class="source-tag tw"><i class="fas fa-map-marker-alt"></i> 台灣新聞 (3)</span>
-               <span class="source-tag intl"><i class="fas fa-globe"></i> 國際新聞 (5)</span>
-               <span class="source-tag"><i class="fas fa-newspaper"></i> 總數: 50+ 則</span>
-           </div>
-       </div>
-      
-       <!-- 控制按鈕 -->
-       <div class="controls">
-           <button class="btn btn-primary" onclick="loadNews()" id="loadBtn">
-               <i class="fas fa-sync-alt"></i> 更新新聞
-           </button>
-           <button class="btn btn-secondary" onclick="showStats()">
-               <i class="fas fa-chart-bar"></i> 檢視統計
-           </button>
-           <button class="btn btn-outline" onclick="testConnection()" id="testBtn">
-               <i class="fas fa-wifi"></i> 測試連線
-           </button>
-           <button class="btn btn-outline" onclick="toggleSources()">
-               <i class="fas fa-list"></i> 顯示來源
-           </button>
-       </div>
-      
-       <!-- 狀態顯示 -->
-       <div class="status-bar" id="statusBar">
-           <div class="status-card">
-               <div class="status-icon"><i class="fas fa-newspaper" style="color: var(--primary);"></i></div>
-               <div class="status-value" id="totalNews">0</div>
-               <div class="status-label">總新聞數</div>
-           </div>
-           <div class="status-card">
-               <div class="status-icon"><i class="fas fa-rss" style="color: var(--secondary);"></i></div>
-               <div class="status-value" id="totalSources">0</div>
-               <div class="status-label">新聞來源</div>
-           </div>
-           <div class="status-card">
-               <div class="status-icon"><i class="fas fa-tags" style="color: #9c27b0;"></i></div>
-               <div class="status-value" id="totalCategories">0</div>
-               <div class="status-label">新聞分類</div>
-           </div>
-           <div class="status-card">
-               <div class="status-icon"><i class="fas fa-clock" style="color: var(--warning);"></i></div>
-               <div class="status-value" id="lastUpdateTime">--:--</div>
-               <div class="status-label">最後更新</div>
-           </div>
-       </div>
-      
-       <!-- 新聞來源統計 -->
-       <div class="sources-stats" id="sourcesStats" style="display: none;">
-           <h2 class="section-title"><i class="fas fa-satellite-dish"></i> 新聞來源統計</h2>
-           <div class="sources-grid" id="sourcesGrid"></div>
-       </div>
-      
-       <!-- 載入指示器 -->
-       <div class="loading" id="loading" style="display: none;">
-           <div class="loader"></div>
-           <p>正在載入新聞資料...</p>
-       </div>
-      
-       <!-- 錯誤訊息 -->
-       <div class="error-message" id="errorMessage" style="display: none;">
-           <i class="fas fa-exclamation-triangle"></i>
-           <div id="errorText"></div>
-       </div>
-      
-       <!-- 最後更新時間 -->
-       <div class="last-updated" id="lastUpdated">
-           <i class="fas fa-clock"></i> 最後更新時間: <span id="updateTimeText">尚未更新</span>
-       </div>
-      
-       <!-- 新聞列表 -->
-       <div class="news-grid" id="newsContainer">
-           <!-- 新聞卡片會動態生成在這裡 -->
-       </div>
-      
-       <!-- 頁尾 -->
-       <div class="footer">
-           <p><i class="fas fa-code"></i> 全球新聞收集系統 v3.0</p>
-           <p>新聞來源: BBC, CNN, Reuters, AP, Al Jazeera, 中央社, ETtoday, 自由時報</p>
-           <p>目標新聞數: 50+ 則 | 更新頻率: 每小時自動更新</p>
-       </div>
-   </div>
-  
-   <!-- JavaScript 程式碼 - 修正版 -->
-   <script>
-       // 系統設定
-       const CONFIG = {
-           // 修正 API URL - 確保正確
-           API_URL: 'https://script.google.com/macros/s/AKfycby-_9Y2ezmU-Li326SeVmCGpeIg6LwaGHF7_5EKng3QlY7sXoP0smrEyboNNLmGW-ui/exec',
-           USE_MOCK_DATA: true,  // 暫時使用模擬資料
-           NEWS_COUNT_TARGET: 50,  // 目標新聞數
-           UPDATE_INTERVAL: 300000, // 5分鐘自動更新
-           
-           // 8 個新聞來源（5國際 + 3台灣）
-           NEWS_SOURCES: {
-               'BBC': { type: '國際', country: 'UK', icon: 'fas fa-broadcast-tower', color: '#bb1919' },
-               'CNN': { type: '國際', country: 'US', icon: 'fas fa-tv', color: '#cc0000' },
-               'Reuters': { type: '國際', country: 'UK', icon: 'fas fa-newspaper', color: '#ff8000' },
-               'AP': { type: '國際', country: 'US', icon: 'fas fa-newspaper', color: '#333333' },
-               'Al Jazeera': { type: '國際', country: 'QA', icon: 'fas fa-globe-asia', color: '#005f85' },
-               '中央社': { type: '台灣', country: 'TW', icon: 'fas fa-landmark', color: '#0066cc' },
-               'ETtoday': { type: '台灣', country: 'TW', icon: 'fas fa-tv', color: '#ff6600' },
-               '自由時報': { type: '台灣', country: 'TW', icon: 'fas fa-newspaper', color: '#cc0000' }
-           },
-           
-           CATEGORIES: [
-               '科技', '財經', '政治', '健康', '環境', 
-               '教育', '運動', '娛樂', '國際', '社會'
-           ],
-           
-           CATEGORY_COLORS: {
-               '科技': 'category-tech',
-               '財經': 'category-finance',
-               '政治': 'category-politics',
-               '健康': 'category-health',
-               '環境': 'category-environment',
-               '教育': 'category-education',
-               '運動': 'category-sports',
-               '娛樂': 'category-entertainment',
-               '國際': 'category-world',
-               '社會': 'category-other'
-           },
-           
-           CATEGORY_ICONS: {
-               '科技': 'fas fa-microchip',
-               '財經': 'fas fa-chart-line',
-               '政治': 'fas fa-landmark',
-               '健康': 'fas fa-heartbeat',
-               '環境': 'fas fa-leaf',
-               '教育': 'fas fa-graduation-cap',
-               '運動': 'fas fa-running',
-               '娛樂': 'fas fa-film',
-               '國際': 'fas fa-globe-americas',
-               '社會': 'fas fa-users'
-           }
-       };
-       
-       // 全域狀態
-       let currentNews = [];
-       let currentFilter = 'all';
-       let lastUpdateTime = null;
-       let autoUpdateInterval = null;
-       
-       // 頁面載入完成後執行
-       document.addEventListener('DOMContentLoaded', function() {
-           console.log('🌍 全球新聞系統啟動');
-           
-           // 綁定按鈕事件（確保可點擊）
-           bindButtonEvents();
-           
-           // 載入新聞資料
-           loadNews();
-           
-           // 設定定時更新
-           startAutoUpdate();
-       });
-       
-       // 綁定按鈕事件
-       function bindButtonEvents() {
-           const testBtn = document.getElementById('testBtn');
-           const loadBtn = document.getElementById('loadBtn');
-           
-           if (testBtn) {
-               testBtn.addEventListener('click', function(e) {
-                   console.log('✅ 測試按鈕被點擊');
-                   testConnection();
-               });
-           }
-           
-           if (loadBtn) {
-               loadBtn.addEventListener('click', function(e) {
-                   console.log('✅ 載入按鈕被點擊');
-                   loadNews();
-               });
-           }
-           
-           console.log('按鈕事件綁定完成');
-       }
-       
-       // 修正：測試連線函數
-       async function testConnection() {
-           console.log('🔍 開始測試連線...');
-           
-           // 顯示載入狀態
-           const originalText = document.getElementById('testBtn').innerHTML;
-           document.getElementById('testBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> 測試中...';
-           document.getElementById('testBtn').disabled = true;
-           
-           try {
-               // 測試 API 連線
-               const testUrl = CONFIG.API_URL + '?action=test&t=' + Date.now();
-               console.log('測試 URL:', testUrl);
-               
-               const response = await fetch(testUrl, {
-                   method: 'GET',
-                   mode: 'cors',
-                   cache: 'no-cache'
-               });
-               
-               console.log('回應狀態:', response.status, response.statusText);
-               
-               if (response.ok) {
-                   const data = await response.json();
-                   console.log('API 回應:', data);
-                   
-                   if (data.success) {
-                       showMessage(`✅ 連線成功！版本: ${data.version || '1.0.0'}`, 'success');
-                       alert(`✅ API 連線正常\n版本: ${data.version || '1.0.0'}\n時間: ${new Date().toLocaleTimeString()}`);
-                   } else {
-                       showMessage(`⚠️ API 回應錯誤: ${data.error || '未知錯誤'}`, 'warning');
-                       alert(`⚠️ API 錯誤: ${data.error || '未知錯誤'}`);
-                   }
-               } else {
-                   showMessage(`❌ HTTP 錯誤: ${response.status}`, 'error');
-                   alert(`❌ 連線失敗\nHTTP 狀態碼: ${response.status}\n請檢查 API URL 和 CORS 設定`);
-               }
-               
-           } catch (error) {
-               console.error('連線測試失敗:', error);
-               showMessage(`❌ 連線失敗: ${error.message}`, 'error');
-               
-               // 提供詳細錯誤資訊
-               let errorMsg = `連線錯誤:\n${error.message}\n\n`;
-               errorMsg += `可能原因:\n`;
-               errorMsg += `1. API URL 不正確\n`;
-               errorMsg += `2. CORS 設定問題\n`;
-               errorMsg += `3. 網路連線問題\n`;
-               errorMsg += `4. GAS 未部署為網頁應用程式`;
-               
-               alert(errorMsg);
-               
-           } finally {
-               // 恢復按鈕狀態
-               document.getElementById('testBtn').innerHTML = originalText;
-               document.getElementById('testBtn').disabled = false;
-           }
-       }
-       
-       // 載入新聞資料
-       async function loadNews() {
-           showLoading(true);
-           hideError();
-           
-           try {
-               if (CONFIG.USE_MOCK_DATA) {
-                   console.log('📊 使用模擬資料 (50則新聞)');
-                   await loadMockData();
-               } else {
-                   console.log('🌐 嘗試連接真實 API...');
-                   await loadRealData();
-               }
-               
-               showMessage(`✅ 成功載入 ${currentNews.length} 則新聞`, 'success');
-               
-           } catch (error) {
-               console.error('載入失敗:', error);
-               
-               // 自動切換到模擬資料
-               if (!CONFIG.USE_MOCK_DATA) {
-                   CONFIG.USE_MOCK_DATA = true;
-                   showMessage('⚠️ API 連線失敗，已切換到模擬資料', 'warning');
-                   await loadMockData();
-               } else {
-                   showError(`載入失敗: ${error.message}`);
-               }
-               
-           } finally {
-               showLoading(false);
-           }
-       }
-       
-       // 載入模擬資料（50則新聞）
-       async function loadMockData() {
-           // 模擬網路延遲
-           await new Promise(resolve => setTimeout(resolve, 1000));
-           
-           const mockData = generateMockData(50); // 生成50則新聞
-           processNewsData(mockData);
-           lastUpdateTime = new Date();
-       }
-       
-       // 載入真實資料
-       async function loadRealData() {
-           const response = await fetch(CONFIG.API_URL + '?t=' + Date.now());
-           
-           if (!response.ok) {
-               throw new Error(`HTTP 錯誤: ${response.status}`);
-           }
-           
-           const result = await response.json();
-           
-           if (!result.success) {
-               throw new Error(result.error || 'API 錯誤');
-           }
-           
-           processNewsData(result.data);
-       }
-       
-       // 生成模擬資料
-       function generateMockData(count) {
-           const sources = Object.keys(CONFIG.NEWS_SOURCES);
-           const categories = CONFIG.CATEGORIES;
-           
-           const news = [];
-           const sourceCount = {};
-           const categoryCount = {};
-           
-           for (let i = 1; i <= count; i++) {
-               const source = sources[Math.floor(Math.random() * sources.length)];
-               const category = categories[Math.floor(Math.random() * categories.length)];
-               
-               // 統計
-               sourceCount[source] = (sourceCount[source] || 0) + 1;
-               categoryCount[category] = (categoryCount[category] || 0) + 1;
-               
-               news.push({
-                   id: i,
-                   title: `新聞標題 ${i}: ${getRandomTopic()} - ${category}類`,
-                   summary: `這是第 ${i} 則模擬新聞，來源於 ${source}。內容關於${getRandomTopic()}的相關報導，屬於${category}類別。`,
-                   category: category,
-                   source: source,
-                   link: '#',
-                   date: getRandomDate(),
-                   timestamp: Date.now() - Math.random() * 86400000 * 7 // 7天內
-               });
-           }
-           
-           // 生成熱門關鍵字
-           const hotKeywords = [
-               {keyword: '國際新聞', count: Math.floor(Math.random() * 20) + 10, size: 22},
-               {keyword: '科技發展', count: Math.floor(Math.random() * 15) + 8, size: 20},
-               {keyword: '經濟趨勢', count: Math.floor(Math.random() * 15) + 5, size: 18},
-               {keyword: '政治動態', count: Math.floor(Math.random() * 12) + 5, size: 16},
-               {keyword: '環境保護', count: Math.floor(Math.random() * 10) + 3, size: 14}
-           ];
-           
-           return {
-               news: news,
-               statistics: {
-                   total: count,
-                   bySource: sourceCount,
-                   byCategory: categoryCount,
-                   lastUpdated: new Date().toISOString()
-               },
-               hotKeywords: hotKeywords
-           };
-       }
-       
-       // 工具函數
-       function getRandomTopic() {
-           const topics = [
-               '人工智能發展', '全球經濟趨勢', '氣候變遷會議', '科技創新', '國際關係',
-               '醫療突破', '教育改革', '運動賽事', '娛樂產業', '社會議題',
-               '金融市場', '能源政策', '太空探索', '網路安全', '文化發展'
-           ];
-           return topics[Math.floor(Math.random() * topics.length)];
-       }
-       
-       function getRandomDate() {
-           const date = new Date();
-           date.setDate(date.getDate() - Math.floor(Math.random() * 7));
-           date.setHours(Math.floor(Math.random() * 24));
-           date.setMinutes(Math.floor(Math.random() * 60));
-           return date.toISOString();
-       }
-       
-       // 處理新聞資料
-       function processNewsData(data) {
-           if (!data || !data.news) {
-               throw new Error('無效的資料格式');
-           }
-           
-           currentNews = data.news || [];
-           
-           // 顯示統計資料
-           displayStatistics(data.statistics);
-           
-           // 顯示新聞列表
-           displayNewsList(currentNews);
-           
-           // 更新最後更新時間
-           updateLastUpdatedTime(data.statistics?.lastUpdated);
-           
-           console.log(`📈 處理完成: ${currentNews.length} 則新聞`);
-       }
-       
-       // 顯示統計資料
-       function displayStatistics(statistics) {
-           if (!statistics) return;
-           
-           const totalNews = statistics.total || 0;
-           const sourceCount = Object.keys(statistics.bySource || {}).length;
-           const categoryCount = Object.keys(statistics.byCategory || {}).length;
-           
-           document.getElementById('totalNews').textContent = totalNews;
-           document.getElementById('totalSources').textContent = sourceCount;
-           document.getElementById('totalCategories').textContent = categoryCount;
-           
-           // 更新最後更新時間顯示
-           if (statistics.lastUpdated) {
-               const date = new Date(statistics.lastUpdated);
-               const timeStr = date.toLocaleTimeString('zh-TW', {
-                   hour: '2-digit',
-                   minute: '2-digit',
-                   hour12: false
-               });
-               document.getElementById('lastUpdateTime').textContent = timeStr;
-           }
-           
-           // 更新來源統計
-           updateSourcesStats(statistics.bySource);
-       }
-       
-       // 更新來源統計
-       function updateSourcesStats(bySource) {
-           if (!bySource) return;
-           
-           const sourcesGrid = document.getElementById('sourcesGrid');
-           if (!sourcesGrid) return;
-           
-           let html = '';
-           Object.entries(bySource).forEach(([source, count]) => {
-               const sourceInfo = CONFIG.NEWS_SOURCES[source] || { type: '其他', icon: 'fas fa-rss', color: '#666' };
-               const typeClass = sourceInfo.type === '台灣' ? 'tw' : 'intl';
-               
-               html += `
-                   <div class="source-item">
-                       <div class="source-name">
-                           <i class="${sourceInfo.icon}" style="color: ${sourceInfo.color};"></i>
-                           <span>${source}</span>
-                           <small style="color: #666;">(${sourceInfo.type})</small>
-                       </div>
-                       <div class="source-count">${count}</div>
-                   </div>
-               `;
-           });
-           
-           sourcesGrid.innerHTML = html;
-       }
-       
-       // 顯示新聞列表
-       function displayNewsList(news) {
-           const container = document.getElementById('newsContainer');
-           
-           if (!news || news.length === 0) {
-               container.innerHTML = `
-                   <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
-                       <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 20px;"></i>
-                       <h3>暫無新聞資料</h3>
-                       <p>請稍後再試或檢查網路連接</p>
-                   </div>
-               `;
-               return;
-           }
-           
-           let html = '';
-           news.forEach(item => {
-               const categoryClass = CONFIG.CATEGORY_COLORS[item.category] || 'category-other';
-               const categoryIcon = CONFIG.CATEGORY_ICONS[item.category] || 'fas fa-newspaper';
-               const sourceInfo = CONFIG.NEWS_SOURCES[item.source] || { icon: 'fas fa-rss', color: '#666' };
-               
-               html += `
-                   <div class="news-card">
-                       <div class="news-category ${categoryClass}">
-                           <i class="${categoryIcon}"></i> ${item.category || '其他'}
-                       </div>
-                       <div class="news-content">
-                           <h3 class="news-title">${escapeHtml(item.title || '無標題')}</h3>
-                           <p class="news-summary">${escapeHtml(item.summary || '無摘要')}</p>
-                           <a href="${item.link || '#'}" class="news-link" target="_blank" rel="noopener noreferrer">
-                               <i class="fas fa-external-link-alt"></i> 閱讀原文
-                           </a>
-                           <div class="news-meta">
-                               <div class="news-source">
-                                   <i class="${sourceInfo.icon}" style="color: ${sourceInfo.color};"></i> ${item.source || '未知來源'}
-                               </div>
-                               <div class="news-date">
-                                   ${formatDate(item.date) || formatDate(item.timestamp)}
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-               `;
-           });
-           
-           container.innerHTML = html;
-       }
-       
-       // 顯示統計詳情
-       function showStats() {
-           if (currentNews.length === 0) {
-               showMessage('尚未載入新聞資料', 'warning');
-               return;
-           }
-           
-           const categories = {};
-           const sources = {};
-           
-           currentNews.forEach(item => {
-               const cat = item.category || '其他';
-               const src = item.source || '未知來源';
-               
-               categories[cat] = (categories[cat] || 0) + 1;
-               sources[src] = (sources[src] || 0) + 1;
-           });
-           
-           let message = `📊 系統統計\n\n`;
-           message += `總新聞數: ${currentNews.length}\n`;
-           message += `目標數量: ${CONFIG.NEWS_COUNT_TARGET}\n`;
-           message += `完成度: ${Math.round((currentNews.length / CONFIG.NEWS_COUNT_TARGET) * 100)}%\n\n`;
-           message += `📰 來源分布:\n`;
-           Object.entries(sources).forEach(([source, count]) => {
-               message += `  ${source}: ${count} 則\n`;
-           });
-           message += `\n🏷️ 分類分布:\n`;
-           Object.entries(categories).forEach(([category, count]) => {
-               message += `  ${category}: ${count} 則\n`;
-           });
-           
-           alert(message);
-       }
-       
-       // 切換來源顯示
-       function toggleSources() {
-           const sourcesStats = document.getElementById('sourcesStats');
-           sourcesStats.style.display = sourcesStats.style.display === 'none' ? 'block' : 'none';
-       }
-       
-       // 開始自動更新
-       function startAutoUpdate() {
-           if (autoUpdateInterval) {
-               clearInterval(autoUpdateInterval);
-           }
-           
-           autoUpdateInterval = setInterval(() => {
-               console.log('🔄 自動更新新聞資料...');
-               loadNews();
-           }, CONFIG.UPDATE_INTERVAL);
-           
-           console.log(`⏰ 已設定自動更新，間隔: ${CONFIG.UPDATE_INTERVAL / 1000} 秒`);
-       }
-       
-       // 工具函數
-       function showLoading(show) {
-           document.getElementById('loading').style.display = show ? 'block' : 'none';
-       }
-       
-       function showError(message) {
-           document.getElementById('errorText').textContent = message;
-           document.getElementById('errorMessage').style.display = 'flex';
-       }
-       
-       function hideError() {
-           document.getElementById('errorMessage').style.display = 'none';
-       }
-       
-       function showMessage(text, type = 'info') {
-           console.log(`${type}: ${text}`);
-       }
-       
-       function updateLastUpdatedTime(timestamp) {
-           const timeStr = timestamp ? 
-               new Date(timestamp).toLocaleString('zh-TW') : 
-               new Date().toLocaleString('zh-TW');
-           document.getElementById('updateTimeText').textContent = timeStr;
-       }
-       
-       function formatDate(dateStr) {
-           try {
-               const date = new Date(dateStr);
-               return date.toLocaleDateString('zh-TW', {
-                   month: '2-digit',
-                   day: '2-digit',
-                   hour: '2-digit',
-                   minute: '2-digit'
-               });
-           } catch (e) {
-               return dateStr || '未知日期';
-           }
-       }
-       
-       function escapeHtml(text) {
-           if (!text) return '';
-           const div = document.createElement('div');
-           div.textContent = text;
-           return div.innerHTML;
-       }
-       
-       // 初始化完成
-       console.log('✅ 全球新聞系統初始化完成');
-   </script>
+    <div class="container">
+        <!-- 頁首 -->
+        <div class="header">
+            <h1><i class="fas fa-robot"></i> 全球AI科技新聞系統</h1>
+            <p>追蹤22個國際新聞源，即時掌握AI發展、科技趨勢、財經動態與國際大事</p>
+            
+            <!-- 統計卡片 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-newspaper" style="color: var(--primary);"></i></div>
+                    <div class="stat-value" id="totalNews">0</div>
+                    <div class="stat-label">總新聞數</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-brain" style="color: var(--ai-color);"></i></div>
+                    <div class="stat-value" id="aiNews">0</div>
+                    <div class="stat-label">AI資訊</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-microchip" style="color: var(--tech-color);"></i></div>
+                    <div class="stat-value" id="techNews">0</div>
+                    <div class="stat-label">科技發展</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-chart-line" style="color: var(--finance-color);"></i></div>
+                    <div class="stat-value" id="financeNews">0</div>
+                    <div class="stat-label">財經市場</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 分類標籤 -->
+        <div class="category-tabs">
+            <button class="category-btn all active" onclick="filterNews('all')">
+                <i class="fas fa-globe"></i> 全部新聞
+            </button>
+            <button class="category-btn ai" onclick="filterNews('AI資訊')">
+                <i class="fas fa-brain"></i> AI資訊類
+            </button>
+            <button class="category-btn tech" onclick="filterNews('科技發展')">
+                <i class="fas fa-microchip"></i> 科技發展
+            </button>
+            <button class="category-btn finance" onclick="filterNews('財經市場')">
+                <i class="fas fa-chart-line"></i> 財經市場
+            </button>
+            <button class="category-btn intl" onclick="filterNews('國際大事')">
+                <i class="fas fa-globe-americas"></i> 國際大事
+            </button>
+            <button class="category-btn software" onclick="filterNews('軟體應用')">
+                <i class="fas fa-code"></i> 軟體應用
+            </button>
+            <button class="category-btn hardware" onclick="filterNews('硬體設備')">
+                <i class="fas fa-server"></i> 硬體設備
+            </button>
+            <button class="category-btn startup" onclick="filterNews('新創動態')">
+                <i class="fas fa-rocket"></i> 新創動態
+            </button>
+        </div>
+        
+        <!-- 控制按鈕 -->
+        <div class="controls">
+            <button class="btn" onclick="loadNews()">
+                <i class="fas fa-sync-alt"></i> 更新新聞
+            </button>
+            <button class="btn" onclick="testConnection()">
+                <i class="fas fa-wifi"></i> 測試連線
+            </button>
+            <button class="btn" onclick="showStats()">
+                <i class="fas fa-chart-bar"></i> 詳細統計
+            </button>
+            <button class="btn" onclick="forceUpdate()">
+                <i class="fas fa-bolt"></i> 強制更新
+            </button>
+        </div>
+        
+        <!-- 載入指示器 -->
+        <div class="loading" id="loading" style="display: none;">
+            <div class="loader"></div>
+            <p>正在載入最新新聞資料...</p>
+        </div>
+        
+        <!-- 新聞容器 -->
+        <div class="news-container" id="newsContainer">
+            <!-- 新聞卡片將在這裡動態生成 -->
+        </div>
+    </div>
+
+    <script>
+        // 系統設定
+        const CONFIG = {
+            API_URL: '你的API網址',  // 替換為你的GAS部署URL
+            CATEGORIES: {
+                'AI資訊': { color: '#ea4335', icon: 'fa-brain' },
+                '科技發展': { color: '#fbbc05', icon: 'fa-microchip' },
+                '財經市場': { color: '#673ab7', icon: 'fa-chart-line' },
+                '國際大事': { color: '#00bcd4', icon: 'fa-globe-americas' },
+                '軟體應用': { color: '#9c27b0', icon: 'fa-code' },
+                '硬體設備': { color: '#4caf50', icon: 'fa-server' },
+                '新創動態': { color: '#ff9800', icon: 'fa-rocket' }
+            }
+        };
+        
+        // 全域變數
+        let allNews = [];
+        let currentFilter = 'all';
+        
+        // 頁面載入
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🤖 AI新聞系統啟動');
+            loadNews();
+        });
+        
+        // 載入新聞
+        async function loadNews() {
+            showLoading(true);
+            
+            try {
+                const response = await fetch(CONFIG.API_URL + '?action=getNews');
+                const result = await response.json();
+                
+                if (result.success) {
+                    allNews = result.data.news;
+                    updateStats(result.data.systemInfo);
+                    displayNews(allNews);
+                    console.log(`✅ 載入 ${allNews.length} 則新聞`);
+                } else {
+                    throw new Error(result.error || 'API錯誤');
+                }
+            } catch (error) {
+                console.error('❌ 載入失敗:', error);
+                alert('新聞載入失敗，請檢查API連線');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // 過濾新聞
+        function filterNews(category) {
+            currentFilter = category;
+            
+            // 更新按鈕狀態
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            let filteredNews;
+            if (category === 'all') {
+                filteredNews = allNews;
+            } else {
+                filteredNews = allNews.filter(item => 
+                    item.mainCategory === category || item.categories.includes(category)
+                );
+            }
+            
+            displayNews(filteredNews);
+            updateCategoryStats(filteredNews, category);
+        }
+        
+        // 顯示新聞
+        function displayNews(news) {
+            const container = document.getElementById('newsContainer');
+            
+            if (!news || news.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: #666;">
+                        <i class="fas fa-newspaper" style="font-size: 4rem; margin-bottom: 20px;"></i>
+                        <h3>暫無新聞資料</h3>
+                        <p>請稍後再試或點擊「更新新聞」</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            news.forEach(item => {
+                const categoryInfo = CONFIG.CATEGORIES[item.mainCategory] || { color: '#666', icon: 'fa-newspaper' };
+                const isAI = item.mainCategory === 'AI資訊';
+                const isInternational = item.country !== 'TW';
+                
+                html += `
+                    <div class="news-card">
+                        <div class="news-header">
+                            <div class="news-category" style="background: ${categoryInfo.color};">
+                                <i class="fas ${categoryInfo.icon}"></i> ${item.mainCategory}
+                            </div>
+                            <div class="news-badge">
+                                ${isAI ? '🤖 ' : ''}${isInternational ? '🌍 ' : ''}${item.source}
+                            </div>
+                        </div>
+                        <div class="news-content">
+                            <h3 class="news-title">${escapeHtml(item.title)}</h3>
+                            <p class="news-summary">${escapeHtml(item.summary)}</p>
+                            <div class="news-meta">
+                                <div class="news-source">
+                                    <i class="fas fa-rss"></i> ${item.source}
+                                    <small style="color: #999; margin-left: 8px;">${item.isReal ? '真實' : '模擬'}</small>
+                                </div>
+                                <div class="news-date">
+                                    ${formatDate(item.date)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // 更新統計
+        function updateStats(systemInfo) {
+            document.getElementById('totalNews').textContent = systemInfo.totalNews || 0;
+            document.getElementById('aiNews').textContent = systemInfo.aiNews || 0;
+            document.getElementById('techNews').textContent = systemInfo.techNews || 0;
+            document.getElementById('financeNews').textContent = systemInfo.financeNews || 0;
+        }
+        
+        function updateCategoryStats(news, category) {
+            const aiCount = news.filter(n => n.mainCategory === 'AI資訊').length;
+            const techCount = news.filter(n => n.mainCategory === '科技發展').length;
+            const financeCount = news.filter(n => n.mainCategory === '財經市場').length;
+            
+            if (category === 'all' || category === 'AI資訊') {
+                document.getElementById('aiNews').textContent = aiCount;
+            }
+            if (category === 'all' || category === '科技發展') {
+                document.getElementById('techNews').textContent = techCount;
+            }
+            if (category === 'all' || category === '財經市場') {
+                document.getElementById('financeNews').textContent = financeCount;
+            }
+        }
+        
+        // 測試連線
+        async function testConnection() {
+            try {
+                const response = await fetch(CONFIG.API_URL + '?action=test');
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`✅ 連線成功！\n版本: ${result.version}\n新聞源: ${result.config.totalSources}個\n目標新聞: ${result.config.targetNews}則`);
+                } else {
+                    alert('❌ 連線測試失敗');
+                }
+            } catch (error) {
+                alert('❌ 連線失敗，請檢查API URL');
+            }
+        }
+        
+        // 顯示詳細統計
+        function showStats() {
+            if (allNews.length === 0) {
+                alert('尚未載入新聞資料');
+                return;
+            }
+            
+            const categories = {};
+            const sources = {};
+            
+            allNews.forEach(item => {
+                categories[item.mainCategory] = (categories[item.mainCategory] || 0) + 1;
+                sources[item.source] = (sources[item.source] || 0) + 1;
+            });
+            
+            let message = `📊 詳細統計\n\n`;
+            message += `總新聞數: ${allNews.length}\n`;
+            message += `真實新聞: ${allNews.filter(n => n.isReal).length}\n`;
+            message += `模擬新聞: ${allNews.filter(n => !n.isReal).length}\n\n`;
+            message += `分類分布:\n`;
+            Object.entries(categories).forEach(([cat, count]) => {
+                message += `  ${cat}: ${count} 則\n`;
+            });
+            message += `\n來源分布:\n`;
+            Object.entries(sources).slice(0, 10).forEach(([src, count]) => {
+                message += `  ${src}: ${count} 則\n`;
+            });
+            
+            alert(message);
+        }
+        
+        // 強制更新
+        async function forceUpdate() {
+            showLoading(true);
+            try {
+                const response = await fetch(CONFIG.API_URL + '?action=getNews&force=true');
+                const result = await response.json();
+                
+                if (result.success) {
+                    allNews = result.data.news;
+                    updateStats(result.data.systemInfo);
+                    displayNews(allNews);
+                    alert(`✅ 強制更新完成\n共 ${allNews.length} 則新聞`);
+                }
+            } catch (error) {
+                alert('❌ 更新失敗');
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        // 工具函數
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        function formatDate(dateStr) {
+            try {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('zh-TW', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (e) {
+                return dateStr || '未知時間';
+            }
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // 初始化
+        console.log('系統準備就緒');
+    </script>
 </body>
 </html>
+
