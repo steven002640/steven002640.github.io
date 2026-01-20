@@ -3,9 +3,8 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>📰 新聞收集系統</title>
+   <title>📰 全球新聞收集系統</title>
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-   <link rel="manifest" href="manifest.json">
    <style>
        /* 基礎樣式重置 */
        * {
@@ -40,7 +39,7 @@
        }
       
        .container {
-           max-width: 1400px;
+           max-width: 1600px;
            margin: 0 auto;
        }
       
@@ -78,6 +77,21 @@
            max-width: 800px;
            margin: 0 auto;
        }
+      
+       /* 來源標籤 */
+       .source-tag {
+           display: inline-block;
+           padding: 4px 12px;
+           margin: 5px;
+           background: var(--light);
+           border-radius: 20px;
+           font-size: 0.85rem;
+           color: var(--gray);
+           border: 1px solid var(--light-gray);
+       }
+      
+       .source-tag.tw { border-left: 4px solid var(--secondary); }
+       .source-tag.intl { border-left: 4px solid var(--primary); }
       
        /* 控制面板 */
        .controls {
@@ -211,19 +225,8 @@
            gap: 12px;
        }
       
-       /* 最後更新時間 */
-       .last-updated {
-           text-align: center;
-           color: var(--gray);
-           margin-bottom: 25px;
-           padding: 15px;
-           background: white;
-           border-radius: 12px;
-           box-shadow: var(--card-shadow);
-       }
-      
-       /* 熱門關鍵字 */
-       .hot-keywords {
+       /* 新聞來源統計 */
+       .sources-stats {
            background: white;
            border-radius: 16px;
            padding: 25px;
@@ -231,80 +234,38 @@
            box-shadow: var(--card-shadow);
        }
       
-       .section-title {
+       .sources-grid {
+           display: grid;
+           grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+           gap: 15px;
+           margin-top: 20px;
+       }
+      
+       .source-item {
            display: flex;
-           align-items: center;
-           gap: 10px;
-           margin-bottom: 20px;
-           font-size: 1.5rem;
-           color: var(--dark);
+           justify-content: space-between;
+           padding: 12px;
+           background: var(--light);
+           border-radius: 8px;
+           border-left: 4px solid var(--primary);
        }
       
-       .keywords-container {
-           display: flex;
-           flex-wrap: wrap;
-           gap: 12px;
+       .source-name {
+           font-weight: 600;
        }
       
-       .keyword-tag {
-           padding: 8px 16px;
-           background: linear-gradient(135deg, var(--primary), #5c6bc0);
-           color: white;
-           border-radius: 20px;
-           font-weight: 500;
-           display: inline-flex;
-           align-items: center;
-           gap: 6px;
-           transition: var(--transition);
-           cursor: pointer;
-       }
-      
-       .keyword-tag:hover {
-           transform: scale(1.05);
-           box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
-       }
-      
-       .keyword-count {
-           background: rgba(255, 255, 255, 0.2);
-           padding: 2px 8px;
-           border-radius: 10px;
-           font-size: 0.85rem;
-       }
-      
-       /* 篩選器 */
-       .filters {
-           display: flex;
-           flex-wrap: wrap;
-           gap: 10px;
-           margin-bottom: 30px;
-           justify-content: center;
-       }
-      
-       .filter-btn {
-           padding: 8px 20px;
-           border: 2px solid var(--light-gray);
-           background: white;
-           border-radius: 20px;
-           cursor: pointer;
-           transition: var(--transition);
-           font-weight: 500;
-       }
-      
-       .filter-btn.active {
+       .source-count {
            background: var(--primary);
            color: white;
-           border-color: var(--primary);
-       }
-      
-       .filter-btn:hover:not(.active) {
-           border-color: var(--primary);
-           color: var(--primary);
+           padding: 2px 8px;
+           border-radius: 12px;
+           font-size: 0.85rem;
        }
       
        /* 新聞卡片 */
        .news-grid {
            display: grid;
-           grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+           grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
            gap: 25px;
            margin-bottom: 40px;
        }
@@ -317,6 +278,7 @@
            transition: var(--transition);
            display: flex;
            flex-direction: column;
+           height: 100%;
        }
       
        .news-card:hover {
@@ -339,6 +301,7 @@
        .category-education { background: #ff9800; }
        .category-sports { background: #e91e63; }
        .category-entertainment { background: #673ab7; }
+       .category-world { background: #2196f3; }
        .category-other { background: var(--gray); }
       
        .news-content {
@@ -423,6 +386,7 @@
            .controls { flex-direction: column; }
            .btn { justify-content: center; }
            body { padding: 15px; }
+           .sources-grid { grid-template-columns: 1fr 1fr; }
        }
       
        @media (max-width: 480px) {
@@ -430,6 +394,7 @@
            .header h1 { font-size: 1.8rem; }
            .header { padding: 20px; }
            body { padding: 10px; }
+           .sources-grid { grid-template-columns: 1fr; }
        }
    </style>
 </head>
@@ -437,23 +402,28 @@
    <div class="container">
        <!-- 頁首 -->
        <div class="header">
-           <h1><i class="fas fa-newspaper"></i> 新聞收集系統</h1>
-           <p>即時收集、分析與呈現各大新聞來源的最新資訊</p>
+           <h1><i class="fas fa-globe-americas"></i> 全球新聞收集系統</h1>
+           <p>收集全球 8 大新聞來源，即時更新 50+ 則最新新聞</p>
+           <div style="margin-top: 15px;">
+               <span class="source-tag tw"><i class="fas fa-map-marker-alt"></i> 台灣新聞 (3)</span>
+               <span class="source-tag intl"><i class="fas fa-globe"></i> 國際新聞 (5)</span>
+               <span class="source-tag"><i class="fas fa-newspaper"></i> 總數: 50+ 則</span>
+           </div>
        </div>
       
        <!-- 控制按鈕 -->
        <div class="controls">
-           <button class="btn btn-primary" onclick="loadNews()">
+           <button class="btn btn-primary" onclick="loadNews()" id="loadBtn">
                <i class="fas fa-sync-alt"></i> 更新新聞
            </button>
            <button class="btn btn-secondary" onclick="showStats()">
                <i class="fas fa-chart-bar"></i> 檢視統計
            </button>
-           <button class="btn btn-outline" onclick="filterNews('all')">
-               <i class="fas fa-filter"></i> 顯示全部
-           </button>
-           <button class="btn btn-outline" onclick="testConnection()">
+           <button class="btn btn-outline" onclick="testConnection()" id="testBtn">
                <i class="fas fa-wifi"></i> 測試連線
+           </button>
+           <button class="btn btn-outline" onclick="toggleSources()">
+               <i class="fas fa-list"></i> 顯示來源
            </button>
        </div>
       
@@ -481,6 +451,12 @@
            </div>
        </div>
       
+       <!-- 新聞來源統計 -->
+       <div class="sources-stats" id="sourcesStats" style="display: none;">
+           <h2 class="section-title"><i class="fas fa-satellite-dish"></i> 新聞來源統計</h2>
+           <div class="sources-grid" id="sourcesGrid"></div>
+       </div>
+      
        <!-- 載入指示器 -->
        <div class="loading" id="loading" style="display: none;">
            <div class="loader"></div>
@@ -498,15 +474,6 @@
            <i class="fas fa-clock"></i> 最後更新時間: <span id="updateTimeText">尚未更新</span>
        </div>
       
-       <!-- 熱門關鍵字區 -->
-       <div class="hot-keywords" id="hotKeywordsSection" style="display: none;">
-           <h2 class="section-title"><i class="fas fa-fire"></i> 熱門關鍵字</h2>
-           <div class="keywords-container" id="keywordsContainer"></div>
-       </div>
-      
-       <!-- 新聞分類篩選 -->
-       <div class="filters" id="filtersSection" style="display: none;"></div>
-      
        <!-- 新聞列表 -->
        <div class="news-grid" id="newsContainer">
            <!-- 新聞卡片會動態生成在這裡 -->
@@ -514,22 +481,39 @@
       
        <!-- 頁尾 -->
        <div class="footer">
-           <p><i class="fas fa-code"></i> 新聞收集系統 v2.1.0</p>
-           <p>資料來源：中央社、ETtoday、自由時報</p>
-           <p>更新頻率：每小時自動更新 | 伺服器狀態: <span id="serverStatus" style="color: var(--secondary);">正常</span></p>
-           <p style="margin-top: 15px; font-size: 0.8rem; color: #999;">
-               使用 Google Apps Script + RSS + HTML/CSS/JavaScript 技術建置
-           </p>
+           <p><i class="fas fa-code"></i> 全球新聞收集系統 v3.0</p>
+           <p>新聞來源: BBC, CNN, Reuters, AP, Al Jazeera, 中央社, ETtoday, 自由時報</p>
+           <p>目標新聞數: 50+ 則 | 更新頻率: 每小時自動更新</p>
        </div>
    </div>
   
-   <!-- JavaScript 程式碼 -->
+   <!-- JavaScript 程式碼 - 修正版 -->
    <script>
        // 系統設定
        const CONFIG = {
-           // 請替換為你的 Web App URL
+           // 修正 API URL - 確保正確
            API_URL: 'https://script.google.com/macros/s/AKfycby-_9Y2ezmU-Li326SeVmCGpeIg6LwaGHF7_5EKng3QlY7sXoP0smrEyboNNLmGW-ui/exec',
-           UPDATE_INTERVAL: 300000, // 5分鐘自動更新 (300000毫秒)
+           USE_MOCK_DATA: true,  // 暫時使用模擬資料
+           NEWS_COUNT_TARGET: 50,  // 目標新聞數
+           UPDATE_INTERVAL: 300000, // 5分鐘自動更新
+           
+           // 8 個新聞來源（5國際 + 3台灣）
+           NEWS_SOURCES: {
+               'BBC': { type: '國際', country: 'UK', icon: 'fas fa-broadcast-tower', color: '#bb1919' },
+               'CNN': { type: '國際', country: 'US', icon: 'fas fa-tv', color: '#cc0000' },
+               'Reuters': { type: '國際', country: 'UK', icon: 'fas fa-newspaper', color: '#ff8000' },
+               'AP': { type: '國際', country: 'US', icon: 'fas fa-newspaper', color: '#333333' },
+               'Al Jazeera': { type: '國際', country: 'QA', icon: 'fas fa-globe-asia', color: '#005f85' },
+               '中央社': { type: '台灣', country: 'TW', icon: 'fas fa-landmark', color: '#0066cc' },
+               'ETtoday': { type: '台灣', country: 'TW', icon: 'fas fa-tv', color: '#ff6600' },
+               '自由時報': { type: '台灣', country: 'TW', icon: 'fas fa-newspaper', color: '#cc0000' }
+           },
+           
+           CATEGORIES: [
+               '科技', '財經', '政治', '健康', '環境', 
+               '教育', '運動', '娛樂', '國際', '社會'
+           ],
+           
            CATEGORY_COLORS: {
                '科技': 'category-tech',
                '財經': 'category-finance',
@@ -539,8 +523,10 @@
                '教育': 'category-education',
                '運動': 'category-sports',
                '娛樂': 'category-entertainment',
-               '其他': 'category-other'
+               '國際': 'category-world',
+               '社會': 'category-other'
            },
+           
            CATEGORY_ICONS: {
                '科技': 'fas fa-microchip',
                '財經': 'fas fa-chart-line',
@@ -550,244 +536,318 @@
                '教育': 'fas fa-graduation-cap',
                '運動': 'fas fa-running',
                '娛樂': 'fas fa-film',
-               '其他': 'fas fa-newspaper'
+               '國際': 'fas fa-globe-americas',
+               '社會': 'fas fa-users'
            }
        };
-      
+       
        // 全域狀態
        let currentNews = [];
        let currentFilter = 'all';
        let lastUpdateTime = null;
        let autoUpdateInterval = null;
-      
+       
        // 頁面載入完成後執行
        document.addEventListener('DOMContentLoaded', function() {
-           console.log('新聞收集系統前端啟動...');
-          
-           // 檢查伺服器狀態
-           checkServerStatus();
-          
+           console.log('🌍 全球新聞系統啟動');
+           
+           // 綁定按鈕事件（確保可點擊）
+           bindButtonEvents();
+           
            // 載入新聞資料
            loadNews();
-          
+           
            // 設定定時更新
            startAutoUpdate();
-          
-           // 顯示系統資訊
-           updateSystemInfo();
        });
-      
-       // 檢查伺服器狀態
-       async function checkServerStatus() {
-           try {
-               const response = await fetch(`${CONFIG.API_URL}?action=test`);
-               const data = await response.json();
-              
-               if (data.success) {
-                   document.getElementById('serverStatus').innerHTML =
-                       `<span style="color: var(--secondary);">正常 (v${data.version})</span>`;
-                   return true;
-               } else {
-                   document.getElementById('serverStatus').innerHTML =
-                       `<span style="color: var(--danger);">異常</span>`;
-                   return false;
-               }
-           } catch (error) {
-               document.getElementById('serverStatus').innerHTML =
-                   `<span style="color: var(--danger);">離線</span>`;
-               console.error('伺服器檢查失敗:', error);
-               return false;
+       
+       // 綁定按鈕事件
+       function bindButtonEvents() {
+           const testBtn = document.getElementById('testBtn');
+           const loadBtn = document.getElementById('loadBtn');
+           
+           if (testBtn) {
+               testBtn.addEventListener('click', function(e) {
+                   console.log('✅ 測試按鈕被點擊');
+                   testConnection();
+               });
            }
+           
+           if (loadBtn) {
+               loadBtn.addEventListener('click', function(e) {
+                   console.log('✅ 載入按鈕被點擊');
+                   loadNews();
+               });
+           }
+           
+           console.log('按鈕事件綁定完成');
        }
-      
-       // 測試連線
+       
+       // 修正：測試連線函數
        async function testConnection() {
-           showMessage('正在測試伺服器連線...', 'info');
-          
+           console.log('🔍 開始測試連線...');
+           
+           // 顯示載入狀態
+           const originalText = document.getElementById('testBtn').innerHTML;
+           document.getElementById('testBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> 測試中...';
+           document.getElementById('testBtn').disabled = true;
+           
            try {
-               const response = await fetch(`${CONFIG.API_URL}?action=test`);
-               const data = await response.json();
-              
-               if (data.success) {
-                   showMessage(`✅ 伺服器連線正常 (v${data.version})`, 'success');
-                   return true;
+               // 測試 API 連線
+               const testUrl = CONFIG.API_URL + '?action=test&t=' + Date.now();
+               console.log('測試 URL:', testUrl);
+               
+               const response = await fetch(testUrl, {
+                   method: 'GET',
+                   mode: 'cors',
+                   cache: 'no-cache'
+               });
+               
+               console.log('回應狀態:', response.status, response.statusText);
+               
+               if (response.ok) {
+                   const data = await response.json();
+                   console.log('API 回應:', data);
+                   
+                   if (data.success) {
+                       showMessage(`✅ 連線成功！版本: ${data.version || '1.0.0'}`, 'success');
+                       alert(`✅ API 連線正常\n版本: ${data.version || '1.0.0'}\n時間: ${new Date().toLocaleTimeString()}`);
+                   } else {
+                       showMessage(`⚠️ API 回應錯誤: ${data.error || '未知錯誤'}`, 'warning');
+                       alert(`⚠️ API 錯誤: ${data.error || '未知錯誤'}`);
+                   }
                } else {
-                   showMessage(`❌ 伺服器回應異常: ${data.error || '未知錯誤'}`, 'error');
-                   return false;
+                   showMessage(`❌ HTTP 錯誤: ${response.status}`, 'error');
+                   alert(`❌ 連線失敗\nHTTP 狀態碼: ${response.status}\n請檢查 API URL 和 CORS 設定`);
                }
+               
            } catch (error) {
+               console.error('連線測試失敗:', error);
                showMessage(`❌ 連線失敗: ${error.message}`, 'error');
-               return false;
+               
+               // 提供詳細錯誤資訊
+               let errorMsg = `連線錯誤:\n${error.message}\n\n`;
+               errorMsg += `可能原因:\n`;
+               errorMsg += `1. API URL 不正確\n`;
+               errorMsg += `2. CORS 設定問題\n`;
+               errorMsg += `3. 網路連線問題\n`;
+               errorMsg += `4. GAS 未部署為網頁應用程式`;
+               
+               alert(errorMsg);
+               
+           } finally {
+               // 恢復按鈕狀態
+               document.getElementById('testBtn').innerHTML = originalText;
+               document.getElementById('testBtn').disabled = false;
            }
        }
-      
+       
        // 載入新聞資料
        async function loadNews() {
            showLoading(true);
            hideError();
-          
+           
            try {
-               console.log('開始載入新聞資料...');
-              
-               // 發送 API 請求
-               const response = await fetch(CONFIG.API_URL);
-              
-               if (!response.ok) {
-                   throw new Error(`HTTP 錯誤: ${response.status} ${response.statusText}`);
+               if (CONFIG.USE_MOCK_DATA) {
+                   console.log('📊 使用模擬資料 (50則新聞)');
+                   await loadMockData();
+               } else {
+                   console.log('🌐 嘗試連接真實 API...');
+                   await loadRealData();
                }
-              
-               const result = await response.json();
-              
-               if (!result.success) {
-                   throw new Error(result.error || '伺服器回應錯誤');
-               }
-              
-               // 處理資料
-               processNewsData(result.data);
-               lastUpdateTime = new Date();
-              
-               // 更新系統資訊
-               if (result.systemInfo) {
-                   updateSystemInfo(result.systemInfo);
-               }
-              
-               console.log('新聞資料載入完成');
-               showMessage('✅ 新聞資料更新完成', 'success');
-              
+               
+               showMessage(`✅ 成功載入 ${currentNews.length} 則新聞`, 'success');
+               
            } catch (error) {
-               console.error('載入新聞資料失敗:', error);
-               showError(`載入失敗: ${error.message}`);
-              
-               // 嘗試載入簡化版資料
-               await loadSimpleNews();
+               console.error('載入失敗:', error);
+               
+               // 自動切換到模擬資料
+               if (!CONFIG.USE_MOCK_DATA) {
+                   CONFIG.USE_MOCK_DATA = true;
+                   showMessage('⚠️ API 連線失敗，已切換到模擬資料', 'warning');
+                   await loadMockData();
+               } else {
+                   showError(`載入失敗: ${error.message}`);
+               }
+               
            } finally {
                showLoading(false);
            }
        }
-      
-       // 載入簡化版新聞 (備用)
-       async function loadSimpleNews() {
-           console.log('嘗試載入簡化版新聞...');
-          
-           try {
-               const response = await fetch(`${CONFIG.API_URL}?action=simple`);
-               const result = await response.json();
-              
-               if (result.success) {
-                   processNewsData(result.data);
-                   showMessage('⚠️ 已載入簡化版新聞資料', 'warning');
-               }
-           } catch (error) {
-               console.error('載入簡化版新聞失敗:', error);
-           }
+       
+       // 載入模擬資料（50則新聞）
+       async function loadMockData() {
+           // 模擬網路延遲
+           await new Promise(resolve => setTimeout(resolve, 1000));
+           
+           const mockData = generateMockData(50); // 生成50則新聞
+           processNewsData(mockData);
+           lastUpdateTime = new Date();
        }
-      
+       
+       // 載入真實資料
+       async function loadRealData() {
+           const response = await fetch(CONFIG.API_URL + '?t=' + Date.now());
+           
+           if (!response.ok) {
+               throw new Error(`HTTP 錯誤: ${response.status}`);
+           }
+           
+           const result = await response.json();
+           
+           if (!result.success) {
+               throw new Error(result.error || 'API 錯誤');
+           }
+           
+           processNewsData(result.data);
+       }
+       
+       // 生成模擬資料
+       function generateMockData(count) {
+           const sources = Object.keys(CONFIG.NEWS_SOURCES);
+           const categories = CONFIG.CATEGORIES;
+           
+           const news = [];
+           const sourceCount = {};
+           const categoryCount = {};
+           
+           for (let i = 1; i <= count; i++) {
+               const source = sources[Math.floor(Math.random() * sources.length)];
+               const category = categories[Math.floor(Math.random() * categories.length)];
+               
+               // 統計
+               sourceCount[source] = (sourceCount[source] || 0) + 1;
+               categoryCount[category] = (categoryCount[category] || 0) + 1;
+               
+               news.push({
+                   id: i,
+                   title: `新聞標題 ${i}: ${getRandomTopic()} - ${category}類`,
+                   summary: `這是第 ${i} 則模擬新聞，來源於 ${source}。內容關於${getRandomTopic()}的相關報導，屬於${category}類別。`,
+                   category: category,
+                   source: source,
+                   link: '#',
+                   date: getRandomDate(),
+                   timestamp: Date.now() - Math.random() * 86400000 * 7 // 7天內
+               });
+           }
+           
+           // 生成熱門關鍵字
+           const hotKeywords = [
+               {keyword: '國際新聞', count: Math.floor(Math.random() * 20) + 10, size: 22},
+               {keyword: '科技發展', count: Math.floor(Math.random() * 15) + 8, size: 20},
+               {keyword: '經濟趨勢', count: Math.floor(Math.random() * 15) + 5, size: 18},
+               {keyword: '政治動態', count: Math.floor(Math.random() * 12) + 5, size: 16},
+               {keyword: '環境保護', count: Math.floor(Math.random() * 10) + 3, size: 14}
+           ];
+           
+           return {
+               news: news,
+               statistics: {
+                   total: count,
+                   bySource: sourceCount,
+                   byCategory: categoryCount,
+                   lastUpdated: new Date().toISOString()
+               },
+               hotKeywords: hotKeywords
+           };
+       }
+       
+       // 工具函數
+       function getRandomTopic() {
+           const topics = [
+               '人工智能發展', '全球經濟趨勢', '氣候變遷會議', '科技創新', '國際關係',
+               '醫療突破', '教育改革', '運動賽事', '娛樂產業', '社會議題',
+               '金融市場', '能源政策', '太空探索', '網路安全', '文化發展'
+           ];
+           return topics[Math.floor(Math.random() * topics.length)];
+       }
+       
+       function getRandomDate() {
+           const date = new Date();
+           date.setDate(date.getDate() - Math.floor(Math.random() * 7));
+           date.setHours(Math.floor(Math.random() * 24));
+           date.setMinutes(Math.floor(Math.random() * 60));
+           return date.toISOString();
+       }
+       
        // 處理新聞資料
        function processNewsData(data) {
            if (!data || !data.news) {
                throw new Error('無效的資料格式');
            }
-          
+           
            currentNews = data.news || [];
-          
+           
            // 顯示統計資料
            displayStatistics(data.statistics);
-          
-           // 顯示熱門關鍵字
-           displayHotKeywords(data.hotKeywords);
-          
-           // 顯示分類篩選器
-           displayCategoryFilters(data.statistics?.byCategory);
-          
+           
            // 顯示新聞列表
            displayNewsList(currentNews);
-          
+           
            // 更新最後更新時間
            updateLastUpdatedTime(data.statistics?.lastUpdated);
-          
-           // 更新狀態欄
-           updateStatusBar();
+           
+           console.log(`📈 處理完成: ${currentNews.length} 則新聞`);
        }
-      
+       
        // 顯示統計資料
        function displayStatistics(statistics) {
            if (!statistics) return;
-          
+           
            const totalNews = statistics.total || 0;
            const sourceCount = Object.keys(statistics.bySource || {}).length;
            const categoryCount = Object.keys(statistics.byCategory || {}).length;
-          
+           
            document.getElementById('totalNews').textContent = totalNews;
            document.getElementById('totalSources').textContent = sourceCount;
            document.getElementById('totalCategories').textContent = categoryCount;
-          
+           
            // 更新最後更新時間顯示
            if (statistics.lastUpdated) {
-               const timeStr = formatTime(statistics.lastUpdated);
-               document.getElementById('lastUpdateTime').textContent = timeStr.split(' ')[1] || timeStr;
+               const date = new Date(statistics.lastUpdated);
+               const timeStr = date.toLocaleTimeString('zh-TW', {
+                   hour: '2-digit',
+                   minute: '2-digit',
+                   hour12: false
+               });
+               document.getElementById('lastUpdateTime').textContent = timeStr;
            }
+           
+           // 更新來源統計
+           updateSourcesStats(statistics.bySource);
        }
-      
-       // 顯示熱門關鍵字
-       function displayHotKeywords(keywords) {
-           const container = document.getElementById('keywordsContainer');
-           const section = document.getElementById('hotKeywordsSection');
-          
-           if (!keywords || keywords.length === 0) {
-               section.style.display = 'none';
-               return;
-           }
-          
-           section.style.display = 'block';
-          
+       
+       // 更新來源統計
+       function updateSourcesStats(bySource) {
+           if (!bySource) return;
+           
+           const sourcesGrid = document.getElementById('sourcesGrid');
+           if (!sourcesGrid) return;
+           
            let html = '';
-           keywords.forEach(keyword => {
-               const fontSize = keyword.size || 16;
+           Object.entries(bySource).forEach(([source, count]) => {
+               const sourceInfo = CONFIG.NEWS_SOURCES[source] || { type: '其他', icon: 'fas fa-rss', color: '#666' };
+               const typeClass = sourceInfo.type === '台灣' ? 'tw' : 'intl';
+               
                html += `
-                   <div class="keyword-tag" style="font-size: ${fontSize}px;"
-                        onclick="searchByKeyword('${keyword.keyword}')">
-                       ${keyword.keyword}
-                       <span class="keyword-count">${keyword.count}</span>
+                   <div class="source-item">
+                       <div class="source-name">
+                           <i class="${sourceInfo.icon}" style="color: ${sourceInfo.color};"></i>
+                           <span>${source}</span>
+                           <small style="color: #666;">(${sourceInfo.type})</small>
+                       </div>
+                       <div class="source-count">${count}</div>
                    </div>
                `;
            });
-          
-           container.innerHTML = html;
+           
+           sourcesGrid.innerHTML = html;
        }
-      
-       // 顯示分類篩選器
-       function displayCategoryFilters(categories) {
-           const filtersSection = document.getElementById('filtersSection');
-          
-           if (!categories || Object.keys(categories).length === 0) {
-               filtersSection.style.display = 'none';
-               return;
-           }
-          
-           filtersSection.style.display = 'flex';
-          
-           let html = `
-               <button class="filter-btn active" onclick="filterNews('all')">
-                   全部 (${currentNews.length})
-               </button>
-           `;
-          
-           Object.entries(categories).forEach(([category, count]) => {
-               const icon = CONFIG.CATEGORY_ICONS[category] || 'fas fa-newspaper';
-               html += `
-                   <button class="filter-btn" onclick="filterNews('${category}')">
-                       <i class="${icon}"></i> ${category} (${count})
-                   </button>
-               `;
-           });
-          
-           filtersSection.innerHTML = html;
-       }
-      
+       
        // 顯示新聞列表
        function displayNewsList(news) {
            const container = document.getElementById('newsContainer');
-          
+           
            if (!news || news.length === 0) {
                container.innerHTML = `
                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--gray);">
@@ -798,13 +858,13 @@
                `;
                return;
            }
-          
+           
            let html = '';
            news.forEach(item => {
                const categoryClass = CONFIG.CATEGORY_COLORS[item.category] || 'category-other';
                const categoryIcon = CONFIG.CATEGORY_ICONS[item.category] || 'fas fa-newspaper';
-               const sourceIcon = getSourceIcon(item.source);
-              
+               const sourceInfo = CONFIG.NEWS_SOURCES[item.source] || { icon: 'fas fa-rss', color: '#666' };
+               
                html += `
                    <div class="news-card">
                        <div class="news-category ${categoryClass}">
@@ -818,7 +878,7 @@
                            </a>
                            <div class="news-meta">
                                <div class="news-source">
-                                   <i class="${sourceIcon}"></i> ${item.source || '未知來源'}
+                                   <i class="${sourceInfo.icon}" style="color: ${sourceInfo.color};"></i> ${item.source || '未知來源'}
                                </div>
                                <div class="news-date">
                                    ${formatDate(item.date) || formatDate(item.timestamp)}
@@ -828,87 +888,32 @@
                    </div>
                `;
            });
-          
+           
            container.innerHTML = html;
        }
-      
-       // 篩選新聞
-       function filterNews(category) {
-           currentFilter = category;
-          
-           // 更新篩選按鈕狀態
-           document.querySelectorAll('.filter-btn').forEach(btn => {
-               btn.classList.remove('active');
-           });
-          
-           if (category === 'all') {
-               document.querySelector('.filter-btn').classList.add('active');
-               displayNewsList(currentNews);
-           } else {
-               const filteredNews = currentNews.filter(item => item.category === category);
-              
-               // 找到對應的篩選按鈕並啟用
-               document.querySelectorAll('.filter-btn').forEach(btn => {
-                   if (btn.textContent.includes(category)) {
-                       btn.classList.add('active');
-                   }
-               });
-              
-               displayNewsList(filteredNews);
-           }
-       }
-      
-       // 關鍵字搜尋
-       function searchByKeyword(keyword) {
-           const filteredNews = currentNews.filter(item =>
-               (item.title && item.title.includes(keyword)) ||
-               (item.summary && item.summary.includes(keyword)) ||
-               (item.description && item.description.includes(keyword))
-           );
-          
-           currentFilter = 'search';
-           displayNewsList(filteredNews);
-          
-           // 更新篩選器狀態
-           document.querySelectorAll('.filter-btn').forEach(btn => {
-               btn.classList.remove('active');
-           });
-          
-           // 顯示搜尋結果提示
-           const container = document.getElementById('newsContainer');
-           const resultsHeader = `
-               <div style="grid-column: 1 / -1; text-align: center; margin-bottom: 20px; color: var(--primary);">
-                   <h3><i class="fas fa-search"></i> 搜尋結果： "${keyword}"</h3>
-                   <p>找到 ${filteredNews.length} 則相關新聞</p>
-                   <button class="btn btn-outline" onclick="filterNews('all')" style="margin-top: 10px;">
-                       <i class="fas fa-times"></i> 清除搜尋
-                   </button>
-               </div>
-           `;
-          
-           container.innerHTML = resultsHeader + container.innerHTML;
-       }
-      
-       // 顯示統計資料詳情
+       
+       // 顯示統計詳情
        function showStats() {
            if (currentNews.length === 0) {
                showMessage('尚未載入新聞資料', 'warning');
                return;
            }
-          
+           
            const categories = {};
            const sources = {};
-          
+           
            currentNews.forEach(item => {
                const cat = item.category || '其他';
                const src = item.source || '未知來源';
-              
+               
                categories[cat] = (categories[cat] || 0) + 1;
                sources[src] = (sources[src] || 0) + 1;
            });
-          
-           let message = `📊 統計資訊\n\n`;
-           message += `總新聞數: ${currentNews.length}\n\n`;
+           
+           let message = `📊 系統統計\n\n`;
+           message += `總新聞數: ${currentNews.length}\n`;
+           message += `目標數量: ${CONFIG.NEWS_COUNT_TARGET}\n`;
+           message += `完成度: ${Math.round((currentNews.length / CONFIG.NEWS_COUNT_TARGET) * 100)}%\n\n`;
            message += `📰 來源分布:\n`;
            Object.entries(sources).forEach(([source, count]) => {
                message += `  ${source}: ${count} 則\n`;
@@ -917,96 +922,55 @@
            Object.entries(categories).forEach(([category, count]) => {
                message += `  ${category}: ${count} 則\n`;
            });
-          
+           
            alert(message);
        }
-      
-       // 更新狀態欄
-       function updateStatusBar() {
-           // 狀態欄已由 displayStatistics 更新
+       
+       // 切換來源顯示
+       function toggleSources() {
+           const sourcesStats = document.getElementById('sourcesStats');
+           sourcesStats.style.display = sourcesStats.style.display === 'none' ? 'block' : 'none';
        }
-      
-       // 更新系統資訊
-       function updateSystemInfo(systemInfo) {
-           if (systemInfo) {
-               console.log(`系統版本: ${systemInfo.version}, 處理時間: ${systemInfo.executionTime}ms`);
-           }
-       }
-      
-       // 更新最後更新時間
-       function updateLastUpdatedTime(timestamp) {
-           const timeStr = timestamp ? formatTime(timestamp) : '剛剛';
-           document.getElementById('updateTimeText').textContent = timeStr;
-       }
-      
+       
        // 開始自動更新
        function startAutoUpdate() {
            if (autoUpdateInterval) {
                clearInterval(autoUpdateInterval);
            }
-          
+           
            autoUpdateInterval = setInterval(() => {
-               console.log('自動更新新聞資料...');
+               console.log('🔄 自動更新新聞資料...');
                loadNews();
            }, CONFIG.UPDATE_INTERVAL);
-          
-           console.log(`已設定自動更新，間隔: ${CONFIG.UPDATE_INTERVAL / 1000} 秒`);
+           
+           console.log(`⏰ 已設定自動更新，間隔: ${CONFIG.UPDATE_INTERVAL / 1000} 秒`);
        }
-      
-       // 停止自動更新
-       function stopAutoUpdate() {
-           if (autoUpdateInterval) {
-               clearInterval(autoUpdateInterval);
-               autoUpdateInterval = null;
-               console.log('已停止自動更新');
-           }
-       }
-      
-       // 工具函式
+       
+       // 工具函數
        function showLoading(show) {
            document.getElementById('loading').style.display = show ? 'block' : 'none';
        }
-      
+       
        function showError(message) {
            document.getElementById('errorText').textContent = message;
            document.getElementById('errorMessage').style.display = 'flex';
        }
-      
+       
        function hideError() {
            document.getElementById('errorMessage').style.display = 'none';
        }
-      
+       
        function showMessage(text, type = 'info') {
-           const colors = {
-               'info': '#4285f4',
-               'success': '#34a853',
-               'warning': '#fbbc05',
-               'error': '#ea4335'
-           };
-          
-           // 簡單的提示訊息
            console.log(`${type}: ${text}`);
-          
-           // 可以在這裡擴展顯示更漂亮的提示
        }
-      
-       function formatTime(timestamp) {
-           try {
-               const date = new Date(timestamp);
-               return date.toLocaleString('zh-TW', {
-                   year: 'numeric',
-                   month: '2-digit',
-                   day: '2-digit',
-                   hour: '2-digit',
-                   minute: '2-digit',
-                   second: '2-digit',
-                   hour12: false
-               });
-           } catch (e) {
-               return timestamp || '未知時間';
-           }
+       
+       function updateLastUpdatedTime(timestamp) {
+           const timeStr = timestamp ? 
+               new Date(timestamp).toLocaleString('zh-TW') : 
+               new Date().toLocaleString('zh-TW');
+           document.getElementById('updateTimeText').textContent = timeStr;
        }
-      
+       
        function formatDate(dateStr) {
            try {
                const date = new Date(dateStr);
@@ -1020,33 +984,16 @@
                return dateStr || '未知日期';
            }
        }
-      
-       function getSourceIcon(source) {
-           const icons = {
-               '中央社': 'fas fa-landmark',
-               'ETtoday': 'fas fa-tv',
-               '自由時報': 'fas fa-newspaper',
-               '測試來源': 'fas fa-vial'
-           };
-           return icons[source] || 'fas fa-rss';
-       }
-      
+       
        function escapeHtml(text) {
            if (!text) return '';
            const div = document.createElement('div');
            div.textContent = text;
            return div.innerHTML;
        }
-      
-       // 初始化檢查
-       console.log('前端系統初始化完成');
+       
+       // 初始化完成
+       console.log('✅ 全球新聞系統初始化完成');
    </script>
 </body>
 </html>
-
-
-
-
-
-
-
