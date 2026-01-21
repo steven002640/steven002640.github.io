@@ -40,9 +40,9 @@
             margin: 0 auto;
         }
         
-        /* 頁首 - 修改為漸層背景 */
+        /* 頁首 - 黃橘漸層背景 */
         .header {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 50%, #f0f7ff 100%);
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
             border-radius: 20px;
             padding: 40px;
             margin-bottom: 30px;
@@ -66,18 +66,16 @@
         .header h1 {
             font-size: 3rem;
             margin-bottom: 15px;
-            background: linear-gradient(45deg, var(--primary), var(--ai-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            color: #333;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
         }
         
         .header p {
-            color: var(--gray);
+            color: #333;
             font-size: 1.2rem;
             max-width: 900px;
             margin: 0 auto 20px;
+            font-weight: 500;
         }
         
         /* 翻譯提示 */
@@ -88,7 +86,7 @@
             margin: 10px auto;
             max-width: 800px;
             font-size: 0.9rem;
-            color: var(--gray);
+            color: #333;
             border-left: 4px solid var(--primary);
         }
         
@@ -158,13 +156,33 @@
             z-index: 10;
         }
         
-        /* 分類按鈕 */
+        /* 分類按鈕 - 改為一行 */
         .category-tabs {
             display: flex;
             gap: 10px;
             margin: 30px 0;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             justify-content: center;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        
+        .category-tabs::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .category-tabs::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .category-tabs::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        
+        .category-tabs::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
         
         .category-btn {
@@ -181,6 +199,8 @@
             box-shadow: var(--card-shadow);
             position: relative;
             overflow: hidden;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         
         .category-btn::after {
@@ -215,7 +235,7 @@
             transform: scale(1.2);
         }
         
-        /* 分類顏色 - AI應用按鈕 */
+        /* 分類顏色 - AI科技按鈕（軟體併入AI科技） */
         .category-btn.ai { background: var(--ai-color); color: white; }
         .category-btn.tech { background: var(--tech-color); color: var(--dark); }
         .category-btn.finance { background: var(--finance-color); color: white; }
@@ -299,13 +319,29 @@
             color: #333;
         }
         
-        /* 控制面板 */
+        /* 控制面板 - 全部按鈕在一排 */
         .controls {
             display: flex;
             gap: 12px;
             margin-bottom: 30px;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             justify-content: center;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        
+        .controls::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .controls::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .controls::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
         }
         
         .btn {
@@ -322,6 +358,8 @@
             background: white;
             color: var(--primary);
             border: 2px solid var(--primary);
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         
         .btn:hover {
@@ -404,7 +442,7 @@
             margin-bottom: 15px;
             color: var(--dark);
             line-height: 1.4;
-            cursor: help;
+            cursor: pointer;
             position: relative;
             padding-bottom: 10px;
             border-bottom: 2px solid transparent;
@@ -447,7 +485,7 @@
             line-height: 1.6;
             font-size: 1rem;
             flex-grow: 1;
-            cursor: help;
+            cursor: pointer;
             position: relative;
             padding: 10px;
             border-radius: 8px;
@@ -594,14 +632,15 @@
             font-weight: 600;
         }
         
-        .modal-summary {
-            font-size: 1.2rem;
-            line-height: 1.6;
-            color: var(--gray);
+        .modal-full-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--dark);
             margin-bottom: 30px;
             padding: 20px;
             background: #f8f9fa;
             border-radius: 10px;
+            white-space: pre-line;
         }
         
         .modal-details {
@@ -717,9 +756,8 @@
         @media (max-width: 768px) {
             .header h1 { font-size: 2.2rem; }
             .news-container { grid-template-columns: 1fr; }
-            .category-tabs { flex-direction: column; }
-            .category-btn { justify-content: center; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .category-tabs { flex-wrap: wrap; }
+            .controls { flex-wrap: wrap; }
             .container { padding: 10px; }
             .system-status { flex-direction: column; gap: 10px; }
             .language-toggle { bottom: 10px; right: 10px; }
@@ -777,11 +815,11 @@
                     <div class="stat-value" id="totalNews">0</div>
                     <div class="stat-label">總新聞數</div>
                 </div>
-                <div class="stat-card" onclick="filterNews('AI應用')">
-                    <div class="translate-hint">AI與軟體相關新聞</div>
+                <div class="stat-card" onclick="filterNews('AI科技')">
+                    <div class="translate-hint">AI科技相關新聞</div>
                     <div class="stat-icon"><i class="fas fa-brain" style="color: var(--ai-color);"></i></div>
                     <div class="stat-value" id="aiNews">0</div>
-                    <div class="stat-label">AI應用</div>
+                    <div class="stat-label">AI科技</div>
                 </div>
                 <div class="stat-card" onclick="filterNews('科技發展')">
                     <div class="translate-hint">科技發展與創新</div>
@@ -809,13 +847,13 @@
             </div>
         </div>
         
-        <!-- 分類標籤 (6個分類，AI資訊改為AI應用) -->
+        <!-- 分類標籤 (5個分類，軟體併入AI科技) -->
         <div class="category-tabs">
             <button class="category-btn all active" onclick="filterNews('all')">
                 <i class="fas fa-globe"></i> <span class="lang-zh">全部新聞</span><span class="lang-en" style="display:none;">All News</span>
             </button>
-            <button class="category-btn ai" onclick="filterNews('AI應用')">
-                <i class="fas fa-brain"></i> <span class="lang-zh">AI應用</span><span class="lang-en" style="display:none;">AI Applications</span>
+            <button class="category-btn ai" onclick="filterNews('AI科技')">
+                <i class="fas fa-brain"></i> <span class="lang-zh">AI科技</span><span class="lang-en" style="display:none;">AI Technology</span>
             </button>
             <button class="category-btn tech" onclick="filterNews('科技發展')">
                 <i class="fas fa-microchip"></i> <span class="lang-zh">科技發展</span><span class="lang-en" style="display:none;">Tech Development</span>
@@ -825,12 +863,6 @@
             </button>
             <button class="category-btn intl" onclick="filterNews('國際大事')">
                 <i class="fas fa-globe-americas"></i> <span class="lang-zh">國際大事</span><span class="lang-en" style="display:none;">International</span>
-            </button>
-            <button class="category-btn hardware" onclick="filterNews('硬體設備')">
-                <i class="fas fa-server"></i> <span class="lang-zh">硬體設備</span><span class="lang-en" style="display:none;">Hardware</span>
-            </button>
-            <button class="category-btn startup" onclick="filterNews('新創動態')">
-                <i class="fas fa-rocket"></i> <span class="lang-zh">新創動態</span><span class="lang-en" style="display:none;">Startups</span>
             </button>
         </div>
         
@@ -842,7 +874,7 @@
             <!-- 分類統計會動態生成在這裡 -->
         </div>
         
-        <!-- 控制按鈕 -->
+        <!-- 控制按鈕 - 全部在一排 -->
         <div class="controls">
             <button class="btn" onclick="loadNews()" id="loadBtn">
                 <i class="fas fa-sync-alt"></i> <span class="lang-zh">更新新聞</span><span class="lang-en" style="display:none;">Refresh</span>
@@ -861,6 +893,9 @@
             </button>
             <button class="btn" onclick="toggleTranslation()">
                 <i class="fas fa-language"></i> <span class="lang-zh">翻譯模式</span><span class="lang-en" style="display:none;">Translation</span>
+            </button>
+            <button class="btn" onclick="showAdvancedSearch()">
+                <i class="fas fa-search"></i> <span class="lang-zh">進階搜尋</span><span class="lang-en" style="display:none;">Advanced Search</span>
             </button>
         </div>
         
@@ -888,12 +923,10 @@
         const CONFIG = {
             API_URL: 'https://script.google.com/macros/s/AKfycby-_9Y2ezmU-Li326SeVmCGpeIg6LwaGHF7_5EKng3QlY7sXoP0smrEyboNNLmGW-ui/exec',
             CATEGORIES: {
-                'AI應用': { color: '#ea4335', icon: 'fa-brain', en: 'AI Applications' },
+                'AI科技': { color: '#ea4335', icon: 'fa-brain', en: 'AI Technology' },
                 '科技發展': { color: '#fbbc05', icon: 'fa-microchip', en: 'Tech Development' },
                 '財經市場': { color: '#673ab7', icon: 'fa-chart-line', en: 'Finance Market' },
-                '國際大事': { color: '#00bcd4', icon: 'fa-globe-americas', en: 'International' },
-                '硬體設備': { color: '#4caf50', icon: 'fa-server', en: 'Hardware' },
-                '新創動態': { color: '#ff9800', icon: 'fa-rocket', en: 'Startups' }
+                '國際大事': { color: '#00bcd4', icon: 'fa-globe-americas', en: 'International' }
             }
         };
         
@@ -902,7 +935,7 @@
         let currentFilter = 'all';
         let currentLanguage = 'zh';
         let autoTranslateEnabled = false;
-        let translationCache = new Map(); // 翻譯快取
+        let translationCache = new Map();
         
         // 頁面載入
         document.addEventListener('DOMContentLoaded', function() {
@@ -914,7 +947,6 @@
         
         // 設定事件監聽器
         function setupEventListeners() {
-            // 新聞卡片點擊事件
             document.addEventListener('click', function(e) {
                 const newsCard = e.target.closest('.news-card');
                 if (newsCard && !e.target.closest('.translate-btn')) {
@@ -936,13 +968,13 @@
                 
                 if (result.success) {
                     allNews = result.data.news;
-                    // 確保軟體應用和AI資訊類新聞歸入AI應用
+                    // 確保軟體應用類新聞歸入AI科技
                     allNews = allNews.map(news => {
                         if (news.mainCategory === '軟體應用' || news.mainCategory === 'AI資訊') {
                             return {
                                 ...news,
-                                mainCategory: 'AI應用',
-                                categories: ['AI應用']
+                                mainCategory: 'AI科技',
+                                categories: ['AI科技']
                             };
                         }
                         return news;
@@ -970,7 +1002,6 @@
         function filterNews(category) {
             currentFilter = category;
             
-            // 更新按鈕狀態
             document.querySelectorAll('.category-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
@@ -981,9 +1012,7 @@
                 filteredNews = allNews;
             } else {
                 filteredNews = allNews.filter(item => {
-                    // 檢查主要分類
                     if (item.mainCategory === category) return true;
-                    // 檢查分類陣列
                     if (item.categories && item.categories.includes(category)) return true;
                     return false;
                 });
@@ -1024,7 +1053,6 @@
                     </button>
                 `;
                 
-                // 根據當前語言顯示對應的訊息
                 updateLanguageDisplay();
             }
         }
@@ -1039,7 +1067,6 @@
         function updateCategoryDisplay(news) {
             const categoryCounts = {};
             
-            // 計算每個分類的新聞數
             Object.keys(CONFIG.CATEGORIES).forEach(cat => {
                 categoryCounts[cat] = 0;
             });
@@ -1050,7 +1077,6 @@
                 }
             });
             
-            // 更新統計顯示
             const statsEl = document.getElementById('categoryStats');
             if (statsEl) {
                 let html = '';
@@ -1103,11 +1129,9 @@
             let html = '';
             news.forEach(item => {
                 const categoryInfo = CONFIG.CATEGORIES[item.mainCategory] || { color: '#666', icon: 'fa-newspaper', en: item.mainCategory };
-                const isAI = item.mainCategory === 'AI應用';
-                const isInternational = item.country !== 'TW';
+                const isAI = item.mainCategory === 'AI科技';
                 const categoryName = currentLanguage === 'zh' ? item.mainCategory : categoryInfo.en;
                 
-                // 檢查是否需要翻譯
                 const needsTranslation = item.language === 'en' && currentLanguage === 'zh';
                 const translationButton = needsTranslation ? 
                     `<button class="translate-btn" onclick="translateNewsItem('${item.id}', event)" title="翻譯全文">
@@ -1122,7 +1146,7 @@
                                 <i class="fas ${categoryInfo.icon}"></i> ${categoryName}
                             </div>
                             <div class="news-badge">
-                                ${isAI ? '🤖 ' : ''}${isInternational ? '🌍 ' : ''}${item.source}
+                                ${isAI ? '🤖 ' : ''}${item.country !== 'TW' ? '🌍 ' : ''}${item.source}
                                 ${!item.isReal ? ' <i class="fas fa-clone" style="color: #999;"></i>' : ''}
                             </div>
                         </div>
@@ -1189,27 +1213,22 @@
             
             if (!titleElement || !summaryElement) return;
             
-            // 顯示翻譯中
             titleElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 翻譯中...`;
             summaryElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 翻譯中...`;
             
             try {
-                // 翻譯標題
                 const titleTranslated = await translateText(newsItem.title, 'zh');
                 titleElement.textContent = titleTranslated;
                 
-                // 翻譯摘要
                 const summaryTranslated = await translateText(newsItem.summary, 'zh');
                 summaryElement.textContent = summaryTranslated;
                 
-                // 更新按鈕狀態
                 const translateBtn = document.querySelector(`#news-${newsId} .translate-btn`);
                 if (translateBtn) {
                     translateBtn.innerHTML = '<i class="fas fa-check"></i>';
                     translateBtn.style.background = '#34a853';
                     translateBtn.title = '已翻譯';
                     
-                    // 3秒後恢復原狀
                     setTimeout(() => {
                         if (translateBtn) {
                             translateBtn.innerHTML = '<i class="fas fa-language"></i>';
@@ -1225,7 +1244,6 @@
                 titleElement.textContent = newsItem.title;
                 summaryElement.textContent = newsItem.summary;
                 
-                // 顯示錯誤
                 const translateBtn = document.querySelector(`#news-${newsId} .translate-btn`);
                 if (translateBtn) {
                     translateBtn.innerHTML = '<i class="fas fa-exclamation"></i>';
@@ -1241,21 +1259,18 @@
             }
         }
         
-        // 核心翻譯函數 - 使用免費的MyMemory API
+        // 核心翻譯函數
         async function translateText(text, targetLang) {
-            // 檢查快取
             const cacheKey = `${text}_${targetLang}`;
             if (translationCache.has(cacheKey)) {
                 return translationCache.get(cacheKey);
             }
             
-            // 如果文字太短或已經是中文，直接返回
             if (text.length < 3 || targetLang === 'en') {
                 return text;
             }
             
             try {
-                // 使用 MyMemory Translation API（免費）
                 const response = await fetch(
                     `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang}`,
                     {
@@ -1274,13 +1289,9 @@
                 
                 if (data.responseData && data.responseData.translatedText) {
                     const translatedText = data.responseData.translatedText;
-                    
-                    // 快取翻譯結果
                     translationCache.set(cacheKey, translatedText);
-                    
                     return translatedText;
                 } else {
-                    // API 失敗，使用關鍵字翻譯
                     return fallbackTranslate(text);
                 }
             } catch (error) {
@@ -1289,81 +1300,27 @@
             }
         }
         
-        // 備用翻譯方案 - 關鍵字翻譯
+        // 備用翻譯方案
         function fallbackTranslate(text) {
             const translations = {
-                // AI相關
-                'AI': '人工智慧', 'Artificial Intelligence': '人工智慧', 'artificial intelligence': '人工智慧',
-                'Machine Learning': '機器學習', 'machine learning': '機器學習',
-                'Deep Learning': '深度學習', 'deep learning': '深度學習',
-                'Neural Network': '神經網路', 'neural network': '神經網路',
-                'ChatGPT': 'ChatGPT', 'GPT': 'GPT', 'OpenAI': 'OpenAI',
-                'Google': '谷歌', 'Microsoft': '微軟', 'Amazon': '亞馬遜', 'Apple': '蘋果',
-                'Meta': 'Meta', 'Facebook': '臉書', 'Twitter': '推特',
-                
-                // 技術相關
-                'Technology': '技術', 'technology': '技術',
-                'Software': '軟體', 'software': '軟體',
-                'Hardware': '硬體', 'hardware': '硬體',
-                'Cloud': '雲端', 'cloud': '雲端',
-                'Blockchain': '區塊鏈', 'blockchain': '區塊鏈',
-                'Cryptocurrency': '加密貨幣', 'cryptocurrency': '加密貨幣',
-                'Bitcoin': '比特幣', 'bitcoin': '比特幣',
-                'Ethereum': '以太坊', 'ethereum': '以太坊',
-                'NFT': '非同質化代幣', 'Non-Fungible Token': '非同質化代幣',
-                
-                // 商業相關
-                'Finance': '金融', 'finance': '金融',
-                'Market': '市場', 'market': '市場',
-                'Investment': '投資', 'investment': '投資',
-                'Startup': '新創公司', 'startup': '新創公司',
-                'Venture Capital': '風險投資', 'venture capital': '風險投資',
-                'IPO': '首次公開募股', 'Initial Public Offering': '首次公開募股',
-                
-                // 國際相關
-                'International': '國際', 'international': '國際',
-                'Global': '全球', 'global': '全球',
-                'China': '中國', 'USA': '美國', 'United States': '美國',
-                'Taiwan': '台灣', 'Japan': '日本', 'Korea': '韓國',
-                
-                // 時間相關
-                'today': '今天', 'yesterday': '昨天', 'tomorrow': '明天',
-                'week': '週', 'month': '月', 'year': '年',
-                
-                // 常見動詞
-                'announced': '宣布', 'launched': '推出', 'developed': '開發',
-                'invested': '投資', 'released': '發布', 'reported': '報導',
-                'said': '表示', 'according to': '根據',
-                
-                // 常見形容詞
-                'new': '新的', 'latest': '最新的', 'advanced': '先進的',
-                'innovative': '創新的', 'revolutionary': '革命性的',
-                'successful': '成功的', 'popular': '流行的'
+                'AI': '人工智慧', 'Artificial Intelligence': '人工智慧',
+                'Machine Learning': '機器學習',
+                'Deep Learning': '深度學習',
+                'Neural Network': '神經網路',
+                'ChatGPT': 'ChatGPT', 'GPT': 'GPT',
+                'Google': '谷歌', 'Microsoft': '微軟',
+                'Technology': '技術',
+                'Software': '軟體',
+                'Hardware': '硬體',
+                'Finance': '金融',
+                'Market': '市場',
+                'International': '國際',
+                'announced': '宣布', 'launched': '推出'
             };
             
             let translated = text;
-            
-            // 優先處理完整片語
             Object.entries(translations).forEach(([en, zh]) => {
                 const regex = new RegExp(`\\b${en}\\b`, 'gi');
-                translated = translated.replace(regex, zh);
-            });
-            
-            // 處理常見片語
-            const phrases = {
-                'AI technology': 'AI技術',
-                'tech giant': '科技巨頭',
-                'stock market': '股市',
-                'economic growth': '經濟成長',
-                'research and development': '研發',
-                'in the future': '在未來',
-                'according to reports': '根據報導',
-                'it is reported that': '據報導',
-                'the latest news': '最新消息'
-            };
-            
-            Object.entries(phrases).forEach(([en, zh]) => {
-                const regex = new RegExp(en, 'gi');
                 translated = translated.replace(regex, zh);
             });
             
@@ -1371,7 +1328,7 @@
         }
         
         // 顯示新聞詳細內容
-        function showNewsDetail(newsId) {
+        async function showNewsDetail(newsId) {
             const newsItem = allNews.find(n => n.id === newsId);
             if (!newsItem) return;
             
@@ -1380,13 +1337,25 @@
             
             const categoryName = currentLanguage === 'zh' ? newsItem.mainCategory : categoryInfo.en;
             
+            // 從API取得完整內容
+            let fullContent = newsItem.summary;
+            try {
+                const response = await fetch(`${CONFIG.API_URL}?action=getNewsDetail&id=${newsId}`);
+                const result = await response.json();
+                if (result.success && result.data.content) {
+                    fullContent = result.data.content;
+                }
+            } catch (error) {
+                console.warn('無法取得完整內容，使用摘要:', error);
+            }
+            
             let content = `
                 <div class="modal-category" style="background: ${categoryInfo.color};">
                     <i class="fas ${categoryInfo.icon}"></i> ${categoryName}
                 </div>
                 <h1 class="modal-title">${escapeHtml(newsItem.title)}</h1>
-                <div class="modal-summary">
-                    ${escapeHtml(newsItem.summary)}
+                <div class="modal-full-content">
+                    ${escapeHtml(fullContent)}
                 </div>
                 <div class="modal-details">
                     <div class="detail-item">
@@ -1430,32 +1399,28 @@
             
             const modalContent = document.getElementById('modalContent');
             const titleElement = modalContent.querySelector('.modal-title');
-            const summaryElement = modalContent.querySelector('.modal-summary');
+            const contentElement = modalContent.querySelector('.modal-full-content');
             
-            if (!titleElement || !summaryElement) return;
+            if (!titleElement || !contentElement) return;
             
-            // 顯示翻譯中提示
             const originalTitle = titleElement.textContent;
-            const originalSummary = summaryElement.textContent;
+            const originalContent = contentElement.textContent;
             
             titleElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 翻譯中...';
-            summaryElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 翻譯中...';
+            contentElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 翻譯中...';
             
             try {
-                // 翻譯標題
                 const translatedTitle = await translateText(originalTitle, 'zh');
                 titleElement.textContent = translatedTitle;
                 
-                // 翻譯摘要
-                const translatedSummary = await translateText(originalSummary, 'zh');
-                summaryElement.textContent = translatedSummary;
+                const translatedContent = await translateText(originalContent, 'zh');
+                contentElement.textContent = translatedContent;
                 
-                // 顯示成功訊息
                 showToast(currentLanguage === 'zh' ? '✅ 翻譯完成' : '✅ Translation completed', 'success');
             } catch (error) {
                 console.error('詳細內容翻譯失敗:', error);
                 titleElement.textContent = originalTitle;
-                summaryElement.textContent = originalSummary;
+                contentElement.textContent = originalContent;
                 showToast(currentLanguage === 'zh' ? '❌ 翻譯失敗' : '❌ Translation failed', 'error');
             }
         }
@@ -1468,18 +1433,15 @@
             const shareText = `${newsItem.title}\n\n${newsItem.summary}\n\n來源: ${newsItem.source}`;
             
             if (navigator.share) {
-                // 使用Web Share API
                 navigator.share({
                     title: newsItem.title,
                     text: newsItem.summary,
                     url: window.location.href
                 });
             } else {
-                // 複製到剪貼簿
                 navigator.clipboard.writeText(shareText).then(() => {
                     showToast(currentLanguage === 'zh' ? '✅ 已複製到剪貼簿' : '✅ Copied to clipboard', 'success');
                 }).catch(() => {
-                    // 備用方案
                     const textArea = document.createElement('textarea');
                     textArea.value = shareText;
                     document.body.appendChild(textArea);
@@ -1533,16 +1495,13 @@
         function setLanguage(lang) {
             currentLanguage = lang;
             
-            // 更新語言按鈕狀態
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
             
-            // 更新所有語言相關元素
             updateLanguageDisplay();
             
-            // 重新顯示新聞
             if (allNews.length > 0) {
                 displayNews(currentFilter === 'all' ? allNews : 
                     allNews.filter(item => item.mainCategory === currentFilter));
@@ -1551,7 +1510,6 @@
         
         // 更新語言顯示
         function updateLanguageDisplay() {
-            // 顯示/隱藏對應語言的元素
             document.querySelectorAll('.lang-zh').forEach(el => {
                 el.style.display = currentLanguage === 'zh' ? '' : 'none';
             });
@@ -1559,7 +1517,6 @@
                 el.style.display = currentLanguage === 'en' ? '' : 'none';
             });
             
-            // 更新提示訊息
             const hint = document.getElementById('translateHint');
             if (hint) {
                 hint.textContent = currentLanguage === 'zh' ? 
@@ -1579,7 +1536,6 @@
                 btn.style.background = '#34a853';
                 btn.style.color = 'white';
                 
-                // 自動翻譯所有英文新聞
                 setTimeout(() => {
                     allNews.forEach(item => {
                         if (item.language === 'en' && currentLanguage === 'zh') {
@@ -1609,7 +1565,6 @@
                 btn.style.color = 'white';
                 btn.style.borderColor = '#34a853';
                 
-                // 自動翻譯所有英文新聞
                 setTimeout(() => {
                     allNews.forEach(item => {
                         if (item.language === 'en' && currentLanguage === 'zh') {
@@ -1633,7 +1588,7 @@
             if (!systemInfo) return;
             
             const total = allNews.length;
-            const aiCount = allNews.filter(n => n.mainCategory === 'AI應用').length;
+            const aiCount = allNews.filter(n => n.mainCategory === 'AI科技').length;
             const techCount = allNews.filter(n => n.mainCategory === '科技發展').length;
             const financeCount = allNews.filter(n => n.mainCategory === '財經市場').length;
             
@@ -1644,11 +1599,11 @@
         }
         
         function updateCategoryStats(news, category) {
-            const aiCount = news.filter(n => n.mainCategory === 'AI應用').length;
+            const aiCount = news.filter(n => n.mainCategory === 'AI科技').length;
             const techCount = news.filter(n => n.mainCategory === '科技發展').length;
             const financeCount = news.filter(n => n.mainCategory === '財經市場').length;
             
-            if (category === 'all' || category === 'AI應用') {
+            if (category === 'all' || category === 'AI科技') {
                 document.getElementById('aiNews').textContent = aiCount;
             }
             if (category === 'all' || category === '科技發展') {
@@ -1723,13 +1678,12 @@
                 
                 if (result.success) {
                     allNews = result.data.news;
-                    // 確保軟體應用和AI資訊類新聞歸入AI應用
                     allNews = allNews.map(news => {
                         if (news.mainCategory === '軟體應用' || news.mainCategory === 'AI資訊') {
                             return {
                                 ...news,
-                                mainCategory: 'AI應用',
-                                categories: ['AI應用']
+                                mainCategory: 'AI科技',
+                                categories: ['AI科技']
                             };
                         }
                         return news;
@@ -1768,6 +1722,25 @@
             });
             
             alert(message);
+        }
+        
+        // 進階搜尋
+        function showAdvancedSearch() {
+            const searchTerm = prompt(currentLanguage === 'zh' ? '請輸入搜尋關鍵字:' : 'Please enter search keyword:');
+            if (!searchTerm) return;
+            
+            const filteredNews = allNews.filter(item => 
+                item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                item.summary.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            
+            if (filteredNews.length === 0) {
+                showToast(currentLanguage === 'zh' ? `未找到包含 "${searchTerm}" 的新聞` : `No news found containing "${searchTerm}"`, 'info');
+                return;
+            }
+            
+            displayNews(filteredNews);
+            showFilterMessage(currentLanguage === 'zh' ? `搜尋結果: "${searchTerm}"` : `Search results: "${searchTerm}"`, filteredNews.length);
         }
         
         // 工具函數
@@ -1856,7 +1829,7 @@
         
         // 自動更新功能
         let autoUpdateInterval;
-        function startAutoUpdate(interval = 300000) { // 5分鐘
+        function startAutoUpdate(interval = 300000) {
             if (autoUpdateInterval) {
                 clearInterval(autoUpdateInterval);
             }
@@ -1872,7 +1845,6 @@
             startAutoUpdate();
         }, 5000);
         
-        // 初始化
         console.log('系統準備就緒');
     </script>
 </body>
