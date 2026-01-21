@@ -244,6 +244,7 @@
             justify-content: center;
             white-space: nowrap;
             flex-shrink: 0;
+            flex: 1;
         }
         
         .category-btn i {
@@ -431,6 +432,7 @@
                 min-width: 100px;
                 padding: 7px 12px;
                 font-size: 0.85rem;
+                flex: 0 0 auto;
             }
             .category-btn i {
                 font-size: 0.8rem;
@@ -446,12 +448,25 @@
             .category-btn {
                 min-width: auto;
                 padding: 6px 10px;
+                flex: 0 0 auto;
             }
             .category-btn span:not(:first-child) {
                 display: none;
             }
             .category-btn i {
                 margin-right: 0;
+            }
+        }
+        
+        /* 針對iPad的媒體查詢 */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .category-tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+            .category-btn {
+                min-width: 110px;
+                flex: 0 0 auto;
             }
         }
         
@@ -633,7 +648,7 @@
         
         .modal-original-content {
             color: var(--text-secondary);
-            line-height: 1.6; /* 減少行距 */
+            line-height: 1.6;
             font-size: 1.05rem;
             margin-bottom: 30px;
             white-space: pre-line;
@@ -646,24 +661,24 @@
             font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
         }
         
-        /* 原始連結區塊 */
-        .original-link {
-            background: rgba(0, 212, 255, 0.1);
-            padding: 15px 20px;
-            border-radius: 10px;
+        /* 原始連結區塊 - 修改位置到最下方 */
+        .original-link-container {
             margin: 25px 0;
+            padding: 20px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 10px;
             border: 1px solid rgba(0, 212, 255, 0.3);
             display: flex;
             align-items: center;
             gap: 12px;
         }
         
-        .original-link i {
+        .original-link-container i {
             color: var(--primary);
             font-size: 1.2rem;
         }
         
-        .original-link a {
+        .original-link-container a {
             color: var(--primary);
             text-decoration: none;
             font-weight: 600;
@@ -671,12 +686,12 @@
             transition: all 0.3s ease;
         }
         
-        .original-link a:hover {
+        .original-link-container a:hover {
             color: #00a8cc;
             text-decoration: underline;
         }
         
-        /* 翻譯按鈕 */
+        /* 翻譯按鈕 - 固定在右下角 */
         .translate-btn {
             position: fixed;
             bottom: 30px;
@@ -693,7 +708,7 @@
             align-items: center;
             gap: 10px;
             box-shadow: var(--card-shadow);
-            z-index: 100;
+            z-index: 1000;
             transition: all 0.3s ease;
         }
         
@@ -767,6 +782,14 @@
             .header { padding: 30px; }
             .modal-content { margin: 20px; padding: 30px; }
             .modal-title { font-size: 1.5rem; }
+            .category-tabs {
+                gap: 6px;
+            }
+            .category-btn {
+                min-width: 100px;
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
         }
         
         @media (max-width: 768px) {
@@ -779,6 +802,14 @@
                 right: 20px;
                 padding: 10px 20px;
                 font-size: 0.9rem;
+            }
+            .category-tabs {
+                gap: 4px;
+            }
+            .category-btn {
+                min-width: 90px;
+                padding: 6px 10px;
+                font-size: 0.85rem;
             }
         }
         
@@ -794,6 +825,14 @@
                 right: 15px;
                 padding: 8px 15px;
                 font-size: 0.85rem;
+            }
+            .category-tabs {
+                gap: 3px;
+            }
+            .category-btn {
+                min-width: 80px;
+                padding: 5px 8px;
+                font-size: 0.8rem;
             }
         }
     </style>
@@ -822,11 +861,11 @@
             <!-- 中文翻譯內容 -->
             <div class="chinese-content" id="chineseContent"></div>
             
-            <!-- 原始連結區塊 -->
-            <div class="original-link" id="originalLink">
+            <!-- 原始連結區塊 - 移動到最下方 -->
+            <div class="original-link-container" id="originalLink">
                 <i class="fas fa-external-link-alt"></i>
                 <div>
-                    <strong>原文連結：</strong>
+                    <strong>原始新聞連結：</strong>
                     <a href="#" target="_blank" id="originalUrl" rel="noopener noreferrer">載入中...</a>
                 </div>
             </div>
@@ -984,7 +1023,478 @@
             console.log('🚀 AI新聞系統啟動');
             updateSystemInfo('系統啟動中...');
             loadNews();
+            
+            // 處理iPad上的按鈕佈局
+            adjustCategoryButtonsForTablet();
+            window.addEventListener('resize', adjustCategoryButtonsForTablet);
         });
         
+        // 調整分類按鈕以適應iPad
+        function adjustCategoryButtonsForTablet() {
+            const categoryTabs = document.querySelector('.category-tabs');
+            const buttons = document.querySelectorAll('.category-btn');
+            const containerWidth = categoryTabs.offsetWidth;
+            let totalButtonsWidth = 0;
+            
+            buttons.forEach(btn => {
+                totalButtonsWidth += btn.offsetWidth + 8; // 8px是gap的寬度
+            });
+            
+            // 如果按鈕總寬度超過容器寬度，啟用水平滾動
+            if (totalButtonsWidth > containerWidth) {
+                categoryTabs.style.flexWrap = 'nowrap';
+                categoryTabs.style.overflowX = 'auto';
+                buttons.forEach(btn => {
+                    btn.style.flex = '0 0 auto';
+                });
+            } else {
+                categoryTabs.style.flexWrap = 'wrap';
+                categoryTabs.style.overflowX = 'hidden';
+                buttons.forEach(btn => {
+                    btn.style.flex = '1';
+                });
+            }
+        }
+        
         // 載入新聞
-        async function
+        async function loadNews() {
+            showLoading();
+            hideError();
+            updateSystemInfo('正在載入最新新聞...');
+            
+            try {
+                const response = await fetch(CONFIG.API_URL);
+                if (!response.ok) {
+                    throw new Error(`網路錯誤: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success && data.news) {
+                    allNews = data.news;
+                    console.log(`✅ 成功載入 ${allNews.length} 則新聞`);
+                    
+                    // 更新統計
+                    updateStats(allNews);
+                    
+                    // 顯示所有新聞
+                    displayNews(allNews);
+                    
+                    // 更新系統資訊
+                    updateSystemInfo(`已載入 ${allNews.length} 則新聞`);
+                    updateTime();
+                    
+                    // 隱藏載入指示器
+                    hideLoading();
+                } else {
+                    throw new Error(data.message || 'API回傳資料格式錯誤');
+                }
+            } catch (error) {
+                console.error('❌ 載入新聞失敗:', error);
+                showError(`無法載入新聞: ${error.message}`);
+                hideLoading();
+                updateSystemInfo('載入失敗，請檢查網路連線');
+            }
+        }
+        
+        // 更新統計
+        function updateStats(newsList) {
+            const total = newsList.length;
+            const aiCount = newsList.filter(news => news.category === 'AI科技').length;
+            const techCount = newsList.filter(news => news.category === '科技發展').length;
+            const financeCount = newsList.filter(news => news.category === '財經市場').length;
+            
+            document.getElementById('totalNews').textContent = total;
+            document.getElementById('aiNews').textContent = aiCount;
+            document.getElementById('techNews').textContent = techCount;
+            document.getElementById('financeNews').textContent = financeCount;
+        }
+        
+        // 顯示新聞
+        function displayNews(newsList) {
+            const container = document.getElementById('newsContainer');
+            container.innerHTML = '';
+            
+            if (newsList.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 50px; grid-column: 1 / -1;">
+                        <i class="fas fa-newspaper" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 20px;"></i>
+                        <h3 style="color: var(--text-secondary);">暫無新聞</h3>
+                        <p style="color: var(--text-muted);">請稍後再試或點擊更新按鈕</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            newsList.forEach(news => {
+                const category = CONFIG.CATEGORIES[news.category] || CONFIG.CATEGORIES['科技發展'];
+                const newsCard = document.createElement('div');
+                newsCard.className = 'news-card';
+                newsCard.onclick = () => showNewsDetail(news);
+                
+                // 格式化日期
+                const newsDate = news.date ? news.date.split('T')[0] : '日期不詳';
+                
+                newsCard.innerHTML = `
+                    <div class="news-header">
+                        <div class="news-category ${category.className}" style="background: ${category.gradient}">
+                            <i class="fas ${category.icon}"></i>
+                            <span>${news.category}</span>
+                        </div>
+                        <div class="news-badge">
+                            ${newsDate}
+                        </div>
+                    </div>
+                    <div class="news-content">
+                        <h3 class="news-title">${news.title}</h3>
+                        <p class="news-summary">${news.summary || '點擊查看詳細內容...'}</p>
+                        <div class="news-meta">
+                            <div class="news-source">
+                                <i class="fas fa-newspaper"></i>
+                                <span>${news.source || '未知來源'}</span>
+                            </div>
+                            <div class="news-date">
+                                <i class="far fa-clock"></i>
+                                ${newsDate}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(newsCard);
+            });
+        }
+        
+        // 顯示新聞詳細內容
+        function showNewsDetail(news) {
+            currentNewsDetail = news;
+            const modal = document.getElementById('newsModal');
+            const category = CONFIG.CATEGORIES[news.category] || CONFIG.CATEGORIES['科技發展'];
+            const newsDate = news.date ? news.date.split('T')[0] : '日期不詳';
+            
+            // 設定模態框內容
+            document.getElementById('modalTitle').textContent = news.title;
+            document.getElementById('modalSource').innerHTML = `
+                <i class="fas fa-newspaper"></i>
+                <span>來源: ${news.source || '未知來源'}</span>
+                <span style="margin-left: 15px;">|</span>
+                <i class="fas fa-tag" style="margin-left: 15px;"></i>
+                <span style="background: ${category.gradient}; padding: 4px 12px; border-radius: 15px; color: white;">
+                    ${news.category}
+                </span>
+            `;
+            document.getElementById('modalContent').textContent = news.content || '無詳細內容';
+            document.getElementById('modalDate').textContent = newsDate;
+            document.getElementById('modalCategory').textContent = news.category;
+            
+            // 更新內容長度
+            const contentLength = (news.content || '').length;
+            document.getElementById('contentLength').textContent = `${contentLength} 字元`;
+            
+            // 設定原始連結
+            if (news.link) {
+                const originalUrl = document.getElementById('originalUrl');
+                originalUrl.href = news.link;
+                originalUrl.textContent = news.link;
+                
+                // 顯示原始連結區塊
+                document.getElementById('originalLink').style.display = 'flex';
+            } else {
+                document.getElementById('originalLink').style.display = 'none';
+            }
+            
+            // 重置翻譯狀態
+            document.getElementById('chineseContent').style.display = 'none';
+            document.getElementById('chineseContent').textContent = '';
+            document.getElementById('languageSwitch').style.display = 'none';
+            
+            // 顯示模態框
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            // 顯示翻譯按鈕
+            document.getElementById('translateButton').style.display = 'flex';
+            
+            // 重置語言切換按鈕
+            const langBtns = document.querySelectorAll('.lang-btn');
+            langBtns.forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.lang-btn[onclick="switchLanguage(\'original\')"]').classList.add('active');
+            
+            // 如果內容是英文，顯示語言切換按鈕
+            if (isEnglishContent(news.content)) {
+                document.getElementById('languageSwitch').style.display = 'flex';
+            }
+        }
+        
+        // 檢查是否為英文內容
+        function isEnglishContent(text) {
+            if (!text) return false;
+            // 簡單的英文檢測：超過70%的字符是英文字母
+            const englishChars = text.match(/[a-zA-Z]/g) || [];
+            const totalChars = text.replace(/[\s\n]/g, '').length;
+            return totalChars > 0 && (englishChars.length / totalChars) > 0.7;
+        }
+        
+        // 關閉模態框
+        function closeModal() {
+            const modal = document.getElementById('newsModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            document.getElementById('translateButton').style.display = 'none';
+            currentNewsDetail = null;
+        }
+        
+        // 翻譯內容
+        async function translateContent() {
+            if (!currentNewsDetail || isTranslating) return;
+            
+            const translateBtn = document.getElementById('translateButton');
+            const chineseContent = document.getElementById('chineseContent');
+            const originalContent = document.getElementById('modalContent');
+            const languageSwitch = document.getElementById('languageSwitch');
+            
+            // 檢查是否已經翻譯過
+            const cacheKey = currentNewsDetail.id || currentNewsDetail.title;
+            if (translationCache[cacheKey]) {
+                chineseContent.textContent = translationCache[cacheKey];
+                chineseContent.style.display = 'block';
+                originalContent.style.display = 'none';
+                translateBtn.classList.add('translated');
+                translateBtn.innerHTML = '<i class="fas fa-check"></i><span>已翻譯</span>';
+                
+                // 顯示語言切換按鈕
+                languageSwitch.style.display = 'flex';
+                const langBtns = document.querySelectorAll('.lang-btn');
+                langBtns.forEach(btn => btn.classList.remove('active'));
+                document.querySelector('.lang-btn[onclick="switchLanguage(\'chinese\')"]').classList.add('active');
+                return;
+            }
+            
+            // 開始翻譯
+            isTranslating = true;
+            translateBtn.classList.add('translating');
+            translateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>翻譯中...</span>';
+            
+            const textToTranslate = currentNewsDetail.content || '';
+            
+            try {
+                // 這裡使用簡化的翻譯API（實際使用時需要替換為真實的翻譯API）
+                // 注意：由於CORS限制，這裡使用了一個簡單的模擬翻譯
+                await simulateTranslation(textToTranslate, cacheKey);
+                
+                // 顯示翻譯結果
+                chineseContent.textContent = translationCache[cacheKey];
+                chineseContent.style.display = 'block';
+                originalContent.style.display = 'none';
+                
+                // 更新按鈕狀態
+                translateBtn.classList.remove('translating');
+                translateBtn.classList.add('translated');
+                translateBtn.innerHTML = '<i class="fas fa-check"></i><span>已翻譯</span>';
+                
+                // 顯示語言切換按鈕
+                languageSwitch.style.display = 'flex';
+                const langBtns = document.querySelectorAll('.lang-btn');
+                langBtns.forEach(btn => btn.classList.remove('active'));
+                document.querySelector('.lang-btn[onclick="switchLanguage(\'chinese\')"]').classList.add('active');
+                
+            } catch (error) {
+                console.error('翻譯失敗:', error);
+                translateBtn.classList.remove('translating');
+                translateBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>翻譯失敗</span>';
+                
+                // 3秒後恢復原狀
+                setTimeout(() => {
+                    translateBtn.innerHTML = '<i class="fas fa-language"></i><span>翻譯成中文</span>';
+                }, 3000);
+            } finally {
+                isTranslating = false;
+            }
+        }
+        
+        // 模擬翻譯（實際使用時需要替換為真實的翻譯API）
+        function simulateTranslation(text, cacheKey) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // 模擬翻譯結果（這裡只是簡單地添加"[翻譯]"前綴）
+                    // 實際使用時應該調用真實的翻譯API，如Google Translate、DeepL等
+                    const translatedText = `[中文翻譯] ${text.substring(0, 500)}...\n\n（註：這是模擬翻譯，實際使用時需要接入真實的翻譯API）`;
+                    translationCache[cacheKey] = translatedText;
+                    resolve();
+                }, 1500);
+            });
+        }
+        
+        // 切換語言
+        function switchLanguage(lang) {
+            const originalContent = document.getElementById('modalContent');
+            const chineseContent = document.getElementById('chineseContent');
+            const translateBtn = document.getElementById('translateButton');
+            const langBtns = document.querySelectorAll('.lang-btn');
+            
+            if (lang === 'original') {
+                originalContent.style.display = 'block';
+                chineseContent.style.display = 'none';
+                langBtns.forEach(btn => btn.classList.remove('active'));
+                document.querySelector('.lang-btn[onclick="switchLanguage(\'original\')"]').classList.add('active');
+            } else if (lang === 'chinese') {
+                // 如果還沒有翻譯，先翻譯
+                if (!chineseContent.textContent) {
+                    translateContent();
+                } else {
+                    originalContent.style.display = 'none';
+                    chineseContent.style.display = 'block';
+                    langBtns.forEach(btn => btn.classList.remove('active'));
+                    document.querySelector('.lang-btn[onclick="switchLanguage(\'chinese\')"]').classList.add('active');
+                }
+            }
+        }
+        
+        // 過濾新聞
+        function filterNews(category) {
+            currentFilter = category;
+            
+            // 更新按鈕狀態
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (category === 'all') {
+                document.querySelector('.category-btn.all').classList.add('active');
+                displayNews(allNews);
+                document.getElementById('filterMessage').style.display = 'none';
+            } else {
+                document.querySelector(`.category-btn.${getCategoryClass(category)}`).classList.add('active');
+                
+                const filteredNews = allNews.filter(news => news.category === category);
+                displayNews(filteredNews);
+                
+                // 顯示過濾訊息
+                const filterMessage = document.getElementById('filterMessage');
+                filterMessage.textContent = `顯示 ${category} 類別新聞，共 ${filteredNews.length} 則`;
+                filterMessage.style.display = 'block';
+                
+                // 3秒後隱藏訊息
+                setTimeout(() => {
+                    filterMessage.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        // 獲取分類CSS類名
+        function getCategoryClass(category) {
+            switch(category) {
+                case 'AI科技': return 'ai';
+                case '科技發展': return 'tech';
+                case '財經市場': return 'finance';
+                case '國際大事': return 'intl';
+                case '硬體設備': return 'hardware';
+                case '新創科技': return 'startup';
+                default: return '';
+            }
+        }
+        
+        // 測試連線
+        function testConnection() {
+            updateSystemInfo('測試API連線中...');
+            showLoading();
+            
+            setTimeout(() => {
+                fetch(CONFIG.API_URL)
+                    .then(response => {
+                        if (response.ok) {
+                            updateSystemInfo('✅ API連線正常');
+                        } else {
+                            updateSystemInfo('❌ API連線異常');
+                        }
+                    })
+                    .catch(error => {
+                        updateSystemInfo('❌ 無法連接到API伺服器');
+                        console.error('連線測試失敗:', error);
+                    })
+                    .finally(() => {
+                        hideLoading();
+                        setTimeout(() => updateSystemInfo(`已載入 ${allNews.length} 則新聞`), 2000);
+                    });
+            }, 1000);
+        }
+        
+        // 顯示統計
+        function showStats() {
+            const categories = {};
+            allNews.forEach(news => {
+                categories[news.category] = (categories[news.category] || 0) + 1;
+            });
+            
+            let statsText = '📊 新聞統計：\n';
+            for (const [category, count] of Object.entries(categories)) {
+                statsText += `${category}: ${count}則\n`;
+            }
+            
+            alert(statsText);
+        }
+        
+        // 強制更新
+        function forceUpdate() {
+            updateSystemInfo('強制更新中...');
+            loadNews();
+        }
+        
+        // 更新系統資訊
+        function updateSystemInfo(message) {
+            document.getElementById('systemInfo').textContent = message;
+        }
+        
+        // 更新時間
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('zh-TW', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            
+            document.getElementById('updateTime').innerHTML = `
+                <i class="fas fa-clock"></i> 最後更新: ${timeString}
+            `;
+        }
+        
+        // 顯示載入指示器
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('loadBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> 載入中...';
+            document.getElementById('loadBtn').disabled = true;
+        }
+        
+        // 隱藏載入指示器
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('loadBtn').innerHTML = '<i class="fas fa-sync-alt"></i> 更新新聞';
+            document.getElementById('loadBtn').disabled = false;
+        }
+        
+        // 顯示錯誤訊息
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').style.display = 'flex';
+        }
+        
+        // 隱藏錯誤訊息
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+        
+        // 點擊模態框外部關閉
+        window.onclick = function(event) {
+            const modal = document.getElementById('newsModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
