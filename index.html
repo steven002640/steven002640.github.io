@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖12276663</title>
+    <title>🤖 全球AI科技新聞系統</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* 科技深色主題顏色 */
@@ -198,46 +198,66 @@
             font-weight: 500;
         }
         
-        /* 分類按鈕 */
+        /* 分類按鈕 - 7個按鈕在同一列 */
         .category-tabs {
             display: flex;
-            gap: 10px;
-            margin: 30px 0;
-            flex-wrap: wrap;
+            gap: 8px;
+            margin: 25px 0;
+            flex-wrap: nowrap;
             justify-content: center;
+            overflow-x: auto;
+            padding: 10px 5px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--border-color);
+        }
+        
+        .category-tabs::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .category-tabs::-webkit-scrollbar-track {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+        
+        .category-tabs::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
         }
         
         .category-btn {
-            padding: 14px 28px;
+            padding: 10px 18px;
             border: none;
-            border-radius: 50px;
-            font-size: 1.1rem;
+            border-radius: 25px;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
             box-shadow: var(--card-shadow);
             position: relative;
             overflow: hidden;
             color: white;
-            min-width: 160px;
+            min-width: 120px;
             justify-content: center;
-        }
-        
-        .category-btn.active {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         
         .category-btn i {
-            transition: transform 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .category-btn.active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
         
         .category-btn:hover:not(.active) i {
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
         
         /* 分類顏色 */
@@ -251,7 +271,7 @@
         
         .category-btn:hover:not(.active) {
             opacity: 0.9;
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
         
         /* 系統狀態 */
@@ -290,8 +310,8 @@
         /* 過濾訊息 */
         .filter-message {
             text-align: center;
-            margin: 25px 0;
-            padding: 18px;
+            margin: 20px 0;
+            padding: 15px;
             background: var(--gradient-card);
             border-radius: 15px;
             box-shadow: var(--card-shadow);
@@ -304,23 +324,23 @@
         /* 控制面板 */
         .controls {
             display: flex;
-            gap: 12px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
             justify-content: center;
         }
         
         .btn {
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 10px;
-            font-size: 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: var(--gradient-card);
             color: var(--primary);
             border: 2px solid var(--primary);
@@ -338,13 +358,13 @@
         .error-message {
             background: rgba(255, 107, 107, 0.1);
             color: var(--ai-color);
-            padding: 20px;
+            padding: 18px;
             border-radius: 15px;
-            margin: 25px 0;
+            margin: 20px 0;
             border-left: 5px solid var(--ai-color);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             border: 1px solid rgba(255, 107, 107, 0.3);
             display: none;
         }
@@ -352,23 +372,23 @@
         /* 載入動畫 */
         .loading {
             text-align: center;
-            padding: 60px;
+            padding: 50px;
             background: var(--gradient-card);
             border-radius: 20px;
             box-shadow: var(--card-shadow);
-            margin: 30px 0;
+            margin: 25px 0;
             border: 1px solid var(--border-color);
             display: none;
         }
         
         .loader {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(255, 255, 255, 0.1);
-            border-top: 5px solid var(--primary);
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 25px;
+            margin: 0 auto 20px;
         }
         
         @keyframes spin {
@@ -379,23 +399,66 @@
         /* 新聞容器 */
         .news-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-            gap: 25px;
-            margin-bottom: 50px;
+            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
         }
         
         @media (max-width: 1200px) {
-            .news-container { grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); }
+            .news-container { grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); }
+        }
+        
+        @media (max-width: 992px) {
+            .news-container { grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); }
+            .category-tabs {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+            }
+            .category-btn {
+                min-width: 110px;
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
         }
         
         @media (max-width: 768px) {
             .news-container { grid-template-columns: 1fr; }
+            .category-tabs {
+                gap: 6px;
+                padding: 8px 3px;
+            }
+            .category-btn {
+                min-width: 100px;
+                padding: 7px 12px;
+                font-size: 0.85rem;
+            }
+            .category-btn i {
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .category-tabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                justify-content: flex-start;
+            }
+            .category-btn {
+                min-width: auto;
+                padding: 6px 10px;
+            }
+            .category-btn span:not(:first-child) {
+                display: none;
+            }
+            .category-btn i {
+                margin-right: 0;
+            }
         }
         
         /* 新聞卡片 */
         .news-card {
             background: var(--gradient-card);
-            border-radius: 18px;
+            border-radius: 16px;
             overflow: hidden;
             box-shadow: var(--card-shadow);
             transition: all 0.3s ease;
@@ -408,13 +471,13 @@
         }
         
         .news-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-6px);
             box-shadow: var(--card-shadow-hover);
             border-color: var(--primary);
         }
         
         .news-header {
-            padding: 20px;
+            padding: 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -423,14 +486,14 @@
         }
         
         .news-category {
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            padding: 6px 15px;
+            border-radius: 18px;
+            font-size: 0.85rem;
             font-weight: 700;
             color: white;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .category-ai { background: var(--gradient-ai); }
@@ -442,64 +505,41 @@
         
         .news-badge {
             background: rgba(255, 255, 255, 0.1);
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 0.85rem;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
             color: var(--text-secondary);
             border: 1px solid var(--border-color);
         }
         
         .news-content {
-            padding: 25px;
+            padding: 22px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
         }
         
         .news-title {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             color: var(--text-primary);
             line-height: 1.4;
         }
         
         .news-summary {
             color: var(--text-secondary);
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             line-height: 1.6;
-            font-size: 1.05rem;
+            font-size: 1rem;
             flex-grow: 1;
-        }
-        
-        .view-full-btn {
-            background: rgba(0, 212, 255, 0.1);
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 600;
-            text-align: center;
-            margin: 15px 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        
-        .view-full-btn:hover {
-            background: var(--primary);
-            color: var(--dark-bg);
-            transform: translateY(-2px);
         }
         
         .news-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 20px;
+            padding-top: 18px;
             border-top: 1px solid var(--border-color);
             margin-top: auto;
         }
@@ -509,19 +549,19 @@
             color: var(--primary);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .news-date {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             background: rgba(255, 255, 255, 0.05);
-            padding: 5px 12px;
-            border-radius: 15px;
+            padding: 4px 10px;
+            border-radius: 12px;
             border: 1px solid var(--border-color);
         }
         
-        /* 詳細內容模態框 */
+        /* 詳細內容模態框 - 修改重點區域 */
         .modal {
             display: none;
             position: fixed;
@@ -548,7 +588,7 @@
         }
         
         @keyframes modalSlideIn {
-            from { transform: translateY(-30px); opacity: 0; }
+            from { transform: translateY(-20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
         
@@ -562,7 +602,7 @@
             border-radius: 50%;
             width: 40px;
             height: 40px;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -575,7 +615,7 @@
         }
         
         .modal-title {
-            font-size: 2rem;
+            font-size: 1.8rem;
             margin-bottom: 20px;
             color: var(--text-primary);
             line-height: 1.3;
@@ -587,19 +627,127 @@
             margin-bottom: 30px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            flex-wrap: wrap;
         }
         
         .modal-original-content {
             color: var(--text-secondary);
-            line-height: 1.8;
-            font-size: 1.1rem;
+            line-height: 1.6; /* 減少行距 */
+            font-size: 1.05rem;
             margin-bottom: 30px;
             white-space: pre-line;
             background: rgba(0, 0, 0, 0.2);
             padding: 25px;
-            border-radius: 15px;
+            border-radius: 12px;
             border: 1px solid var(--border-color);
+            max-height: 60vh;
+            overflow-y: auto;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+        }
+        
+        /* 原始連結區塊 */
+        .original-link {
+            background: rgba(0, 212, 255, 0.1);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .original-link i {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .original-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            word-break: break-all;
+            transition: all 0.3s ease;
+        }
+        
+        .original-link a:hover {
+            color: #00a8cc;
+            text-decoration: underline;
+        }
+        
+        /* 翻譯按鈕 */
+        .translate-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--card-shadow);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .translate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.4);
+        }
+        
+        .translate-btn.translating {
+            background: var(--gradient-startup);
+        }
+        
+        .translate-btn.translated {
+            background: var(--gradient-startup);
+        }
+        
+        /* 中文翻譯內容 */
+        .chinese-content {
+            display: none;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 1.05rem;
+            margin-bottom: 30px;
+            white-space: pre-line;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            max-height: 60vh;
+            overflow-y: auto;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+        }
+        
+        /* 語言切換按鈕 */
+        .language-switch {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .lang-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .lang-btn.active {
+            background: var(--gradient-primary);
+            color: white;
         }
         
         .modal-meta {
@@ -609,36 +757,44 @@
             padding-top: 25px;
             border-top: 1px solid var(--border-color);
             color: var(--text-muted);
+            flex-wrap: wrap;
+            gap: 15px;
         }
         
         /* 響應式設計 */
         @media (max-width: 1024px) {
-            .header h1 { font-size: 2.5rem; }
+            .header h1 { font-size: 2.2rem; }
             .header { padding: 30px; }
-            .news-container { grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); }
             .modal-content { margin: 20px; padding: 30px; }
+            .modal-title { font-size: 1.5rem; }
         }
         
         @media (max-width: 768px) {
-            .header h1 { font-size: 2rem; }
-            .header p { font-size: 1.1rem; }
-            .news-container { grid-template-columns: 1fr; }
-            .category-tabs { flex-direction: column; align-items: center; }
-            .category-btn { width: 100%; max-width: 300px; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .system-status { flex-direction: column; gap: 15px; text-align: center; }
+            .header h1 { font-size: 1.8rem; }
+            .header p { font-size: 1rem; }
             .modal-content { margin: 15px; padding: 25px; }
-            .modal-title { font-size: 1.6rem; }
+            .modal-title { font-size: 1.3rem; }
+            .translate-btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
         }
         
         @media (max-width: 480px) {
-            .header h1 { font-size: 1.8rem; }
-            .header { padding: 25px 20px; }
-            .stats-grid { grid-template-columns: 1fr; }
-            body { padding: 15px; }
-            .btn, .category-btn { padding: 10px 20px; font-size: 0.95rem; }
+            .header h1 { font-size: 1.6rem; }
+            .header { padding: 20px; }
+            body { padding: 12px; }
+            .btn, .category-btn { padding: 8px 15px; font-size: 0.9rem; }
             .modal-content { margin: 10px; padding: 20px; }
-            .modal-title { font-size: 1.4rem; }
+            .modal-title { font-size: 1.2rem; }
+            .translate-btn {
+                bottom: 15px;
+                right: 15px;
+                padding: 8px 15px;
+                font-size: 0.85rem;
+            }
         }
     </style>
 </head>
@@ -649,7 +805,32 @@
             <button class="modal-close" onclick="closeModal()">×</button>
             <h2 class="modal-title" id="modalTitle"></h2>
             <div class="modal-source" id="modalSource"></div>
+            
+            <!-- 語言切換按鈕 -->
+            <div class="language-switch" id="languageSwitch" style="display: none;">
+                <button class="lang-btn active" onclick="switchLanguage('original')">
+                    <i class="fas fa-globe"></i> 原文
+                </button>
+                <button class="lang-btn" onclick="switchLanguage('chinese')">
+                    <i class="fas fa-language"></i> 中文
+                </button>
+            </div>
+            
+            <!-- 原始內容 -->
             <div class="modal-original-content" id="modalContent"></div>
+            
+            <!-- 中文翻譯內容 -->
+            <div class="chinese-content" id="chineseContent"></div>
+            
+            <!-- 原始連結區塊 -->
+            <div class="original-link" id="originalLink">
+                <i class="fas fa-external-link-alt"></i>
+                <div>
+                    <strong>原文連結：</strong>
+                    <a href="#" target="_blank" id="originalUrl" rel="noopener noreferrer">載入中...</a>
+                </div>
+            </div>
+            
             <div class="modal-meta">
                 <div>
                     <i class="fas fa-calendar"></i>
@@ -659,9 +840,19 @@
                     <i class="fas fa-tag"></i>
                     <span id="modalCategory"></span>
                 </div>
+                <div>
+                    <i class="fas fa-file-alt"></i>
+                    <span id="contentLength">0 字元</span>
+                </div>
             </div>
         </div>
     </div>
+    
+    <!-- 翻譯按鈕（固定在右下角） -->
+    <button class="translate-btn" id="translateButton" style="display: none;" onclick="translateContent()">
+        <i class="fas fa-language"></i>
+        <span>翻譯成中文</span>
+    </button>
     
     <div class="container">
         <!-- 頁首 -->
@@ -705,28 +896,28 @@
             </div>
         </div>
         
-        <!-- 分類標籤 -->
+        <!-- 分類標籤 - 7個按鈕在同一列 -->
         <div class="category-tabs">
             <button class="category-btn all active" onclick="filterNews('all')">
-                <i class="fas fa-globe"></i> 全部新聞
+                <i class="fas fa-globe"></i> <span>全部</span>
             </button>
             <button class="category-btn ai" onclick="filterNews('AI科技')">
-                <i class="fas fa-brain"></i> AI科技
+                <i class="fas fa-brain"></i> <span>AI科技</span>
             </button>
             <button class="category-btn tech" onclick="filterNews('科技發展')">
-                <i class="fas fa-microchip"></i> 科技發展
+                <i class="fas fa-microchip"></i> <span>科技</span>
             </button>
             <button class="category-btn finance" onclick="filterNews('財經市場')">
-                <i class="fas fa-chart-line"></i> 財經市場
+                <i class="fas fa-chart-line"></i> <span>財經</span>
             </button>
             <button class="category-btn intl" onclick="filterNews('國際大事')">
-                <i class="fas fa-globe-americas"></i> 國際大事
+                <i class="fas fa-globe-americas"></i> <span>國際</span>
             </button>
             <button class="category-btn hardware" onclick="filterNews('硬體設備')">
-                <i class="fas fa-server"></i> 硬體設備
+                <i class="fas fa-server"></i> <span>硬體</span>
             </button>
             <button class="category-btn startup" onclick="filterNews('新創科技')">
-                <i class="fas fa-rocket"></i> 新創科技
+                <i class="fas fa-rocket"></i> <span>新創</span>
             </button>
         </div>
         
@@ -742,7 +933,7 @@
                 <i class="fas fa-wifi"></i> 測試連線
             </button>
             <button class="btn" onclick="showStats()">
-                <i class="fas fa-chart-bar"></i> 詳細統計
+                <i class="fas fa-chart-bar"></i> 統計
             </button>
             <button class="btn" onclick="forceUpdate()">
                 <i class="fas fa-bolt"></i> 強制更新
@@ -784,403 +975,16 @@
         // 全域變數
         let allNews = [];
         let currentFilter = 'all';
+        let currentNewsDetail = null;
+        let isTranslating = false;
+        let translationCache = {};
         
         // 頁面載入
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 AI新聞系統啟動 - 簡化版');
+            console.log('🚀 AI新聞系統啟動');
             updateSystemInfo('系統啟動中...');
             loadNews();
         });
         
         // 載入新聞
-        async function loadNews() {
-            showLoading(true);
-            hideError();
-            updateSystemInfo('正在載入新聞資料...');
-            
-            try {
-                const response = await fetch(CONFIG.API_URL + '?action=getNews');
-                const result = await response.json();
-                
-                if (result.success) {
-                    allNews = result.data.news;
-                    
-                    updateStats(result.data.statistics);
-                    displayNews(allNews);
-                    updateSystemInfo(`已載入 ${allNews.length} 則新聞`);
-                    updateLastUpdateTime(result.metadata.timestamp);
-                    
-                    console.log(`✅ 載入 ${allNews.length} 則新聞`);
-                } else {
-                    throw new Error(result.error || 'API錯誤');
-                }
-            } catch (error) {
-                console.error('❌ 載入失敗:', error);
-                showError(`新聞載入失敗: ${error.message}`);
-                updateSystemInfo('載入失敗，請檢查網路連線');
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        // 過濾新聞
-        function filterNews(category) {
-            currentFilter = category;
-            
-            // 更新按鈕狀態
-            document.querySelectorAll('.category-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            let filteredNews;
-            if (category === 'all') {
-                filteredNews = allNews;
-                document.getElementById('filterMessage').style.display = 'none';
-            } else {
-                filteredNews = allNews.filter(item => {
-                    if (item.mainCategory === category) return true;
-                    if (item.categories && item.categories.includes(category)) return true;
-                    return false;
-                });
-                
-                const catInfo = CONFIG.CATEGORIES[category];
-                const messageEl = document.getElementById('filterMessage');
-                messageEl.innerHTML = `
-                    <i class="fas fa-filter"></i> 
-                    已篩選: <strong style="color: ${catInfo?.color || '#fff'}">${category}</strong> (${filteredNews.length} 則)
-                    <button onclick="clearFilter()" style="
-                        margin-left: 15px;
-                        padding: 6px 15px;
-                        background: var(--primary);
-                        color: var(--dark-bg);
-                        border: none;
-                        border-radius: 20px;
-                        cursor: pointer;
-                        font-size: 0.9rem;
-                        font-weight: 600;
-                        transition: all 0.3s ease;
-                        display: inline-flex;
-                        align-items: center;
-                        gap: 6px;
-                    " onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                        <i class="fas fa-times"></i> 清除篩選
-                    </button>
-                `;
-                messageEl.style.display = 'block';
-            }
-            
-            displayNews(filteredNews);
-            updateCategoryStats(filteredNews, category);
-        }
-        
-        // 清除篩選
-        function clearFilter() {
-            const allBtn = document.querySelector('.category-btn.all');
-            allBtn.click();
-        }
-        
-        // 顯示新聞
-        function displayNews(news) {
-            const container = document.getElementById('newsContainer');
-            
-            if (!news || news.length === 0) {
-                container.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: var(--text-secondary);">
-                        <i class="fas fa-newspaper" style="font-size: 3rem; margin-bottom: 20px; color: var(--primary);"></i>
-                        <h3 style="margin-bottom: 15px;">暫無新聞資料</h3>
-                        <p style="margin-bottom: 25px;">請稍後再試或點擊「更新新聞」</p>
-                        <button class="btn" onclick="loadNews()">
-                            <i class="fas fa-sync-alt"></i> 重新載入
-                        </button>
-                    </div>
-                `;
-                return;
-            }
-            
-            let html = '';
-            news.forEach(item => {
-                const categoryInfo = CONFIG.CATEGORIES[item.mainCategory] || { 
-                    color: '#666', 
-                    icon: 'fa-newspaper',
-                    gradient: 'var(--gradient-primary)'
-                };
-                const isAI = item.mainCategory === 'AI科技';
-                const isInternational = item.country !== 'TW';
-                
-                html += `
-                    <div class="news-card" onclick="viewFullContent('${item.id}')">
-                        <div class="news-header">
-                            <div class="news-category category-${item.mainCategory === 'AI科技' ? 'ai' : 
-                                item.mainCategory === '科技發展' ? 'tech' :
-                                item.mainCategory === '財經市場' ? 'finance' :
-                                item.mainCategory === '國際大事' ? 'intl' :
-                                item.mainCategory === '硬體設備' ? 'hardware' :
-                                item.mainCategory === '新創科技' ? 'startup' : 'ai'}">
-                                <i class="fas ${categoryInfo.icon}"></i> ${item.mainCategory}
-                            </div>
-                            <div class="news-badge">
-                                ${isAI ? '🤖 ' : ''}${isInternational ? '🌍 ' : ''}${item.source}
-                                ${!item.isReal ? ' <i class="fas fa-clone" style="color: var(--text-muted);"></i>' : ''}
-                            </div>
-                        </div>
-                        
-                        <div class="news-content">
-                            <h3 class="news-title">${escapeHtml(item.title)}</h3>
-                            
-                            <p class="news-summary">
-                                ${escapeHtml(item.summary)}
-                            </p>
-                            
-                            <div class="news-meta">
-                                <div class="news-source">
-                                    <i class="fas fa-rss"></i> ${item.source}
-                                    <small style="color: var(--text-muted); margin-left: 8px;">
-                                        ${item.isReal ? '真實新聞' : '模擬新聞'} • 
-                                        ${item.language === 'zh' ? '中文' : '英文'}
-                                    </small>
-                                </div>
-                                <div class="news-date">
-                                    ${formatDate(item.date)}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-        }
-        
-        // 查看完整內容
-        async function viewFullContent(newsId) {
-            showLoading(true);
-            
-            try {
-                const response = await fetch(`${CONFIG.API_URL}?action=getNewsDetail&id=${newsId}`);
-                const result = await response.json();
-                
-                if (result.success) {
-                    showNewsModal(result.data);
-                } else {
-                    throw new Error(result.error || '無法取得完整內容');
-                }
-            } catch (error) {
-                console.error('❌ 取得完整內容失敗:', error);
-                alert(`無法載入完整內容: ${error.message}`);
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        // 顯示新聞模態框
-        function showNewsModal(newsData) {
-            const modal = document.getElementById('newsModal');
-            const catInfo = CONFIG.CATEGORIES[newsData.category] || CONFIG.CATEGORIES['AI科技'];
-            
-            // 設定模態框內容
-            document.getElementById('modalTitle').textContent = newsData.title;
-            document.getElementById('modalSource').innerHTML = `
-                <i class="fas fa-newspaper"></i> ${newsData.source} • 
-                <i class="fas ${catInfo.icon}" style="color: ${catInfo.color}; margin-left: 10px;"></i>
-                <span style="color: ${catInfo.color}; margin-left: 5px;">${newsData.category}</span>
-            `;
-            
-            // 顯示原稿內容
-            let originalContent = newsData.originalContent;
-            if (!originalContent) {
-                originalContent = '抱歉，暫時無法取得這則新聞的完整內容。\n\n請稍後再試或瀏覽其他新聞。';
-            }
-            
-            document.getElementById('modalContent').textContent = originalContent;
-            document.getElementById('modalDate').textContent = formatDate(newsData.date);
-            document.getElementById('modalCategory').textContent = newsData.category;
-            
-            // 顯示模態框
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-        
-        // 關閉模態框
-        function closeModal() {
-            document.getElementById('newsModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-        
-        // 更新統計
-        function updateStats(stats) {
-            document.getElementById('totalNews').textContent = stats.total || 0;
-            document.getElementById('aiNews').textContent = stats.byMainCategory['AI科技'] || 0;
-            document.getElementById('techNews').textContent = stats.byMainCategory['科技發展'] || 0;
-            document.getElementById('financeNews').textContent = stats.byMainCategory['財經市場'] || 0;
-        }
-        
-        function updateCategoryStats(news, category) {
-            const aiCount = news.filter(n => n.mainCategory === 'AI科技').length;
-            const techCount = news.filter(n => n.mainCategory === '科技發展').length;
-            const financeCount = news.filter(n => n.mainCategory === '財經市場').length;
-            
-            if (category === 'all' || category === 'AI科技') {
-                document.getElementById('aiNews').textContent = aiCount;
-            }
-            if (category === 'all' || category === '科技發展') {
-                document.getElementById('techNews').textContent = techCount;
-            }
-            if (category === 'all' || category === '財經市場') {
-                document.getElementById('financeNews').textContent = financeCount;
-            }
-        }
-        
-        // 測試連線
-        async function testConnection() {
-            try {
-                const response = await fetch(CONFIG.API_URL + '?action=test');
-                const result = await response.json();
-                
-                if (result.success) {
-                    alert(`✅ 連線成功！\n版本: ${result.version}\n新聞源: ${result.config.totalSources}個`);
-                } else {
-                    alert('❌ 連線測試失敗');
-                }
-            } catch (error) {
-                alert('❌ 連線失敗，請檢查API URL');
-            }
-        }
-        
-        // 顯示詳細統計
-        function showStats() {
-            if (allNews.length === 0) {
-                alert('尚未載入新聞資料');
-                return;
-            }
-            
-            const categories = {};
-            const realCount = allNews.filter(n => n.isReal).length;
-            const mockCount = allNews.filter(n => !n.isReal).length;
-            
-            allNews.forEach(item => {
-                categories[item.mainCategory] = (categories[item.mainCategory] || 0) + 1;
-            });
-            
-            let message = `📊 詳細統計報告\n\n`;
-            message += `總新聞數: ${allNews.length} 則\n`;
-            message += `真實新聞: ${realCount} 則\n`;
-            message += `模擬新聞: ${mockCount} 則\n`;
-            message += `模擬比例: ${Math.round((mockCount / allNews.length) * 100)}%\n\n`;
-            message += `📈 分類分布:\n`;
-            Object.entries(categories).forEach(([cat, count]) => {
-                const percentage = Math.round((count / allNews.length) * 100);
-                message += `  ${cat}: ${count} (${percentage}%)\n`;
-            });
-            
-            alert(message);
-        }
-        
-        // 強制更新
-        async function forceUpdate() {
-            showLoading(true);
-            updateSystemInfo('強制更新中...');
-            
-            try {
-                const response = await fetch(CONFIG.API_URL + '?action=getNews&force=true');
-                const result = await response.json();
-                
-                if (result.success) {
-                    allNews = result.data.news;
-                    
-                    updateStats(result.data.statistics);
-                    displayNews(allNews);
-                    updateSystemInfo(`強制更新完成，共 ${allNews.length} 則新聞`);
-                    alert(`✅ 強制更新完成\n共 ${allNews.length} 則新聞`);
-                } else {
-                    throw new Error(result.error || '更新失敗');
-                }
-            } catch (error) {
-                alert('❌ 更新失敗: ' + error.message);
-            } finally {
-                showLoading(false);
-            }
-        }
-        
-        // 工具函數
-        function showLoading(show) {
-            document.getElementById('loading').style.display = show ? 'block' : 'none';
-            const loadBtn = document.getElementById('loadBtn');
-            if (loadBtn) {
-                loadBtn.disabled = show;
-                loadBtn.innerHTML = show ? 
-                    '<i class="fas fa-spinner fa-spin"></i> 載入中...' : 
-                    '<i class="fas fa-sync-alt"></i> 更新新聞';
-            }
-        }
-        
-        function showError(message) {
-            document.getElementById('errorText').textContent = message;
-            document.getElementById('errorMessage').style.display = 'flex';
-        }
-        
-        function hideError() {
-            document.getElementById('errorMessage').style.display = 'none';
-        }
-        
-        function updateSystemInfo(info) {
-            document.getElementById('systemInfo').textContent = info;
-        }
-        
-        function updateLastUpdateTime(timestamp) {
-            const timeStr = timestamp ? 
-                new Date(timestamp).toLocaleString('zh-TW') : '尚未更新';
-            document.getElementById('updateTime').innerHTML = 
-                `<i class="fas fa-clock"></i> 最後更新: ${timeStr}`;
-        }
-        
-        function formatDate(dateStr) {
-            try {
-                const date = new Date(dateStr);
-                return date.toLocaleDateString('zh-TW', {
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            } catch (e) {
-                return dateStr || '未知時間';
-            }
-        }
-        
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        // 點擊模態框外部關閉
-        window.onclick = function(event) {
-            const modal = document.getElementById('newsModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        };
-        
-        // 自動更新功能
-        let autoUpdateInterval;
-        function startAutoUpdate(interval = 300000) {
-            if (autoUpdateInterval) {
-                clearInterval(autoUpdateInterval);
-            }
-            autoUpdateInterval = setInterval(() => {
-                console.log('🔄 自動更新新聞...');
-                loadNews();
-            }, interval);
-            console.log(`⏰ 已設定自動更新，間隔: ${interval / 1000} 秒`);
-        }
-        
-        // 初始化完成後啟動自動更新
-        setTimeout(() => {
-            startAutoUpdate();
-            console.log('系統準備就緒');
-        }, 5000);
-    </script>
-</body>
-</html>
+        async function
