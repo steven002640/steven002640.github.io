@@ -7,17 +7,33 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #4285f4;
-            --primary-dark: #3367d6;
-            --ai-color: #ea4335;
-            --tech-color: #fbbc05;
-            --finance-color: #673ab7;
-            --intl-color: #00bcd4;
-            --light: #f8f9fa;
-            --dark: #202124;
-            --gray: #5f6368;
-            --card-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            --card-shadow-hover: 0 8px 24px rgba(0,0,0,0.15);
+            --primary: #00d4ff;
+            --primary-dark: #00a8cc;
+            --ai-color: #ff6b6b;
+            --tech-color: #4ecdc4;
+            --finance-color: #ffd166;
+            --intl-color: #118ab2;
+            --startup-color: #06d6a0;
+            --hardware-color: #7209b7;
+            --dark-bg: #0a0e17;
+            --darker-bg: #050811;
+            --card-bg: #13182b;
+            --card-hover: #1a223f;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --text-muted: #718096;
+            --border-color: #2d3748;
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --card-shadow-hover: 0 16px 48px rgba(0, 212, 255, 0.2);
+            --gradient-bg: linear-gradient(135deg, #0a0e17 0%, #13182b 50%, #0a0e17 100%);
+            --gradient-card: linear-gradient(145deg, #13182b 0%, #1a223f 100%);
+            --gradient-primary: linear-gradient(90deg, #00d4ff 0%, #0066ff 100%);
+            --gradient-ai: linear-gradient(90deg, #ff6b6b 0%, #ff8e53 100%);
+            --gradient-tech: linear-gradient(90deg, #4ecdc4 0%, #44a08d 100%);
+            --gradient-finance: linear-gradient(90deg, #ffd166 0%, #ffb347 100%);
+            --gradient-intl: linear-gradient(90deg, #118ab2 0%, #073b4c 100%);
+            --gradient-startup: linear-gradient(90deg, #06d6a0 0%, #0cb48a 100%);
+            --gradient-hardware: linear-gradient(90deg, #7209b7 0%, #560bad 100%);
         }
         
         * {
@@ -27,30 +43,48 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: var(--dark);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', 'Noto Sans TC', sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(78, 205, 196, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
         }
         
         .container {
             max-width: 1800px;
             margin: 0 auto;
+            position: relative;
         }
         
-        /* 頁首 - 黃橘漸層背景 */
+        /* 頁首 */
         .header {
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
-            border-radius: 20px;
-            padding: 40px;
-            margin-bottom: 30px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 50px;
+            margin-bottom: 40px;
             box-shadow: var(--card-shadow);
             text-align: center;
             position: relative;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--border-color);
+            background: var(--gradient-card);
         }
         
         .header::before {
@@ -59,85 +93,161 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--ai-color), var(--tech-color), var(--finance-color), var(--intl-color));
+            height: 4px;
+            background: linear-gradient(90deg, 
+                var(--ai-color), 
+                var(--tech-color), 
+                var(--finance-color), 
+                var(--intl-color),
+                var(--startup-color),
+                var(--hardware-color)
+            );
         }
         
         .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        
+        .header h1 i {
+            margin-right: 20px;
             font-size: 3rem;
-            margin-bottom: 15px;
-            color: #333;
-            text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
         }
         
         .header p {
-            color: #333;
-            font-size: 1.2rem;
-            max-width: 900px;
-            margin: 0 auto 20px;
-            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 1.3rem;
+            max-width: 1000px;
+            margin: 0 auto 30px;
+            line-height: 1.8;
         }
         
         /* 翻譯提示 */
         .translate-notice {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            padding: 10px 20px;
-            margin: 10px auto;
-            max-width: 800px;
-            font-size: 0.9rem;
-            color: #333;
-            border-left: 4px solid var(--primary);
+            background: rgba(19, 24, 43, 0.8);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin: 20px auto;
+            max-width: 900px;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
         
         .translate-notice i {
             color: var(--primary);
-            margin-right: 8px;
+            font-size: 1.2rem;
         }
         
         /* 統計卡片 */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
         }
         
         .stat-card {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 12px;
+            background: var(--gradient-card);
+            padding: 25px;
+            border-radius: 16px;
             box-shadow: var(--card-shadow);
             text-align: center;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
             cursor: pointer;
             position: relative;
-            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.03) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+        
+        .stat-card:hover::before {
+            transform: translateX(100%);
         }
         
         .stat-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px) scale(1.02);
             box-shadow: var(--card-shadow-hover);
+            border-color: var(--primary);
         }
         
         .stat-card:hover .translate-hint {
             opacity: 1;
+            transform: translateY(0);
         }
         
         .stat-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            height: 80px;
+            width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+        }
+        
+        .stat-card:nth-child(1) .stat-icon { 
+            color: var(--primary); 
+            background: rgba(0, 212, 255, 0.1);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+        .stat-card:nth-child(2) .stat-icon { 
+            color: var(--ai-color); 
+            background: rgba(255, 107, 107, 0.1);
+            border-color: rgba(255, 107, 107, 0.3);
+        }
+        .stat-card:nth-child(3) .stat-icon { 
+            color: var(--tech-color); 
+            background: rgba(78, 205, 196, 0.1);
+            border-color: rgba(78, 205, 196, 0.3);
+        }
+        .stat-card:nth-child(4) .stat-icon { 
+            color: var(--finance-color); 
+            background: rgba(255, 209, 102, 0.1);
+            border-color: rgba(255, 209, 102, 0.3);
         }
         
         .stat-value {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 5px;
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .stat-label {
-            color: var(--gray);
-            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
         
         /* 翻譯提示氣泡 */
@@ -147,63 +257,48 @@
             right: -10px;
             background: var(--ai-color);
             color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
             opacity: 0;
-            transition: opacity 0.3s;
+            transform: translateY(10px);
+            transition: all 0.3s;
             pointer-events: none;
             z-index: 10;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         
-        /* 分類按鈕 - 改為一行 */
+        /* 分類按鈕 */
         .category-tabs {
             display: flex;
-            gap: 10px;
-            margin: 30px 0;
-            flex-wrap: nowrap;
+            gap: 12px;
+            margin: 40px 0;
+            flex-wrap: wrap;
             justify-content: center;
-            overflow-x: auto;
-            padding: 10px 0;
-        }
-        
-        .category-tabs::-webkit-scrollbar {
-            height: 6px;
-        }
-        
-        .category-tabs::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-        
-        .category-tabs::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 3px;
-        }
-        
-        .category-tabs::-webkit-scrollbar-thumb:hover {
-            background: #555;
         }
         
         .category-btn {
-            padding: 14px 28px;
+            padding: 16px 32px;
             border: none;
             border-radius: 50px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             box-shadow: var(--card-shadow);
             position: relative;
             overflow: hidden;
-            white-space: nowrap;
-            flex-shrink: 0;
+            color: white;
+            min-width: 180px;
+            justify-content: center;
+            border: 2px solid transparent;
         }
         
-        .category-btn::after {
+        .category-btn::before {
             content: '';
             position: absolute;
             top: 50%;
@@ -211,339 +306,432 @@
             width: 0;
             height: 0;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2);
             transform: translate(-50%, -50%);
             transition: width 0.6s, height 0.6s;
         }
         
-        .category-btn:active::after {
+        .category-btn:active::before {
             width: 300px;
             height: 300px;
         }
         
         .category-btn.active {
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.3);
         }
         
         .category-btn i {
             transition: transform 0.3s ease;
+            font-size: 1.2rem;
         }
         
-        .category-btn:hover i {
-            transform: scale(1.2);
+        .category-btn:hover:not(.active) i {
+            transform: scale(1.2) rotate(10deg);
         }
         
-        /* 分類顏色 - AI科技按鈕（軟體併入AI科技） */
-        .category-btn.ai { background: var(--ai-color); color: white; }
-        .category-btn.tech { background: var(--tech-color); color: var(--dark); }
-        .category-btn.finance { background: var(--finance-color); color: white; }
-        .category-btn.intl { background: var(--intl-color); color: white; }
-        .category-btn.all { background: var(--primary); color: white; }
-        .category-btn.hardware { background: #4caf50; color: white; }
-        .category-btn.startup { background: #ff9800; color: white; }
+        /* 分類顏色 */
+        .category-btn.all { background: var(--gradient-primary); }
+        .category-btn.ai { background: var(--gradient-ai); }
+        .category-btn.tech { background: var(--gradient-tech); color: #000; }
+        .category-btn.finance { background: var(--gradient-finance); color: #000; }
+        .category-btn.intl { background: var(--gradient-intl); }
+        .category-btn.hardware { background: var(--gradient-hardware); }
+        .category-btn.startup { background: var(--gradient-startup); color: #000; }
         
         .category-btn:hover:not(.active) {
             opacity: 0.9;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* 系統狀態 */
+        .system-status {
+            background: var(--card-bg);
+            padding: 20px 30px;
+            border-radius: 16px;
+            margin: 30px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            background: var(--gradient-card);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .system-status > div {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .system-status i {
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+        
+        #updateTime {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            background: rgba(0, 212, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+        
+        /* 過濾訊息 */
+        .filter-message {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            font-weight: 600;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            background: var(--gradient-card);
+        }
+        
+        .filter-message i {
+            color: var(--primary);
+            margin-right: 12px;
+            font-size: 1.2rem;
         }
         
         /* 分類統計顯示 */
         .category-stats {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin: 20px 0;
+            gap: 20px;
+            margin: 30px 0;
             flex-wrap: wrap;
         }
         
         .category-stat {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
+            gap: 12px;
+            padding: 12px 24px;
             border-left: 4px solid var(--primary);
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            background: rgba(66, 133, 244, 0.1);
+            background: rgba(0, 212, 255, 0.1);
             transition: all 0.3s ease;
             position: relative;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
         }
         
         .category-stat:hover {
-            transform: translateY(-2px);
+            transform: translateY(-4px);
             box-shadow: var(--card-shadow);
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--primary);
         }
         
-        .category-stat:hover .translate-tooltip {
-            display: block;
-        }
-        
-        /* 翻譯工具提示 */
-        .translate-tooltip {
-            display: none;
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            z-index: 100;
-            margin-bottom: 5px;
-        }
-        
-        .translate-tooltip::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 5px solid transparent;
-            border-top-color: rgba(0, 0, 0, 0.8);
-        }
-        
-        /* 過濾訊息 */
-        .filter-message {
-            text-align: center;
-            margin: 20px 0;
-            padding: 15px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            font-weight: 600;
-            color: #333;
-        }
-        
-        /* 控制面板 - 全部按鈕在一排 */
+        /* 控制面板 */
         .controls {
             display: flex;
-            gap: 12px;
-            margin-bottom: 30px;
-            flex-wrap: nowrap;
+            gap: 16px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
             justify-content: center;
-            overflow-x: auto;
-            padding: 10px 0;
-        }
-        
-        .controls::-webkit-scrollbar {
-            height: 6px;
-        }
-        
-        .controls::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-        
-        .controls::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 3px;
         }
         
         .btn {
-            padding: 12px 24px;
+            padding: 14px 28px;
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            background: white;
+            gap: 12px;
+            background: var(--card-bg);
             color: var(--primary);
             border: 2px solid var(--primary);
-            white-space: nowrap;
-            flex-shrink: 0;
+            box-shadow: var(--card-shadow);
         }
         
         .btn:hover {
             background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
+            color: var(--dark-bg);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3);
+        }
+        
+        /* 錯誤訊息 */
+        .error-message {
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--ai-color);
+            padding: 24px;
+            border-radius: 16px;
+            margin: 30px 0;
+            border-left: 5px solid var(--ai-color);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+        
+        .error-message i {
+            font-size: 1.5rem;
+        }
+        
+        /* 載入動畫 */
+        .loading {
+            text-align: center;
+            padding: 80px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            margin: 40px 0;
+            border: 1px solid var(--border-color);
+            background: var(--gradient-card);
+        }
+        
+        .loader {
+            width: 70px;
+            height: 70px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 30px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 新聞容器 */
+        .news-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
         }
         
         /* 新聞卡片 */
-        .news-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            gap: 25px;
-            margin-bottom: 50px;
-        }
-        
         .news-card {
-            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-            border-radius: 16px;
+            background: var(--gradient-card);
+            border-radius: 20px;
             overflow: hidden;
             box-shadow: var(--card-shadow);
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
             display: flex;
             flex-direction: column;
             height: 100%;
             position: relative;
-            cursor: pointer;
+            border: 1px solid var(--border-color);
         }
         
         .news-card:hover {
-            transform: translateY(-8px) scale(1.02);
+            transform: translateY(-10px) scale(1.02);
             box-shadow: var(--card-shadow-hover);
+            border-color: var(--primary);
         }
         
         .news-card:hover .translate-btn {
             opacity: 1;
+            transform: translateY(0);
         }
         
         .news-header {
-            padding: 20px;
+            padding: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.2);
         }
         
         .news-category {
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 700;
             color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
         }
         
-        .category-ai { background: var(--ai-color); }
-        .category-tech { background: var(--tech-color); }
-        .category-finance { background: var(--finance-color); }
-        .category-intl { background: var(--intl-color); }
-        .category-hardware { background: #4caf50; }
-        .category-startup { background: #ff9800; }
+        .news-category i {
+            font-size: 1rem;
+        }
+        
+        .category-ai { background: var(--gradient-ai); }
+        .category-tech { background: var(--gradient-tech); color: #000; }
+        .category-finance { background: var(--gradient-finance); color: #000; }
+        .category-intl { background: var(--gradient-intl); }
+        .category-hardware { background: var(--gradient-hardware); }
+        .category-startup { background: var(--gradient-startup); color: #000; }
         
         .news-badge {
-            background: #f0f0f0;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            color: var(--gray);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
         }
         
         .news-content {
-            padding: 25px;
+            padding: 30px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
         }
         
         .news-title {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             font-weight: 700;
-            margin-bottom: 15px;
-            color: var(--dark);
+            margin-bottom: 20px;
+            color: var(--text-primary);
             line-height: 1.4;
             cursor: pointer;
             position: relative;
-            padding-bottom: 10px;
-            border-bottom: 2px solid transparent;
-            transition: border-color 0.3s;
+            transition: color 0.3s ease;
         }
         
         .news-title:hover {
-            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
         }
         
         .news-title:hover .title-translation {
             display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .title-translation {
-            position: absolute;
-            top: -70px;
-            left: 0;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 12px 15px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: normal;
-            z-index: 100;
-            max-width: 300px;
-            line-height: 1.4;
-            display: none;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.3s, transform 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: fadeIn 0.3s ease;
         }
         
         .news-summary {
-            color: var(--gray);
-            margin-bottom: 20px;
-            line-height: 1.6;
-            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            line-height: 1.7;
+            font-size: 1.05rem;
             flex-grow: 1;
             cursor: pointer;
             position: relative;
-            padding: 10px;
-            border-radius: 8px;
-            transition: background-color 0.3s;
-        }
-        
-        .news-summary:hover {
-            background-color: rgba(0,0,0,0.03);
         }
         
         .news-summary:hover .summary-translation {
             display: block;
-            opacity: 1;
-            transform: translateY(0);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        /* 翻譯提示框 */
+        .title-translation,
+        .summary-translation {
+            display: none;
+            position: absolute;
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            z-index: 1000;
+            max-width: 350px;
+            line-height: 1.6;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(20px);
+        }
+        
+        .title-translation {
+            top: -20px;
+            left: 0;
+            transform: translateY(-100%);
+        }
+        
+        .title-translation::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 20px;
+            border: 8px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.95);
         }
         
         .summary-translation {
-            position: absolute;
             bottom: 100%;
             left: 0;
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 12px 15px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            z-index: 100;
-            max-width: 350px;
-            line-height: 1.5;
-            display: none;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: opacity 0.3s, transform 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             margin-bottom: 10px;
+        }
+        
+        .summary-translation::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 20px;
+            border: 8px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.95);
+            transform: rotate(180deg);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 查看完整內容按鈕 */
+        .view-full-btn {
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            margin: 20px 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        
+        .view-full-btn:hover {
+            background: var(--primary);
+            color: var(--dark-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3);
         }
         
         /* 翻譯按鈕 */
         .translate-btn {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 20px;
+            right: 20px;
             background: var(--primary);
-            color: white;
+            color: var(--dark-bg);
             border: none;
             border-radius: 50%;
-            width: 36px;
-            height: 36px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             opacity: 0;
-            transition: opacity 0.3s, transform 0.3s;
+            transform: translateY(10px);
+            transition: all 0.3s;
             z-index: 10;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         
         .translate-btn:hover {
-            transform: scale(1.1);
+            transform: scale(1.1) rotate(10deg);
             background: var(--primary-dark);
         }
         
@@ -551,8 +739,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
+            padding-top: 25px;
+            border-top: 1px solid var(--border-color);
             margin-top: auto;
         }
         
@@ -561,38 +749,87 @@
             color: var(--primary);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         
         .news-date {
-            color: var(--gray);
-            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
         }
         
-        /* 詳細新聞內容彈窗 */
-        .news-modal {
+        /* 語言切換 */
+        .language-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--card-bg);
+            border-radius: 50px;
+            padding: 12px 24px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            gap: 12px;
+            z-index: 1000;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+        
+        .lang-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        .lang-btn.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+        
+        .lang-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+        }
+        
+        /* 詳細內容模態框 */
+        .modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(5, 8, 17, 0.95);
             z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
         }
         
         .modal-content {
-            background: white;
-            border-radius: 20px;
-            max-width: 800px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            background: var(--gradient-card);
+            margin: 50px auto;
+            padding: 40px;
+            border-radius: 24px;
+            max-width: 900px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
             position: relative;
+            animation: modalSlideIn 0.4s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         
         .modal-close {
@@ -602,234 +839,165 @@
             background: var(--ai-color);
             color: white;
             border: none;
+            border-radius: 50%;
             width: 40px;
             height: 40px;
-            border-radius: 50%;
+            font-size: 1.5rem;
             cursor: pointer;
-            z-index: 10;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            transition: all 0.3s;
         }
         
-        .modal-body {
-            padding: 40px;
+        .modal-close:hover {
+            transform: rotate(90deg) scale(1.1);
+            background: #ff5252;
         }
         
         .modal-title {
-            font-size: 2rem;
+            font-size: 2.2rem;
             margin-bottom: 20px;
-            color: var(--dark);
+            color: var(--text-primary);
+            line-height: 1.3;
         }
         
-        .modal-category {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 20px;
-            color: white;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-        
-        .modal-full-content {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: var(--dark);
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            white-space: pre-line;
-        }
-        
-        .modal-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .detail-item {
-            padding: 15px;
-            background: #f0f7ff;
-            border-radius: 10px;
-        }
-        
-        .detail-label {
-            font-weight: 600;
+        .modal-source {
             color: var(--primary);
-            margin-bottom: 5px;
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 30px;
-        }
-        
-        /* 載入動畫 */
-        .loading {
-            text-align: center;
-            padding: 60px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: var(--card-shadow);
-            margin: 30px 0;
-        }
-        
-        .loader {
-            width: 60px;
-            height: 60px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 25px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* 錯誤訊息 */
-        .error-message {
-            background: #ffebee;
-            color: var(--ai-color);
-            padding: 20px;
-            border-radius: 12px;
-            margin: 20px 0;
-            border-left: 5px solid var(--ai-color);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
             display: flex;
             align-items: center;
             gap: 12px;
         }
         
-        /* 系統狀態 */
-        .system-status {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
+        .modal-full-content {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            white-space: pre-line;
+        }
+        
+        .modal-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        /* 語言切換 */
-        .language-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: white;
-            border-radius: 50px;
-            padding: 10px 20px;
-            box-shadow: var(--card-shadow);
-            display: flex;
-            gap: 10px;
-            z-index: 1000;
-        }
-        
-        .lang-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 20px;
-            background: #f0f0f0;
-            color: var(--gray);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .lang-btn.active {
-            background: var(--primary);
-            color: white;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
         }
         
         /* 響應式設計 */
-        @media (max-width: 1200px) {
+        @media (max-width: 1400px) {
+            .news-container { grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); }
+        }
+        
+        @media (max-width: 1024px) {
+            .header h1 { font-size: 2.8rem; }
+            .header { padding: 40px; }
             .news-container { grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); }
+            .category-btn { min-width: 160px; padding: 14px 24px; }
+            .modal-content { margin: 30px; padding: 30px; }
         }
         
         @media (max-width: 768px) {
             .header h1 { font-size: 2.2rem; }
+            .header p { font-size: 1.1rem; }
             .news-container { grid-template-columns: 1fr; }
-            .category-tabs { flex-wrap: wrap; }
-            .controls { flex-wrap: wrap; }
-            .container { padding: 10px; }
-            .system-status { flex-direction: column; gap: 10px; }
-            .language-toggle { bottom: 10px; right: 10px; }
-            .modal-content { margin: 10px; }
-            .modal-body { padding: 20px; }
+            .category-tabs { flex-direction: column; align-items: center; }
+            .category-btn { width: 100%; max-width: 300px; justify-content: center; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .container { padding: 15px; }
+            .system-status { flex-direction: column; gap: 15px; text-align: center; }
+            .language-toggle { bottom: 15px; right: 15px; flex-direction: column; }
+            .lang-btn { min-width: 80px; }
+            .modal-content { margin: 20px; padding: 25px; }
+            .modal-title { font-size: 1.8rem; }
         }
         
         @media (max-width: 480px) {
             .header h1 { font-size: 1.8rem; }
-            .header { padding: 25px; }
+            .header { padding: 30px 20px; }
             .stats-grid { grid-template-columns: 1fr; }
             body { padding: 10px; }
+            .btn, .category-btn { padding: 12px 20px; font-size: 1rem; }
+            .controls { gap: 10px; }
+            .language-toggle { padding: 10px; }
         }
     </style>
 </head>
 <body>
-    <!-- 詳細新聞彈窗 -->
-    <div class="news-modal" id="newsModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="modal-body" id="modalContent">
-                <!-- 彈窗內容會動態生成在這裡 -->
-            </div>
-        </div>
-    </div>
-    
     <!-- 語言切換按鈕 -->
     <div class="language-toggle">
-        <button class="lang-btn active" onclick="setLanguage('zh')">中文</button>
-        <button class="lang-btn" onclick="setLanguage('en')">English</button>
-        <button class="lang-btn" onclick="toggleAutoTranslate()">
-            <i class="fas fa-language"></i> 自動翻譯
+        <button class="lang-btn active" onclick="setLanguage('zh')">
+            <i class="fas fa-language"></i> 繁體中文
         </button>
+        <button class="lang-btn" onclick="setLanguage('en')">
+            <i class="fas fa-globe"></i> English
+        </button>
+        <button class="lang-btn" onclick="toggleAutoTranslate()">
+            <i class="fas fa-robot"></i> 
+            <span class="lang-zh">自動翻譯</span>
+            <span class="lang-en" style="display:none;">Auto Translate</span>
+        </button>
+    </div>
+    
+    <!-- 詳細內容模態框 -->
+    <div id="newsModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <div class="modal-source" id="modalSource"></div>
+            <div class="modal-full-content" id="modalContent"></div>
+            <div class="modal-meta">
+                <div>
+                    <i class="fas fa-calendar"></i>
+                    <span id="modalDate"></span>
+                </div>
+                <div>
+                    <i class="fas fa-tag"></i>
+                    <span id="modalCategory"></span>
+                </div>
+            </div>
+        </div>
     </div>
     
     <div class="container">
         <!-- 頁首 -->
         <div class="header">
             <h1><i class="fas fa-robot"></i> 全球AI科技新聞系統</h1>
-            <p>追蹤22個國際新聞源，即時掌握AI發展、科技趨勢、財經動態與國際大事</p>
+            <p>即時追蹤28個國際新聞源，掌握AI發展、科技趨勢、財經動態、國際大事與新創科技</p>
             
             <!-- 翻譯提示 -->
             <div class="translate-notice">
                 <i class="fas fa-info-circle"></i>
-                <span id="translateHint">滑鼠懸停在英文內容上可顯示中文翻譯，點擊翻譯按鈕可翻譯全文</span>
+                <span id="translateHint">點擊「查看完整內容」閱讀原稿全文 | 滑鼠懸停顯示翻譯 | 自動翻譯功能可用</span>
             </div>
             
             <!-- 統計卡片 -->
             <div class="stats-grid">
                 <div class="stat-card" onclick="filterNews('all')">
                     <div class="translate-hint">點擊查看全部新聞</div>
-                    <div class="stat-icon"><i class="fas fa-newspaper" style="color: var(--primary);"></i></div>
+                    <div class="stat-icon"><i class="fas fa-newspaper"></i></div>
                     <div class="stat-value" id="totalNews">0</div>
                     <div class="stat-label">總新聞數</div>
                 </div>
                 <div class="stat-card" onclick="filterNews('AI科技')">
                     <div class="translate-hint">AI科技相關新聞</div>
-                    <div class="stat-icon"><i class="fas fa-brain" style="color: var(--ai-color);"></i></div>
+                    <div class="stat-icon"><i class="fas fa-brain"></i></div>
                     <div class="stat-value" id="aiNews">0</div>
                     <div class="stat-label">AI科技</div>
                 </div>
                 <div class="stat-card" onclick="filterNews('科技發展')">
                     <div class="translate-hint">科技發展與創新</div>
-                    <div class="stat-icon"><i class="fas fa-microchip" style="color: var(--tech-color);"></i></div>
+                    <div class="stat-icon"><i class="fas fa-microchip"></i></div>
                     <div class="stat-value" id="techNews">0</div>
                     <div class="stat-label">科技發展</div>
                 </div>
                 <div class="stat-card" onclick="filterNews('財經市場')">
                     <div class="translate-hint">財經市場動態</div>
-                    <div class="stat-icon"><i class="fas fa-chart-line" style="color: var(--finance-color);"></i></div>
+                    <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
                     <div class="stat-value" id="financeNews">0</div>
                     <div class="stat-label">財經市場</div>
                 </div>
@@ -840,29 +1008,51 @@
         <div class="system-status">
             <div>
                 <i class="fas fa-satellite-dish"></i>
-                <span id="systemInfo">正在連接新聞系統...</span>
+                <span id="systemInfo">系統初始化中...</span>
             </div>
-            <div id="updateTime" style="color: var(--gray); font-size: 0.9rem;">
-                最後更新: --
+            <div id="updateTime">
+                <i class="fas fa-clock"></i>
+                <span class="lang-zh">最後更新: --</span>
+                <span class="lang-en" style="display:none;">Last Update: --</span>
             </div>
         </div>
         
-        <!-- 分類標籤 (5個分類，軟體併入AI科技) -->
+        <!-- 分類標籤 (7個分類) -->
         <div class="category-tabs">
             <button class="category-btn all active" onclick="filterNews('all')">
-                <i class="fas fa-globe"></i> <span class="lang-zh">全部新聞</span><span class="lang-en" style="display:none;">All News</span>
+                <i class="fas fa-globe"></i> 
+                <span class="lang-zh">全部新聞</span>
+                <span class="lang-en" style="display:none;">All News</span>
             </button>
             <button class="category-btn ai" onclick="filterNews('AI科技')">
-                <i class="fas fa-brain"></i> <span class="lang-zh">AI科技</span><span class="lang-en" style="display:none;">AI Technology</span>
+                <i class="fas fa-brain"></i> 
+                <span class="lang-zh">AI科技</span>
+                <span class="lang-en" style="display:none;">AI Tech</span>
             </button>
             <button class="category-btn tech" onclick="filterNews('科技發展')">
-                <i class="fas fa-microchip"></i> <span class="lang-zh">科技發展</span><span class="lang-en" style="display:none;">Tech Development</span>
+                <i class="fas fa-microchip"></i> 
+                <span class="lang-zh">科技發展</span>
+                <span class="lang-en" style="display:none;">Tech Dev</span>
             </button>
             <button class="category-btn finance" onclick="filterNews('財經市場')">
-                <i class="fas fa-chart-line"></i> <span class="lang-zh">財經市場</span><span class="lang-en" style="display:none;">Finance</span>
+                <i class="fas fa-chart-line"></i> 
+                <span class="lang-zh">財經市場</span>
+                <span class="lang-en" style="display:none;">Finance</span>
             </button>
             <button class="category-btn intl" onclick="filterNews('國際大事')">
-                <i class="fas fa-globe-americas"></i> <span class="lang-zh">國際大事</span><span class="lang-en" style="display:none;">International</span>
+                <i class="fas fa-globe-americas"></i> 
+                <span class="lang-zh">國際大事</span>
+                <span class="lang-en" style="display:none;">International</span>
+            </button>
+            <button class="category-btn hardware" onclick="filterNews('硬體設備')">
+                <i class="fas fa-server"></i> 
+                <span class="lang-zh">硬體設備</span>
+                <span class="lang-en" style="display:none;">Hardware</span>
+            </button>
+            <button class="category-btn startup" onclick="filterNews('新創科技')">
+                <i class="fas fa-rocket"></i> 
+                <span class="lang-zh">新創科技</span>
+                <span class="lang-en" style="display:none;">Startups</span>
             </button>
         </div>
         
@@ -874,28 +1064,37 @@
             <!-- 分類統計會動態生成在這裡 -->
         </div>
         
-        <!-- 控制按鈕 - 全部在一排 -->
+        <!-- 控制按鈕 -->
         <div class="controls">
             <button class="btn" onclick="loadNews()" id="loadBtn">
-                <i class="fas fa-sync-alt"></i> <span class="lang-zh">更新新聞</span><span class="lang-en" style="display:none;">Refresh</span>
+                <i class="fas fa-sync-alt"></i> 
+                <span class="lang-zh">更新新聞</span>
+                <span class="lang-en" style="display:none;">Refresh</span>
             </button>
             <button class="btn" onclick="testConnection()">
-                <i class="fas fa-wifi"></i> <span class="lang-zh">測試連線</span><span class="lang-en" style="display:none;">Test Connection</span>
+                <i class="fas fa-wifi"></i> 
+                <span class="lang-zh">測試連線</span>
+                <span class="lang-en" style="display:none;">Test Connection</span>
             </button>
             <button class="btn" onclick="showStats()">
-                <i class="fas fa-chart-bar"></i> <span class="lang-zh">詳細統計</span><span class="lang-en" style="display:none;">Statistics</span>
+                <i class="fas fa-chart-bar"></i> 
+                <span class="lang-zh">詳細統計</span>
+                <span class="lang-en" style="display:none;">Statistics</span>
             </button>
             <button class="btn" onclick="forceUpdate()">
-                <i class="fas fa-bolt"></i> <span class="lang-zh">強制更新</span><span class="lang-en" style="display:none;">Force Update</span>
+                <i class="fas fa-bolt"></i> 
+                <span class="lang-zh">強制更新</span>
+                <span class="lang-en" style="display:none;">Force Update</span>
             </button>
             <button class="btn" onclick="showSources()">
-                <i class="fas fa-list"></i> <span class="lang-zh">新聞來源</span><span class="lang-en" style="display:none;">Sources</span>
+                <i class="fas fa-list"></i> 
+                <span class="lang-zh">新聞來源</span>
+                <span class="lang-en" style="display:none;">Sources</span>
             </button>
-            <button class="btn" onclick="toggleTranslation()">
-                <i class="fas fa-language"></i> <span class="lang-zh">翻譯模式</span><span class="lang-en" style="display:none;">Translation</span>
-            </button>
-            <button class="btn" onclick="showAdvancedSearch()">
-                <i class="fas fa-search"></i> <span class="lang-zh">進階搜尋</span><span class="lang-en" style="display:none;">Advanced Search</span>
+            <button class="btn" onclick="toggleTranslation()" id="translateToggleBtn">
+                <i class="fas fa-language"></i> 
+                <span class="lang-zh">翻譯模式: 關</span>
+                <span class="lang-en" style="display:none;">Translation: Off</span>
             </button>
         </div>
         
@@ -923,11 +1122,15 @@
         const CONFIG = {
             API_URL: 'https://script.google.com/macros/s/AKfycby-_9Y2ezmU-Li326SeVmCGpeIg6LwaGHF7_5EKng3QlY7sXoP0smrEyboNNLmGW-ui/exec',
             CATEGORIES: {
-                'AI科技': { color: '#ea4335', icon: 'fa-brain', en: 'AI Technology' },
-                '科技發展': { color: '#fbbc05', icon: 'fa-microchip', en: 'Tech Development' },
-                '財經市場': { color: '#673ab7', icon: 'fa-chart-line', en: 'Finance Market' },
-                '國際大事': { color: '#00bcd4', icon: 'fa-globe-americas', en: 'International' }
-            }
+                'AI科技': { color: '#ff6b6b', icon: 'fa-brain', en: 'AI Tech', gradient: 'var(--gradient-ai)' },
+                '科技發展': { color: '#4ecdc4', icon: 'fa-microchip', en: 'Tech Development', gradient: 'var(--gradient-tech)' },
+                '財經市場': { color: '#ffd166', icon: 'fa-chart-line', en: 'Finance Market', gradient: 'var(--gradient-finance)' },
+                '國際大事': { color: '#118ab2', icon: 'fa-globe-americas', en: 'International', gradient: 'var(--gradient-intl)' },
+                '硬體設備': { color: '#7209b7', icon: 'fa-server', en: 'Hardware', gradient: 'var(--gradient-hardware)' },
+                '新創科技': { color: '#06d6a0', icon: 'fa-rocket', en: 'Startups', gradient: 'var(--gradient-startup)' }
+            },
+            TRANSLATION_API: 'https://translation.googleapis.com/language/translate/v2',
+            GOOGLE_API_KEY: null
         };
         
         // 全域變數
@@ -935,11 +1138,10 @@
         let currentFilter = 'all';
         let currentLanguage = 'zh';
         let autoTranslateEnabled = false;
-        let translationCache = new Map();
         
         // 頁面載入
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🤖 AI新聞系統啟動');
+            console.log('🚀 AI新聞系統啟動 - 科技深色主題');
             updateSystemInfo('系統啟動中...');
             loadNews();
             setupEventListeners();
@@ -947,12 +1149,18 @@
         
         // 設定事件監聽器
         function setupEventListeners() {
+            // 點擊外部關閉翻譯提示
             document.addEventListener('click', function(e) {
-                const newsCard = e.target.closest('.news-card');
-                if (newsCard && !e.target.closest('.translate-btn')) {
-                    const newsId = newsCard.id.replace('news-', '');
-                    showNewsDetail(newsId);
+                if (!e.target.closest('.news-title') && !e.target.closest('.news-summary')) {
+                    hideAllTranslations();
                 }
+            });
+        }
+        
+        // 隱藏所有翻譯提示
+        function hideAllTranslations() {
+            document.querySelectorAll('.title-translation, .summary-translation').forEach(el => {
+                el.style.display = 'none';
             });
         }
         
@@ -968,24 +1176,19 @@
                 
                 if (result.success) {
                     allNews = result.data.news;
-                    // 確保軟體應用類新聞歸入AI科技
-                    allNews = allNews.map(news => {
-                        if (news.mainCategory === '軟體應用' || news.mainCategory === 'AI資訊') {
-                            return {
-                                ...news,
-                                mainCategory: 'AI科技',
-                                categories: ['AI科技']
-                            };
-                        }
-                        return news;
-                    });
                     
                     updateStats(result.data.systemInfo);
                     updateCategoryDisplay(allNews);
                     displayNews(allNews);
                     updateSystemInfo(`已載入 ${allNews.length} 則新聞`);
                     updateLastUpdateTime(result.metadata.timestamp);
+                    
                     console.log(`✅ 載入 ${allNews.length} 則新聞`);
+                    console.log(`   AI科技: ${result.data.systemInfo.aiNews}`);
+                    console.log(`   財經市場: ${result.data.systemInfo.financeNews}`);
+                    console.log(`   國際大事: ${result.data.systemInfo.internationalNews}`);
+                    console.log(`   新創科技: ${result.data.systemInfo.startupNews}`);
+                    
                 } else {
                     throw new Error(result.error || 'API錯誤');
                 }
@@ -1002,6 +1205,7 @@
         function filterNews(category) {
             currentFilter = category;
             
+            // 更新按鈕狀態
             document.querySelectorAll('.category-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
@@ -1032,21 +1236,26 @@
                 messageEl.style.display = 'none';
             } else {
                 messageEl.style.display = 'block';
+                const catInfo = CONFIG.CATEGORIES[category];
                 messageEl.innerHTML = `
                     <i class="fas fa-filter"></i> 
-                    <span class="lang-zh">已篩選: <strong>${category}</strong> (${count} 則)</span>
-                    <span class="lang-en" style="display:none;">Filtered: <strong>${categoryName}</strong> (${count} items)</span>
+                    <span class="lang-zh">已篩選: <strong style="color: ${catInfo?.color || '#fff'}">${category}</strong> (${count} 則)</span>
+                    <span class="lang-en" style="display:none;">Filtered: <strong style="color: ${catInfo?.color || '#fff'}">${categoryName}</strong> (${count} items)</span>
                     <button onclick="clearFilter()" style="
-                        margin-left: 15px;
-                        padding: 5px 15px;
+                        margin-left: 20px;
+                        padding: 8px 20px;
                         background: var(--primary);
-                        color: white;
+                        color: var(--dark-bg);
                         border: none;
-                        border-radius: 20px;
+                        border-radius: 25px;
                         cursor: pointer;
-                        font-size: 0.9rem;
+                        font-size: 0.95rem;
+                        font-weight: 600;
                         transition: all 0.3s ease;
-                    " onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                    " onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
                         <i class="fas fa-times"></i> 
                         <span class="lang-zh">清除篩選</span>
                         <span class="lang-en" style="display:none;">Clear Filter</span>
@@ -1067,6 +1276,7 @@
         function updateCategoryDisplay(news) {
             const categoryCounts = {};
             
+            // 計算每個分類的新聞數
             Object.keys(CONFIG.CATEGORIES).forEach(cat => {
                 categoryCounts[cat] = 0;
             });
@@ -1077,6 +1287,7 @@
                 }
             });
             
+            // 更新統計顯示
             const statsEl = document.getElementById('categoryStats');
             if (statsEl) {
                 let html = '';
@@ -1087,24 +1298,24 @@
                         
                         html += `
                             <div class="category-stat" style="border-left-color: ${catInfo.color}; background: ${catInfo.color}15;" 
-                                 onclick="filterNews('${cat}')">
+                                 onclick="filterNews('${cat}')" title="${catName}: ${count}">
                                 <i class="fas ${catInfo.icon}" style="color: ${catInfo.color};"></i>
                                 <span style="font-weight: 600;">${catName}</span>
                                 <span style="
                                     background: ${catInfo.color};
-                                    color: white;
-                                    padding: 2px 8px;
-                                    border-radius: 10px;
-                                    font-size: 0.85rem;
+                                    color: ${cat === '科技發展' || cat === '財經市場' || cat === '新創科技' ? '#000' : 'white'};
+                                    padding: 4px 12px;
+                                    border-radius: 15px;
+                                    font-size: 0.9rem;
+                                    font-weight: 700;
+                                    min-width: 40px;
+                                    text-align: center;
                                 ">${count}</span>
-                                <div class="translate-tooltip lang-zh">點擊查看 ${cat} 新聞</div>
-                                <div class="translate-tooltip lang-en" style="display:none;">Click to view ${catInfo.en} news</div>
                             </div>
                         `;
                     }
                 });
                 statsEl.innerHTML = html;
-                updateLanguageDisplay();
             }
         }
         
@@ -1114,12 +1325,17 @@
             
             if (!news || news.length === 0) {
                 container.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: #666;">
-                        <i class="fas fa-newspaper" style="font-size: 4rem; margin-bottom: 20px;"></i>
-                        <h3 class="lang-zh">暫無新聞資料</h3>
-                        <h3 class="lang-en" style="display:none;">No News Available</h3>
-                        <p class="lang-zh">請稍後再試或點擊「更新新聞」</p>
-                        <p class="lang-en" style="display:none;">Please try again later or click "Refresh"</p>
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 80px; color: var(--text-secondary);">
+                        <i class="fas fa-newspaper" style="font-size: 4rem; margin-bottom: 20px; color: var(--primary);"></i>
+                        <h3 class="lang-zh" style="margin-bottom: 15px;">暫無新聞資料</h3>
+                        <h3 class="lang-en" style="display:none; margin-bottom: 15px;">No News Available</h3>
+                        <p class="lang-zh" style="margin-bottom: 30px;">請稍後再試或點擊「更新新聞」</p>
+                        <p class="lang-en" style="display:none; margin-bottom: 30px;">Please try again later or click "Refresh"</p>
+                        <button class="btn" onclick="loadNews()">
+                            <i class="fas fa-sync-alt"></i> 
+                            <span class="lang-zh">重新載入</span>
+                            <span class="lang-en" style="display:none;">Reload</span>
+                        </button>
                     </div>
                 `;
                 updateLanguageDisplay();
@@ -1128,47 +1344,77 @@
             
             let html = '';
             news.forEach(item => {
-                const categoryInfo = CONFIG.CATEGORIES[item.mainCategory] || { color: '#666', icon: 'fa-newspaper', en: item.mainCategory };
+                const categoryInfo = CONFIG.CATEGORIES[item.mainCategory] || { 
+                    color: '#666', 
+                    icon: 'fa-newspaper', 
+                    en: item.mainCategory,
+                    gradient: 'var(--gradient-primary)'
+                };
                 const isAI = item.mainCategory === 'AI科技';
+                const isInternational = item.country !== 'TW';
                 const categoryName = currentLanguage === 'zh' ? item.mainCategory : categoryInfo.en;
                 
+                // 檢查是否需要翻譯
                 const needsTranslation = item.language === 'en' && currentLanguage === 'zh';
-                const translationButton = needsTranslation ? 
-                    `<button class="translate-btn" onclick="translateNewsItem('${item.id}', event)" title="翻譯全文">
-                        <i class="fas fa-language"></i>
-                    </button>` : '';
                 
                 html += `
-                    <div class="news-card" id="news-${item.id}" data-id="${item.id}">
-                        ${translationButton}
+                    <div class="news-card" id="news-${item.id}">
+                        ${needsTranslation ? 
+                            `<button class="translate-btn" onclick="translateNewsItem('${item.id}')" title="翻譯全文">
+                                <i class="fas fa-language"></i>
+                            </button>` : ''
+                        }
+                        
                         <div class="news-header">
-                            <div class="news-category" style="background: ${categoryInfo.color};">
+                            <div class="news-category category-${item.mainCategory === 'AI科技' ? 'ai' : 
+                                item.mainCategory === '科技發展' ? 'tech' :
+                                item.mainCategory === '財經市場' ? 'finance' :
+                                item.mainCategory === '國際大事' ? 'intl' :
+                                item.mainCategory === '硬體設備' ? 'hardware' :
+                                item.mainCategory === '新創科技' ? 'startup' : 'ai'}">
                                 <i class="fas ${categoryInfo.icon}"></i> ${categoryName}
                             </div>
                             <div class="news-badge">
-                                ${isAI ? '🤖 ' : ''}${item.country !== 'TW' ? '🌍 ' : ''}${item.source}
-                                ${!item.isReal ? ' <i class="fas fa-clone" style="color: #999;"></i>' : ''}
+                                ${isAI ? '🤖 ' : ''}${isInternational ? '🌍 ' : ''}${item.source}
+                                ${!item.isReal ? ' <i class="fas fa-clone" style="color: var(--text-muted);"></i>' : ''}
                             </div>
                         </div>
+                        
                         <div class="news-content">
-                            <h3 class="news-title" data-original="${escapeHtml(item.title)}" onmouseenter="showTranslation(this, 'title')">
+                            <h3 class="news-title" onclick="viewFullContent('${item.id}')">
                                 ${escapeHtml(item.title)}
-                                <div class="title-translation" id="trans-title-${item.id}">
-                                    翻譯中...
-                                </div>
+                                ${needsTranslation ? `
+                                    <div class="title-translation" id="trans-title-${item.id}">
+                                        翻譯中...
+                                    </div>
+                                ` : ''}
                             </h3>
-                            <p class="news-summary" data-original="${escapeHtml(item.summary)}" onmouseenter="showTranslation(this, 'summary', '${item.id}')">
+                            
+                            <p class="news-summary">
                                 ${escapeHtml(item.summary)}
-                                <div class="summary-translation" id="trans-summary-${item.id}">
-                                    翻譯中...
-                                </div>
+                                ${needsTranslation ? `
+                                    <div class="summary-translation" id="trans-summary-${item.id}">
+                                        翻譯中...
+                                    </div>
+                                ` : ''}
                             </p>
+                            
+                            <a href="javascript:void(0)" class="view-full-btn" onclick="viewFullContent('${item.id}')">
+                                <i class="fas fa-external-link-alt"></i>
+                                <span class="lang-zh">查看完整內容</span>
+                                <span class="lang-en" style="display:none;">View Full Content</span>
+                            </a>
+                            
                             <div class="news-meta">
                                 <div class="news-source">
                                     <i class="fas fa-rss"></i> ${item.source}
-                                    <small style="color: #999; margin-left: 8px;">
-                                        ${item.isReal ? (currentLanguage === 'zh' ? '真實' : 'Real') : (currentLanguage === 'zh' ? '模擬' : 'Mock')} • 
-                                        ${item.language === 'zh' ? (currentLanguage === 'zh' ? '中文' : 'Chinese') : (currentLanguage === 'zh' ? '英文' : 'English')}
+                                    <small style="color: var(--text-muted); margin-left: 8px;">
+                                        ${item.isReal ? 
+                                            (currentLanguage === 'zh' ? '真實新聞' : 'Real News') : 
+                                            (currentLanguage === 'zh' ? '模擬新聞' : 'Mock News')} • 
+                                        ${item.language === 'zh' ? 
+                                            (currentLanguage === 'zh' ? '中文' : 'Chinese') : 
+                                            (currentLanguage === 'zh' ? '英文' : 'English')}
                                     </small>
                                 </div>
                                 <div class="news-date">
@@ -1181,335 +1427,201 @@
             });
             
             container.innerHTML = html;
+            
+            // 如果啟用自動翻譯，自動翻譯英文內容
+            if (autoTranslateEnabled) {
+                setTimeout(() => {
+                    news.forEach(item => {
+                        if (item.language === 'en' && currentLanguage === 'zh') {
+                            translateNewsItem(item.id);
+                        }
+                    });
+                }, 1500);
+            }
+            
             updateLanguageDisplay();
         }
         
-        // 顯示懸停翻譯
-        async function showTranslation(element, type, newsId) {
-            const originalText = element.dataset.original;
-            if (!originalText || currentLanguage === 'en') return;
-            
-            const translationElement = element.querySelector(`.${type}-translation`);
-            if (!translationElement || translationElement.textContent !== '翻譯中...') return;
+        // 查看完整內容
+        async function viewFullContent(newsId) {
+            showLoading(true);
             
             try {
-                const translatedText = await translateText(originalText, 'zh');
-                translationElement.textContent = translatedText;
+                const response = await fetch(`${CONFIG.API_URL}?action=getNewsDetail&id=${newsId}&fullContent=true`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNewsModal(result.data);
+                } else {
+                    throw new Error(result.error || '無法取得完整內容');
+                }
             } catch (error) {
-                console.error('懸停翻譯失敗:', error);
-                translationElement.textContent = '翻譯失敗';
+                console.error('❌ 取得完整內容失敗:', error);
+                alert(currentLanguage === 'zh' ? 
+                    `無法載入完整內容: ${error.message}` : 
+                    `Failed to load full content: ${error.message}`);
+            } finally {
+                showLoading(false);
             }
+        }
+        
+        // 顯示新聞模態框
+        function showNewsModal(newsData) {
+            const modal = document.getElementById('newsModal');
+            const catInfo = CONFIG.CATEGORIES[newsData.category] || CONFIG.CATEGORIES['AI科技'];
+            
+            // 設定模態框內容
+            document.getElementById('modalTitle').textContent = newsData.title;
+            document.getElementById('modalSource').innerHTML = `
+                <i class="fas fa-newspaper"></i> ${newsData.source} • 
+                <i class="fas ${catInfo.icon}" style="color: ${catInfo.color}; margin-left: 10px;"></i>
+                <span style="color: ${catInfo.color}; margin-left: 5px;">
+                    ${currentLanguage === 'zh' ? newsData.category : catInfo.en}
+                </span>
+            `;
+            
+            // 顯示完整內容
+            let fullContent = newsData.fullContent;
+            if (!fullContent || fullContent.length < 100) {
+                fullContent = newsData.description || newsData.summary || newsData.title;
+                fullContent += '\n\n' + (currentLanguage === 'zh' ? 
+                    '【完整內容正在生成中...】' : 
+                    '【Full content is being generated...】');
+            }
+            
+            document.getElementById('modalContent').textContent = fullContent;
+            document.getElementById('modalDate').textContent = formatDate(newsData.date);
+            document.getElementById('modalCategory').textContent = 
+                currentLanguage === 'zh' ? newsData.category : catInfo.en;
+            
+            // 顯示模態框
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // 關閉模態框
+        function closeModal() {
+            document.getElementById('newsModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
         
         // 翻譯單則新聞
-        async function translateNewsItem(newsId, event) {
-            if (event) event.stopPropagation();
-            
+        async function translateNewsItem(newsId) {
             const newsItem = allNews.find(n => n.id === newsId);
             if (!newsItem) return;
             
-            const titleElement = document.querySelector(`#news-${newsId} .news-title`);
-            const summaryElement = document.querySelector(`#news-${newsId} .news-summary`);
+            const transTitleElement = document.querySelector(`#trans-title-${newsId}`);
+            const transSummaryElement = document.querySelector(`#trans-summary-${newsId}`);
             
-            if (!titleElement || !summaryElement) return;
-            
-            titleElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 翻譯中...`;
-            summaryElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 翻譯中...`;
+            // 顯示翻譯中提示
+            if (transTitleElement) {
+                transTitleElement.textContent = '翻譯中...';
+                transTitleElement.style.display = 'block';
+            }
+            if (transSummaryElement) {
+                transSummaryElement.textContent = '翻譯中...';
+                transSummaryElement.style.display = 'block';
+            }
             
             try {
-                const titleTranslated = await translateText(newsItem.title, 'zh');
-                titleElement.textContent = titleTranslated;
+                // 簡易關鍵字翻譯（實際使用時應該申請Google Translation API）
+                const simpleTranslations = {
+                    'AI': '人工智慧', 'artificial intelligence': '人工智慧', 
+                    'machine learning': '機器學習', 'deep learning': '深度學習',
+                    'technology': '技術', 'innovation': '創新', 'development': '發展',
+                    'hardware': '硬體', 'finance': '金融', 'market': '市場',
+                    'international': '國際', 'global': '全球', 'startup': '新創',
+                    'company': '公司', 'investment': '投資', 'business': '商業',
+                    'economy': '經濟', 'digital': '數位', 'software': '軟體',
+                    'cloud': '雲端', 'data': '資料', 'security': '安全',
+                    'cyber': '網路', 'mobile': '行動', 'web': '網頁',
+                    'app': '應用程式', 'platform': '平台', 'service': '服務'
+                };
                 
-                const summaryTranslated = await translateText(newsItem.summary, 'zh');
-                summaryElement.textContent = summaryTranslated;
+                let translatedTitle = newsItem.title;
+                let translatedSummary = newsItem.summary;
                 
+                Object.entries(simpleTranslations).forEach(([en, zh]) => {
+                    const regex = new RegExp(en, 'gi');
+                    translatedTitle = translatedTitle.replace(regex, zh);
+                    translatedSummary = translatedSummary.replace(regex, zh);
+                });
+                
+                if (transTitleElement) transTitleElement.textContent = translatedTitle;
+                if (transSummaryElement) transSummaryElement.textContent = translatedSummary;
+                
+                // 更新按鈕狀態
                 const translateBtn = document.querySelector(`#news-${newsId} .translate-btn`);
                 if (translateBtn) {
                     translateBtn.innerHTML = '<i class="fas fa-check"></i>';
-                    translateBtn.style.background = '#34a853';
-                    translateBtn.title = '已翻譯';
-                    
+                    translateBtn.style.background = '#06d6a0';
                     setTimeout(() => {
-                        if (translateBtn) {
-                            translateBtn.innerHTML = '<i class="fas fa-language"></i>';
-                            translateBtn.style.background = '';
-                            translateBtn.title = '翻譯全文';
-                        }
-                    }, 3000);
+                        translateBtn.innerHTML = '<i class="fas fa-language"></i>';
+                        translateBtn.style.background = '';
+                    }, 2000);
                 }
-                
-                console.log(`✅ 新聞 ${newsId} 翻譯完成`);
             } catch (error) {
-                console.error('❌ 翻譯失敗:', error);
-                titleElement.textContent = newsItem.title;
-                summaryElement.textContent = newsItem.summary;
-                
-                const translateBtn = document.querySelector(`#news-${newsId} .translate-btn`);
-                if (translateBtn) {
-                    translateBtn.innerHTML = '<i class="fas fa-exclamation"></i>';
-                    translateBtn.style.background = '#ea4335';
-                    
-                    setTimeout(() => {
-                        if (translateBtn) {
-                            translateBtn.innerHTML = '<i class="fas fa-language"></i>';
-                            translateBtn.style.background = '';
-                        }
-                    }, 3000);
-                }
+                console.error('翻譯失敗:', error);
+                if (transTitleElement) transTitleElement.textContent = '翻譯失敗';
+                if (transSummaryElement) transSummaryElement.textContent = '翻譯失敗，請稍後再試';
             }
         }
         
-        // 核心翻譯函數
-        async function translateText(text, targetLang) {
-            const cacheKey = `${text}_${targetLang}`;
-            if (translationCache.has(cacheKey)) {
-                return translationCache.get(cacheKey);
-            }
+        // 切換翻譯模式
+        function toggleTranslation() {
+            autoTranslateEnabled = !autoTranslateEnabled;
+            const btn = document.getElementById('translateToggleBtn');
+            const span = btn.querySelector('span');
             
-            if (text.length < 3 || targetLang === 'en') {
-                return text;
-            }
-            
-            try {
-                const response = await fetch(
-                    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang}`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json'
-                        }
+            if (autoTranslateEnabled) {
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> <span class="lang-zh">翻譯模式: 開</span><span class="lang-en" style="display:none;">Translation: On</span>';
+                btn.style.background = 'var(--gradient-startup)';
+                btn.style.color = '#000';
+                btn.style.borderColor = '#06d6a0';
+                
+                // 自動翻譯所有英文新聞
+                allNews.forEach(item => {
+                    if (item.language === 'en' && currentLanguage === 'zh') {
+                        translateNewsItem(item.id);
                     }
-                );
-                
-                if (!response.ok) {
-                    throw new Error(`API 錯誤: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (data.responseData && data.responseData.translatedText) {
-                    const translatedText = data.responseData.translatedText;
-                    translationCache.set(cacheKey, translatedText);
-                    return translatedText;
-                } else {
-                    return fallbackTranslate(text);
-                }
-            } catch (error) {
-                console.warn('翻譯API錯誤，使用備用方案:', error);
-                return fallbackTranslate(text);
-            }
-        }
-        
-        // 備用翻譯方案
-        function fallbackTranslate(text) {
-            const translations = {
-                'AI': '人工智慧', 'Artificial Intelligence': '人工智慧',
-                'Machine Learning': '機器學習',
-                'Deep Learning': '深度學習',
-                'Neural Network': '神經網路',
-                'ChatGPT': 'ChatGPT', 'GPT': 'GPT',
-                'Google': '谷歌', 'Microsoft': '微軟',
-                'Technology': '技術',
-                'Software': '軟體',
-                'Hardware': '硬體',
-                'Finance': '金融',
-                'Market': '市場',
-                'International': '國際',
-                'announced': '宣布', 'launched': '推出'
-            };
-            
-            let translated = text;
-            Object.entries(translations).forEach(([en, zh]) => {
-                const regex = new RegExp(`\\b${en}\\b`, 'gi');
-                translated = translated.replace(regex, zh);
-            });
-            
-            return translated;
-        }
-        
-        // 顯示新聞詳細內容
-        async function showNewsDetail(newsId) {
-            const newsItem = allNews.find(n => n.id === newsId);
-            if (!newsItem) return;
-            
-            const categoryInfo = CONFIG.CATEGORIES[newsItem.mainCategory] || { color: '#666', icon: 'fa-newspaper', en: newsItem.mainCategory };
-            const modalContent = document.getElementById('modalContent');
-            
-            const categoryName = currentLanguage === 'zh' ? newsItem.mainCategory : categoryInfo.en;
-            
-            // 從API取得完整內容
-            let fullContent = newsItem.summary;
-            try {
-                const response = await fetch(`${CONFIG.API_URL}?action=getNewsDetail&id=${newsId}`);
-                const result = await response.json();
-                if (result.success && result.data.content) {
-                    fullContent = result.data.content;
-                }
-            } catch (error) {
-                console.warn('無法取得完整內容，使用摘要:', error);
-            }
-            
-            let content = `
-                <div class="modal-category" style="background: ${categoryInfo.color};">
-                    <i class="fas ${categoryInfo.icon}"></i> ${categoryName}
-                </div>
-                <h1 class="modal-title">${escapeHtml(newsItem.title)}</h1>
-                <div class="modal-full-content">
-                    ${escapeHtml(fullContent)}
-                </div>
-                <div class="modal-details">
-                    <div class="detail-item">
-                        <div class="detail-label">${currentLanguage === 'zh' ? '新聞來源' : 'Source'}</div>
-                        <div><i class="fas fa-rss"></i> ${newsItem.source}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">${currentLanguage === 'zh' ? '發布時間' : 'Published'}</div>
-                        <div><i class="fas fa-clock"></i> ${formatDate(newsItem.date)}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">${currentLanguage === 'zh' ? '語言' : 'Language'}</div>
-                        <div><i class="fas fa-language"></i> ${newsItem.language === 'zh' ? (currentLanguage === 'zh' ? '中文' : 'Chinese') : (currentLanguage === 'zh' ? '英文' : 'English')}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">${currentLanguage === 'zh' ? '新聞類型' : 'News Type'}</div>
-                        <div><i class="fas fa-newspaper"></i> ${newsItem.isReal ? (currentLanguage === 'zh' ? '真實新聞' : 'Real News') : (currentLanguage === 'zh' ? '模擬新聞' : 'Mock News')}</div>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn" onclick="translateNewsDetail('${newsId}')" style="background: var(--primary); color: white;">
-                        <i class="fas fa-language"></i> ${currentLanguage === 'zh' ? '翻譯內容' : 'Translate'}
-                    </button>
-                    <button class="btn" onclick="shareNews('${newsId}')">
-                        <i class="fas fa-share"></i> ${currentLanguage === 'zh' ? '分享' : 'Share'}
-                    </button>
-                    <button class="btn" onclick="closeModal()">
-                        <i class="fas fa-times"></i> ${currentLanguage === 'zh' ? '關閉' : 'Close'}
-                    </button>
-                </div>
-            `;
-            
-            modalContent.innerHTML = content;
-            document.getElementById('newsModal').style.display = 'flex';
-        }
-        
-        // 翻譯新聞詳細內容
-        async function translateNewsDetail(newsId) {
-            const newsItem = allNews.find(n => n.id === newsId);
-            if (!newsItem) return;
-            
-            const modalContent = document.getElementById('modalContent');
-            const titleElement = modalContent.querySelector('.modal-title');
-            const contentElement = modalContent.querySelector('.modal-full-content');
-            
-            if (!titleElement || !contentElement) return;
-            
-            const originalTitle = titleElement.textContent;
-            const originalContent = contentElement.textContent;
-            
-            titleElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 翻譯中...';
-            contentElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 翻譯中...';
-            
-            try {
-                const translatedTitle = await translateText(originalTitle, 'zh');
-                titleElement.textContent = translatedTitle;
-                
-                const translatedContent = await translateText(originalContent, 'zh');
-                contentElement.textContent = translatedContent;
-                
-                showToast(currentLanguage === 'zh' ? '✅ 翻譯完成' : '✅ Translation completed', 'success');
-            } catch (error) {
-                console.error('詳細內容翻譯失敗:', error);
-                titleElement.textContent = originalTitle;
-                contentElement.textContent = originalContent;
-                showToast(currentLanguage === 'zh' ? '❌ 翻譯失敗' : '❌ Translation failed', 'error');
-            }
-        }
-        
-        // 分享新聞
-        function shareNews(newsId) {
-            const newsItem = allNews.find(n => n.id === newsId);
-            if (!newsItem) return;
-            
-            const shareText = `${newsItem.title}\n\n${newsItem.summary}\n\n來源: ${newsItem.source}`;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: newsItem.title,
-                    text: newsItem.summary,
-                    url: window.location.href
                 });
+                
+                showNotification(currentLanguage === 'zh' ? '已啟用自動翻譯模式' : 'Auto-translation enabled', 'success');
             } else {
-                navigator.clipboard.writeText(shareText).then(() => {
-                    showToast(currentLanguage === 'zh' ? '✅ 已複製到剪貼簿' : '✅ Copied to clipboard', 'success');
-                }).catch(() => {
-                    const textArea = document.createElement('textarea');
-                    textArea.value = shareText;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                    showToast(currentLanguage === 'zh' ? '✅ 已複製到剪貼簿' : '✅ Copied to clipboard', 'success');
-                });
+                btn.innerHTML = '<i class="fas fa-language"></i> <span class="lang-zh">翻譯模式: 關</span><span class="lang-en" style="display:none;">Translation: Off</span>';
+                btn.style.background = '';
+                btn.style.color = '';
+                btn.style.borderColor = '';
+                showNotification(currentLanguage === 'zh' ? '已關閉自動翻譯模式' : 'Auto-translation disabled', 'info');
             }
-        }
-        
-        // 顯示提示訊息
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 12px 20px;
-                background: ${type === 'success' ? '#34a853' : type === 'error' ? '#ea4335' : '#4285f4'};
-                color: white;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-                z-index: 3000;
-                animation: slideIn 0.3s ease;
-            `;
-            
-            toast.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
-                ${message}
-            `;
-            
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => {
-                    if (toast.parentNode) {
-                        document.body.removeChild(toast);
-                    }
-                }, 300);
-            }, 3000);
-        }
-        
-        // 關閉彈窗
-        function closeModal() {
-            document.getElementById('newsModal').style.display = 'none';
         }
         
         // 設定語言
         function setLanguage(lang) {
             currentLanguage = lang;
             
+            // 更新語言按鈕狀態
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
             
+            // 更新所有語言相關元素
             updateLanguageDisplay();
             
+            // 重新顯示新聞
             if (allNews.length > 0) {
                 displayNews(currentFilter === 'all' ? allNews : 
                     allNews.filter(item => item.mainCategory === currentFilter));
             }
+            
+            showNotification(currentLanguage === 'zh' ? 
+                '已切換至繁體中文' : 'Switched to English', 'info');
         }
         
         // 更新語言顯示
         function updateLanguageDisplay() {
+            // 顯示/隱藏對應語言的元素
             document.querySelectorAll('.lang-zh').forEach(el => {
                 el.style.display = currentLanguage === 'zh' ? '' : 'none';
             });
@@ -1517,11 +1629,12 @@
                 el.style.display = currentLanguage === 'en' ? '' : 'none';
             });
             
+            // 更新提示訊息
             const hint = document.getElementById('translateHint');
             if (hint) {
                 hint.textContent = currentLanguage === 'zh' ? 
-                    '滑鼠懸停在英文內容上可顯示中文翻譯，點擊翻譯按鈕可翻譯全文' :
-                    'Hover over Chinese content to see English translation, click translate button for full text';
+                    '點擊「查看完整內容」閱讀原稿全文 | 滑鼠懸停顯示翻譯 | 自動翻譯功能可用' :
+                    'Click "View Full Content" to read original article | Hover for translation | Auto-translation available';
             }
         }
         
@@ -1533,75 +1646,105 @@
             
             if (autoTranslateEnabled) {
                 icon.className = 'fas fa-check-circle';
-                btn.style.background = '#34a853';
-                btn.style.color = 'white';
+                btn.style.background = 'var(--gradient-startup)';
+                btn.style.color = '#000';
+                showNotification(currentLanguage === 'zh' ? '已啟用自動翻譯' : 'Auto-translation enabled', 'success');
                 
+                // 自動翻譯當前顯示的新聞
                 setTimeout(() => {
-                    allNews.forEach(item => {
+                    const currentNews = currentFilter === 'all' ? allNews : 
+                        allNews.filter(item => item.mainCategory === currentFilter);
+                    currentNews.forEach(item => {
                         if (item.language === 'en' && currentLanguage === 'zh') {
                             translateNewsItem(item.id);
                         }
                     });
                 }, 1000);
-                
-                showToast(currentLanguage === 'zh' ? '✅ 已啟用自動翻譯' : '✅ Auto-translation enabled', 'success');
             } else {
                 icon.className = 'fas fa-language';
                 btn.style.background = '';
                 btn.style.color = '';
-                showToast(currentLanguage === 'zh' ? '✅ 已關閉自動翻譯' : '✅ Auto-translation disabled', 'info');
+                showNotification(currentLanguage === 'zh' ? '已關閉自動翻譯' : 'Auto-translation disabled', 'info');
             }
         }
         
-        // 切換翻譯模式
-        function toggleTranslation() {
-            autoTranslateEnabled = !autoTranslateEnabled;
-            const btn = document.querySelector('[onclick="toggleTranslation()"]');
-            const icon = btn.querySelector('i');
+        // 顯示通知
+        function showNotification(message, type = 'info') {
+            // 移除現有的通知
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
             
-            if (autoTranslateEnabled) {
-                icon.className = 'fas fa-check-circle';
-                btn.style.background = '#34a853';
-                btn.style.color = 'white';
-                btn.style.borderColor = '#34a853';
-                
-                setTimeout(() => {
-                    allNews.forEach(item => {
-                        if (item.language === 'en' && currentLanguage === 'zh') {
-                            translateNewsItem(item.id);
-                        }
-                    });
-                }, 1000);
-                
-                showToast(currentLanguage === 'zh' ? '✅ 已啟用自動翻譯模式' : '✅ Auto-translation enabled', 'success');
-            } else {
-                icon.className = 'fas fa-language';
-                btn.style.background = '';
-                btn.style.color = '';
-                btn.style.borderColor = '';
-                showToast(currentLanguage === 'zh' ? '✅ 已關閉自動翻譯模式' : '✅ Auto-translation disabled', 'info');
-            }
+            const colors = {
+                success: '#06d6a0',
+                error: '#ff6b6b',
+                info: '#00d4ff',
+                warning: '#ffd166'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${colors[type]};
+                color: ${type === 'success' || type === 'warning' ? '#000' : '#fff'};
+                padding: 16px 24px;
+                border-radius: 12px;
+                box-shadow: var(--card-shadow);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                max-width: 400px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                border: 2px solid ${colors[type]}50;
+            `;
+            
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 
+                                 type === 'error' ? 'exclamation-circle' : 
+                                 type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // 3秒後自動移除
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
+        
+        // 動畫樣式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
         
         // 更新統計
         function updateStats(systemInfo) {
-            if (!systemInfo) return;
-            
-            const total = allNews.length;
-            const aiCount = allNews.filter(n => n.mainCategory === 'AI科技').length;
-            const techCount = allNews.filter(n => n.mainCategory === '科技發展').length;
-            const financeCount = allNews.filter(n => n.mainCategory === '財經市場').length;
-            
-            document.getElementById('totalNews').textContent = total || 0;
-            document.getElementById('aiNews').textContent = aiCount || 0;
-            document.getElementById('techNews').textContent = techCount || 0;
-            document.getElementById('financeNews').textContent = financeCount || 0;
+            document.getElementById('totalNews').textContent = systemInfo.totalNews || 0;
+            document.getElementById('aiNews').textContent = systemInfo.aiNews || 0;
+            document.getElementById('techNews').textContent = systemInfo.techNews || 0;
+            document.getElementById('financeNews').textContent = systemInfo.financeNews || 0;
         }
         
         function updateCategoryStats(news, category) {
             const aiCount = news.filter(n => n.mainCategory === 'AI科技').length;
             const techCount = news.filter(n => n.mainCategory === '科技發展').length;
             const financeCount = news.filter(n => n.mainCategory === '財經市場').length;
+            const startupCount = news.filter(n => n.mainCategory === '新創科技').length;
             
             if (category === 'all' || category === 'AI科技') {
                 document.getElementById('aiNews').textContent = aiCount;
@@ -1621,21 +1764,21 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    showToast(currentLanguage === 'zh' ? 
-                        `✅ 連線成功！版本: ${result.version}` :
+                    showNotification(currentLanguage === 'zh' ? 
+                        `✅ 連線成功！版本: ${result.version}` : 
                         `✅ Connection Successful! Version: ${result.version}`, 'success');
                 } else {
-                    showToast(currentLanguage === 'zh' ? '❌ 連線測試失敗' : '❌ Connection Test Failed', 'error');
+                    showNotification(currentLanguage === 'zh' ? '❌ 連線測試失敗' : '❌ Connection Test Failed', 'error');
                 }
             } catch (error) {
-                showToast(currentLanguage === 'zh' ? '❌ 連線失敗，請檢查API URL' : '❌ Connection Failed, Please Check API URL', 'error');
+                showNotification(currentLanguage === 'zh' ? '❌ 連線失敗，請檢查API URL' : '❌ Connection Failed', 'error');
             }
         }
         
         // 顯示詳細統計
         function showStats() {
             if (allNews.length === 0) {
-                showToast(currentLanguage === 'zh' ? '尚未載入新聞資料' : 'No news data loaded', 'info');
+                showNotification(currentLanguage === 'zh' ? '尚未載入新聞資料' : 'No news data loaded', 'warning');
                 return;
             }
             
@@ -1678,16 +1821,6 @@
                 
                 if (result.success) {
                     allNews = result.data.news;
-                    allNews = allNews.map(news => {
-                        if (news.mainCategory === '軟體應用' || news.mainCategory === 'AI資訊') {
-                            return {
-                                ...news,
-                                mainCategory: 'AI科技',
-                                categories: ['AI科技']
-                            };
-                        }
-                        return news;
-                    });
                     
                     updateStats(result.data.systemInfo);
                     updateCategoryDisplay(allNews);
@@ -1696,14 +1829,14 @@
                         `強制更新完成，共 ${allNews.length} 則新聞` : 
                         `Force update completed, ${allNews.length} items`);
                     
-                    showToast(currentLanguage === 'zh' ? 
+                    showNotification(currentLanguage === 'zh' ? 
                         `✅ 強制更新完成\n共 ${allNews.length} 則新聞` : 
                         `✅ Force update completed\nTotal: ${allNews.length} items`, 'success');
                 } else {
                     throw new Error(result.error || '更新失敗');
                 }
             } catch (error) {
-                showToast(currentLanguage === 'zh' ? '❌ 更新失敗: ' + error.message : '❌ Update failed: ' + error.message, 'error');
+                showNotification(currentLanguage === 'zh' ? '❌ 更新失敗: ' + error.message : '❌ Update failed: ' + error.message, 'error');
             } finally {
                 showLoading(false);
             }
@@ -1722,25 +1855,6 @@
             });
             
             alert(message);
-        }
-        
-        // 進階搜尋
-        function showAdvancedSearch() {
-            const searchTerm = prompt(currentLanguage === 'zh' ? '請輸入搜尋關鍵字:' : 'Please enter search keyword:');
-            if (!searchTerm) return;
-            
-            const filteredNews = allNews.filter(item => 
-                item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.summary.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            
-            if (filteredNews.length === 0) {
-                showToast(currentLanguage === 'zh' ? `未找到包含 "${searchTerm}" 的新聞` : `No news found containing "${searchTerm}"`, 'info');
-                return;
-            }
-            
-            displayNews(filteredNews);
-            showFilterMessage(currentLanguage === 'zh' ? `搜尋結果: "${searchTerm}"` : `Search results: "${searchTerm}"`, filteredNews.length);
         }
         
         // 工具函數
@@ -1800,33 +1914,6 @@
             return div.innerHTML;
         }
         
-        // 動畫CSS
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-            
-            @keyframes slideOut {
-                from {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-                to {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-        
         // 自動更新功能
         let autoUpdateInterval;
         function startAutoUpdate(interval = 300000) {
@@ -1840,12 +1927,19 @@
             console.log(`⏰ 已設定自動更新，間隔: ${interval / 1000} 秒`);
         }
         
+        // 點擊模態框外部關閉
+        window.onclick = function(event) {
+            const modal = document.getElementById('newsModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+        
         // 初始化完成後啟動自動更新
         setTimeout(() => {
             startAutoUpdate();
+            console.log('系統準備就緒 - 科技深色主題');
         }, 5000);
-        
-        console.log('系統準備就緒');
     </script>
 </body>
 </html>
