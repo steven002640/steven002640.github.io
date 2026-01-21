@@ -40,9 +40,9 @@
             margin: 0 auto;
         }
         
-        /* 頁首 */
+        /* 頁首 - 修改為漸層背景 */
         .header {
-            background: white;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 50%, #f0f7ff 100%);
             border-radius: 20px;
             padding: 40px;
             margin-bottom: 30px;
@@ -50,6 +50,7 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
         .header::before {
@@ -69,6 +70,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
         
         .header p {
@@ -104,7 +106,7 @@
         }
         
         .stat-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 12px;
             box-shadow: var(--card-shadow);
@@ -112,6 +114,7 @@
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
+            backdrop-filter: blur(10px);
         }
         
         .stat-card:hover {
@@ -212,7 +215,7 @@
             transform: scale(1.2);
         }
         
-        /* 分類顏色 - 軟體應用併入AI資訊 */
+        /* 分類顏色 - AI應用按鈕 */
         .category-btn.ai { background: var(--ai-color); color: white; }
         .category-btn.tech { background: var(--tech-color); color: var(--dark); }
         .category-btn.finance { background: var(--finance-color); color: white; }
@@ -336,7 +339,7 @@
         }
         
         .news-card {
-            background: white;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
             border-radius: 16px;
             overflow: hidden;
             box-shadow: var(--card-shadow);
@@ -345,10 +348,11 @@
             flex-direction: column;
             height: 100%;
             position: relative;
+            cursor: pointer;
         }
         
         .news-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-8px) scale(1.02);
             box-shadow: var(--card-shadow-hover);
         }
         
@@ -402,26 +406,39 @@
             line-height: 1.4;
             cursor: help;
             position: relative;
+            padding-bottom: 10px;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+        
+        .news-title:hover {
+            border-bottom: 2px solid var(--primary);
         }
         
         .news-title:hover .title-translation {
             display: block;
+            opacity: 1;
+            transform: translateY(0);
         }
         
         .title-translation {
-            display: none;
             position: absolute;
-            top: -40px;
+            top: -70px;
             left: 0;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 12px 15px;
+            border-radius: 8px;
             font-size: 0.9rem;
             font-weight: normal;
             z-index: 100;
             max-width: 300px;
             line-height: 1.4;
+            display: none;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s, transform 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         
         .news-summary {
@@ -432,25 +449,39 @@
             flex-grow: 1;
             cursor: help;
             position: relative;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        
+        .news-summary:hover {
+            background-color: rgba(0,0,0,0.03);
         }
         
         .news-summary:hover .summary-translation {
             display: block;
+            opacity: 1;
+            transform: translateY(0);
         }
         
         .summary-translation {
-            display: none;
             position: absolute;
             bottom: 100%;
             left: 0;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             color: white;
-            padding: 10px;
-            border-radius: 6px;
+            padding: 12px 15px;
+            border-radius: 8px;
             font-size: 0.9rem;
             z-index: 100;
             max-width: 350px;
             line-height: 1.5;
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s, transform 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
         }
         
         /* 翻譯按鈕 */
@@ -500,6 +531,104 @@
             font-size: 0.9rem;
         }
         
+        /* 詳細新聞內容彈窗 */
+        .news-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--ai-color);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .modal-body {
+            padding: 40px;
+        }
+        
+        .modal-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .modal-category {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .modal-summary {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: var(--gray);
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .modal-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .detail-item {
+            padding: 15px;
+            background: #f0f7ff;
+            border-radius: 10px;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
         /* 載入動畫 */
         .loading {
             text-align: center;
@@ -540,13 +669,15 @@
         
         /* 系統狀態 */
         .system-status {
-            background: white;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
             padding: 15px;
             border-radius: 10px;
             margin: 20px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
         /* 語言切換 */
@@ -592,6 +723,8 @@
             .container { padding: 10px; }
             .system-status { flex-direction: column; gap: 10px; }
             .language-toggle { bottom: 10px; right: 10px; }
+            .modal-content { margin: 10px; }
+            .modal-body { padding: 20px; }
         }
         
         @media (max-width: 480px) {
@@ -603,6 +736,18 @@
     </style>
 </head>
 <body>
+    <!-- 詳細新聞彈窗 -->
+    <div class="news-modal" id="newsModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-body" id="modalContent">
+                <!-- 彈窗內容會動態生成在這裡 -->
+            </div>
+        </div>
+    </div>
+    
     <!-- 語言切換按鈕 -->
     <div class="language-toggle">
         <button class="lang-btn active" onclick="setLanguage('zh')">中文</button>
@@ -632,11 +777,11 @@
                     <div class="stat-value" id="totalNews">0</div>
                     <div class="stat-label">總新聞數</div>
                 </div>
-                <div class="stat-card" onclick="filterNews('AI資訊')">
+                <div class="stat-card" onclick="filterNews('AI應用')">
                     <div class="translate-hint">AI與軟體相關新聞</div>
                     <div class="stat-icon"><i class="fas fa-brain" style="color: var(--ai-color);"></i></div>
                     <div class="stat-value" id="aiNews">0</div>
-                    <div class="stat-label">AI資訊與軟體</div>
+                    <div class="stat-label">AI應用</div>
                 </div>
                 <div class="stat-card" onclick="filterNews('科技發展')">
                     <div class="translate-hint">科技發展與創新</div>
@@ -664,13 +809,13 @@
             </div>
         </div>
         
-        <!-- 分類標籤 (6個分類，軟體應用併入AI資訊) -->
+        <!-- 分類標籤 (6個分類，AI資訊改為AI應用) -->
         <div class="category-tabs">
             <button class="category-btn all active" onclick="filterNews('all')">
                 <i class="fas fa-globe"></i> <span class="lang-zh">全部新聞</span><span class="lang-en" style="display:none;">All News</span>
             </button>
-            <button class="category-btn ai" onclick="filterNews('AI資訊')">
-                <i class="fas fa-brain"></i> <span class="lang-zh">AI資訊與軟體</span><span class="lang-en" style="display:none;">AI & Software</span>
+            <button class="category-btn ai" onclick="filterNews('AI應用')">
+                <i class="fas fa-brain"></i> <span class="lang-zh">AI應用</span><span class="lang-en" style="display:none;">AI Applications</span>
             </button>
             <button class="category-btn tech" onclick="filterNews('科技發展')">
                 <i class="fas fa-microchip"></i> <span class="lang-zh">科技發展</span><span class="lang-en" style="display:none;">Tech Development</span>
@@ -743,15 +888,13 @@
         const CONFIG = {
             API_URL: 'https://script.google.com/macros/s/AKfycby-_9Y2ezmU-Li326SeVmCGpeIg6LwaGHF7_5EKng3QlY7sXoP0smrEyboNNLmGW-ui/exec',
             CATEGORIES: {
-                'AI資訊': { color: '#ea4335', icon: 'fa-brain', en: 'AI & Software' },
+                'AI應用': { color: '#ea4335', icon: 'fa-brain', en: 'AI Applications' },
                 '科技發展': { color: '#fbbc05', icon: 'fa-microchip', en: 'Tech Development' },
                 '財經市場': { color: '#673ab7', icon: 'fa-chart-line', en: 'Finance Market' },
                 '國際大事': { color: '#00bcd4', icon: 'fa-globe-americas', en: 'International' },
                 '硬體設備': { color: '#4caf50', icon: 'fa-server', en: 'Hardware' },
                 '新創動態': { color: '#ff9800', icon: 'fa-rocket', en: 'Startups' }
-            },
-            TRANSLATION_API: 'https://translation.googleapis.com/language/translate/v2',
-            GOOGLE_API_KEY: null // 需要申請Google Translation API金鑰
+            }
         };
         
         // 全域變數
@@ -759,18 +902,26 @@
         let currentFilter = 'all';
         let currentLanguage = 'zh';
         let autoTranslateEnabled = false;
+        let translationCache = new Map(); // 翻譯快取
         
         // 頁面載入
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🤖 AI新聞系統啟動');
             updateSystemInfo('系統啟動中...');
             loadNews();
-            setupTranslationHover();
+            setupEventListeners();
         });
         
-        // 設定翻譯懸停功能
-        function setupTranslationHover() {
-            // 系統會自動處理，因為我們在CSS中已經設定了:hover效果
+        // 設定事件監聽器
+        function setupEventListeners() {
+            // 新聞卡片點擊事件
+            document.addEventListener('click', function(e) {
+                const newsCard = e.target.closest('.news-card');
+                if (newsCard && !e.target.closest('.translate-btn')) {
+                    const newsId = newsCard.id.replace('news-', '');
+                    showNewsDetail(newsId);
+                }
+            });
         }
         
         // 載入新聞
@@ -785,13 +936,13 @@
                 
                 if (result.success) {
                     allNews = result.data.news;
-                    // 確保軟體應用類新聞歸入AI資訊
+                    // 確保軟體應用和AI資訊類新聞歸入AI應用
                     allNews = allNews.map(news => {
-                        if (news.mainCategory === '軟體應用') {
+                        if (news.mainCategory === '軟體應用' || news.mainCategory === 'AI資訊') {
                             return {
                                 ...news,
-                                mainCategory: 'AI資訊',
-                                categories: ['AI資訊']
+                                mainCategory: 'AI應用',
+                                categories: ['AI應用']
                             };
                         }
                         return news;
@@ -952,19 +1103,19 @@
             let html = '';
             news.forEach(item => {
                 const categoryInfo = CONFIG.CATEGORIES[item.mainCategory] || { color: '#666', icon: 'fa-newspaper', en: item.mainCategory };
-                const isAI = item.mainCategory === 'AI資訊';
+                const isAI = item.mainCategory === 'AI應用';
                 const isInternational = item.country !== 'TW';
                 const categoryName = currentLanguage === 'zh' ? item.mainCategory : categoryInfo.en;
                 
                 // 檢查是否需要翻譯
                 const needsTranslation = item.language === 'en' && currentLanguage === 'zh';
                 const translationButton = needsTranslation ? 
-                    `<button class="translate-btn" onclick="translateNewsItem('${item.id}')" title="翻譯全文">
+                    `<button class="translate-btn" onclick="translateNewsItem('${item.id}', event)" title="翻譯全文">
                         <i class="fas fa-language"></i>
                     </button>` : '';
                 
                 html += `
-                    <div class="news-card" id="news-${item.id}">
+                    <div class="news-card" id="news-${item.id}" data-id="${item.id}">
                         ${translationButton}
                         <div class="news-header">
                             <div class="news-category" style="background: ${categoryInfo.color};">
@@ -976,21 +1127,17 @@
                             </div>
                         </div>
                         <div class="news-content">
-                            <h3 class="news-title" data-original="${escapeHtml(item.title)}">
+                            <h3 class="news-title" data-original="${escapeHtml(item.title)}" onmouseenter="showTranslation(this, 'title')">
                                 ${escapeHtml(item.title)}
-                                ${needsTranslation ? `
-                                    <div class="title-translation lang-zh" id="trans-title-${item.id}">
-                                        翻譯中...
-                                    </div>
-                                ` : ''}
+                                <div class="title-translation" id="trans-title-${item.id}">
+                                    翻譯中...
+                                </div>
                             </h3>
-                            <p class="news-summary" data-original="${escapeHtml(item.summary)}">
+                            <p class="news-summary" data-original="${escapeHtml(item.summary)}" onmouseenter="showTranslation(this, 'summary', '${item.id}')">
                                 ${escapeHtml(item.summary)}
-                                ${needsTranslation ? `
-                                    <div class="summary-translation lang-zh" id="trans-summary-${item.id}">
-                                        翻譯中...
-                                    </div>
-                                ` : ''}
+                                <div class="summary-translation" id="trans-summary-${item.id}">
+                                    翻譯中...
+                                </div>
                             </p>
                             <div class="news-meta">
                                 <div class="news-source">
@@ -1010,123 +1157,376 @@
             });
             
             container.innerHTML = html;
-            
-            // 如果啟用自動翻譯，自動翻譯英文內容
-            if (autoTranslateEnabled) {
-                setTimeout(() => {
-                    news.forEach(item => {
-                        if (item.language === 'en' && currentLanguage === 'zh') {
-                            translateNewsItem(item.id);
-                        }
-                    });
-                }, 1000);
-            }
-            
             updateLanguageDisplay();
         }
         
+        // 顯示懸停翻譯
+        async function showTranslation(element, type, newsId) {
+            const originalText = element.dataset.original;
+            if (!originalText || currentLanguage === 'en') return;
+            
+            const translationElement = element.querySelector(`.${type}-translation`);
+            if (!translationElement || translationElement.textContent !== '翻譯中...') return;
+            
+            try {
+                const translatedText = await translateText(originalText, 'zh');
+                translationElement.textContent = translatedText;
+            } catch (error) {
+                console.error('懸停翻譯失敗:', error);
+                translationElement.textContent = '翻譯失敗';
+            }
+        }
+        
         // 翻譯單則新聞
-        async function translateNewsItem(newsId) {
+        async function translateNewsItem(newsId, event) {
+            if (event) event.stopPropagation();
+            
             const newsItem = allNews.find(n => n.id === newsId);
             if (!newsItem) return;
             
             const titleElement = document.querySelector(`#news-${newsId} .news-title`);
             const summaryElement = document.querySelector(`#news-${newsId} .news-summary`);
-            const transTitleElement = document.querySelector(`#trans-title-${newsId}`);
-            const transSummaryElement = document.querySelector(`#trans-summary-${newsId}`);
+            
+            if (!titleElement || !summaryElement) return;
+            
+            // 顯示翻譯中
+            titleElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 翻譯中...`;
+            summaryElement.innerHTML = `<i class="fas fa-spinner fa-spin"></i> 翻譯中...`;
+            
+            try {
+                // 翻譯標題
+                const titleTranslated = await translateText(newsItem.title, 'zh');
+                titleElement.textContent = titleTranslated;
+                
+                // 翻譯摘要
+                const summaryTranslated = await translateText(newsItem.summary, 'zh');
+                summaryElement.textContent = summaryTranslated;
+                
+                // 更新按鈕狀態
+                const translateBtn = document.querySelector(`#news-${newsId} .translate-btn`);
+                if (translateBtn) {
+                    translateBtn.innerHTML = '<i class="fas fa-check"></i>';
+                    translateBtn.style.background = '#34a853';
+                    translateBtn.title = '已翻譯';
+                    
+                    // 3秒後恢復原狀
+                    setTimeout(() => {
+                        if (translateBtn) {
+                            translateBtn.innerHTML = '<i class="fas fa-language"></i>';
+                            translateBtn.style.background = '';
+                            translateBtn.title = '翻譯全文';
+                        }
+                    }, 3000);
+                }
+                
+                console.log(`✅ 新聞 ${newsId} 翻譯完成`);
+            } catch (error) {
+                console.error('❌ 翻譯失敗:', error);
+                titleElement.textContent = newsItem.title;
+                summaryElement.textContent = newsItem.summary;
+                
+                // 顯示錯誤
+                const translateBtn = document.querySelector(`#news-${newsId} .translate-btn`);
+                if (translateBtn) {
+                    translateBtn.innerHTML = '<i class="fas fa-exclamation"></i>';
+                    translateBtn.style.background = '#ea4335';
+                    
+                    setTimeout(() => {
+                        if (translateBtn) {
+                            translateBtn.innerHTML = '<i class="fas fa-language"></i>';
+                            translateBtn.style.background = '';
+                        }
+                    }, 3000);
+                }
+            }
+        }
+        
+        // 核心翻譯函數 - 使用免費的MyMemory API
+        async function translateText(text, targetLang) {
+            // 檢查快取
+            const cacheKey = `${text}_${targetLang}`;
+            if (translationCache.has(cacheKey)) {
+                return translationCache.get(cacheKey);
+            }
+            
+            // 如果文字太短或已經是中文，直接返回
+            if (text.length < 3 || targetLang === 'en') {
+                return text;
+            }
+            
+            try {
+                // 使用 MyMemory Translation API（免費）
+                const response = await fetch(
+                    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    }
+                );
+                
+                if (!response.ok) {
+                    throw new Error(`API 錯誤: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.responseData && data.responseData.translatedText) {
+                    const translatedText = data.responseData.translatedText;
+                    
+                    // 快取翻譯結果
+                    translationCache.set(cacheKey, translatedText);
+                    
+                    return translatedText;
+                } else {
+                    // API 失敗，使用關鍵字翻譯
+                    return fallbackTranslate(text);
+                }
+            } catch (error) {
+                console.warn('翻譯API錯誤，使用備用方案:', error);
+                return fallbackTranslate(text);
+            }
+        }
+        
+        // 備用翻譯方案 - 關鍵字翻譯
+        function fallbackTranslate(text) {
+            const translations = {
+                // AI相關
+                'AI': '人工智慧', 'Artificial Intelligence': '人工智慧', 'artificial intelligence': '人工智慧',
+                'Machine Learning': '機器學習', 'machine learning': '機器學習',
+                'Deep Learning': '深度學習', 'deep learning': '深度學習',
+                'Neural Network': '神經網路', 'neural network': '神經網路',
+                'ChatGPT': 'ChatGPT', 'GPT': 'GPT', 'OpenAI': 'OpenAI',
+                'Google': '谷歌', 'Microsoft': '微軟', 'Amazon': '亞馬遜', 'Apple': '蘋果',
+                'Meta': 'Meta', 'Facebook': '臉書', 'Twitter': '推特',
+                
+                // 技術相關
+                'Technology': '技術', 'technology': '技術',
+                'Software': '軟體', 'software': '軟體',
+                'Hardware': '硬體', 'hardware': '硬體',
+                'Cloud': '雲端', 'cloud': '雲端',
+                'Blockchain': '區塊鏈', 'blockchain': '區塊鏈',
+                'Cryptocurrency': '加密貨幣', 'cryptocurrency': '加密貨幣',
+                'Bitcoin': '比特幣', 'bitcoin': '比特幣',
+                'Ethereum': '以太坊', 'ethereum': '以太坊',
+                'NFT': '非同質化代幣', 'Non-Fungible Token': '非同質化代幣',
+                
+                // 商業相關
+                'Finance': '金融', 'finance': '金融',
+                'Market': '市場', 'market': '市場',
+                'Investment': '投資', 'investment': '投資',
+                'Startup': '新創公司', 'startup': '新創公司',
+                'Venture Capital': '風險投資', 'venture capital': '風險投資',
+                'IPO': '首次公開募股', 'Initial Public Offering': '首次公開募股',
+                
+                // 國際相關
+                'International': '國際', 'international': '國際',
+                'Global': '全球', 'global': '全球',
+                'China': '中國', 'USA': '美國', 'United States': '美國',
+                'Taiwan': '台灣', 'Japan': '日本', 'Korea': '韓國',
+                
+                // 時間相關
+                'today': '今天', 'yesterday': '昨天', 'tomorrow': '明天',
+                'week': '週', 'month': '月', 'year': '年',
+                
+                // 常見動詞
+                'announced': '宣布', 'launched': '推出', 'developed': '開發',
+                'invested': '投資', 'released': '發布', 'reported': '報導',
+                'said': '表示', 'according to': '根據',
+                
+                // 常見形容詞
+                'new': '新的', 'latest': '最新的', 'advanced': '先進的',
+                'innovative': '創新的', 'revolutionary': '革命性的',
+                'successful': '成功的', 'popular': '流行的'
+            };
+            
+            let translated = text;
+            
+            // 優先處理完整片語
+            Object.entries(translations).forEach(([en, zh]) => {
+                const regex = new RegExp(`\\b${en}\\b`, 'gi');
+                translated = translated.replace(regex, zh);
+            });
+            
+            // 處理常見片語
+            const phrases = {
+                'AI technology': 'AI技術',
+                'tech giant': '科技巨頭',
+                'stock market': '股市',
+                'economic growth': '經濟成長',
+                'research and development': '研發',
+                'in the future': '在未來',
+                'according to reports': '根據報導',
+                'it is reported that': '據報導',
+                'the latest news': '最新消息'
+            };
+            
+            Object.entries(phrases).forEach(([en, zh]) => {
+                const regex = new RegExp(en, 'gi');
+                translated = translated.replace(regex, zh);
+            });
+            
+            return translated;
+        }
+        
+        // 顯示新聞詳細內容
+        function showNewsDetail(newsId) {
+            const newsItem = allNews.find(n => n.id === newsId);
+            if (!newsItem) return;
+            
+            const categoryInfo = CONFIG.CATEGORIES[newsItem.mainCategory] || { color: '#666', icon: 'fa-newspaper', en: newsItem.mainCategory };
+            const modalContent = document.getElementById('modalContent');
+            
+            const categoryName = currentLanguage === 'zh' ? newsItem.mainCategory : categoryInfo.en;
+            
+            let content = `
+                <div class="modal-category" style="background: ${categoryInfo.color};">
+                    <i class="fas ${categoryInfo.icon}"></i> ${categoryName}
+                </div>
+                <h1 class="modal-title">${escapeHtml(newsItem.title)}</h1>
+                <div class="modal-summary">
+                    ${escapeHtml(newsItem.summary)}
+                </div>
+                <div class="modal-details">
+                    <div class="detail-item">
+                        <div class="detail-label">${currentLanguage === 'zh' ? '新聞來源' : 'Source'}</div>
+                        <div><i class="fas fa-rss"></i> ${newsItem.source}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">${currentLanguage === 'zh' ? '發布時間' : 'Published'}</div>
+                        <div><i class="fas fa-clock"></i> ${formatDate(newsItem.date)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">${currentLanguage === 'zh' ? '語言' : 'Language'}</div>
+                        <div><i class="fas fa-language"></i> ${newsItem.language === 'zh' ? (currentLanguage === 'zh' ? '中文' : 'Chinese') : (currentLanguage === 'zh' ? '英文' : 'English')}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">${currentLanguage === 'zh' ? '新聞類型' : 'News Type'}</div>
+                        <div><i class="fas fa-newspaper"></i> ${newsItem.isReal ? (currentLanguage === 'zh' ? '真實新聞' : 'Real News') : (currentLanguage === 'zh' ? '模擬新聞' : 'Mock News')}</div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn" onclick="translateNewsDetail('${newsId}')" style="background: var(--primary); color: white;">
+                        <i class="fas fa-language"></i> ${currentLanguage === 'zh' ? '翻譯內容' : 'Translate'}
+                    </button>
+                    <button class="btn" onclick="shareNews('${newsId}')">
+                        <i class="fas fa-share"></i> ${currentLanguage === 'zh' ? '分享' : 'Share'}
+                    </button>
+                    <button class="btn" onclick="closeModal()">
+                        <i class="fas fa-times"></i> ${currentLanguage === 'zh' ? '關閉' : 'Close'}
+                    </button>
+                </div>
+            `;
+            
+            modalContent.innerHTML = content;
+            document.getElementById('newsModal').style.display = 'flex';
+        }
+        
+        // 翻譯新聞詳細內容
+        async function translateNewsDetail(newsId) {
+            const newsItem = allNews.find(n => n.id === newsId);
+            if (!newsItem) return;
+            
+            const modalContent = document.getElementById('modalContent');
+            const titleElement = modalContent.querySelector('.modal-title');
+            const summaryElement = modalContent.querySelector('.modal-summary');
             
             if (!titleElement || !summaryElement) return;
             
             // 顯示翻譯中提示
-            if (transTitleElement) transTitleElement.textContent = '翻譯中...';
-            if (transSummaryElement) transSummaryElement.textContent = '翻譯中...';
+            const originalTitle = titleElement.textContent;
+            const originalSummary = summaryElement.textContent;
+            
+            titleElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 翻譯中...';
+            summaryElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 翻譯中...';
             
             try {
-                // 如果沒有Google API金鑰，使用簡易翻譯
-                if (!CONFIG.GOOGLE_API_KEY) {
-                    // 簡易關鍵字翻譯（實際使用時應該申請Google Translation API）
-                    const simpleTranslations = {
-                        'AI': '人工智慧', 'artificial intelligence': '人工智慧', 
-                        'machine learning': '機器學習', 'deep learning': '深度學習',
-                        'technology': '技術', 'innovation': '創新', 'software': '軟體',
-                        'hardware': '硬體', 'finance': '金融', 'market': '市場',
-                        'international': '國際', 'global': '全球', 'startup': '新創'
-                    };
-                    
-                    let translatedTitle = newsItem.title;
-                    let translatedSummary = newsItem.summary;
-                    
-                    Object.entries(simpleTranslations).forEach(([en, zh]) => {
-                        const regex = new RegExp(en, 'gi');
-                        translatedTitle = translatedTitle.replace(regex, zh);
-                        translatedSummary = translatedSummary.replace(regex, zh);
-                    });
-                    
-                    if (transTitleElement) transTitleElement.textContent = translatedTitle;
-                    if (transSummaryElement) transSummaryElement.textContent = translatedSummary;
-                    
-                    // 更新按鈕狀態
-                    const translateBtn = document.querySelector(`#news-${newsId} .translate-btn`);
-                    if (translateBtn) {
-                        translateBtn.innerHTML = '<i class="fas fa-check"></i>';
-                        translateBtn.style.background = '#34a853';
-                        setTimeout(() => {
-                            translateBtn.innerHTML = '<i class="fas fa-language"></i>';
-                            translateBtn.style.background = '';
-                        }, 2000);
-                    }
-                } else {
-                    // 使用Google Translation API（需要申請金鑰）
-                    // const response = await fetch(`${CONFIG.TRANSLATION_API}?key=${CONFIG.GOOGLE_API_KEY}`, {
-                    //     method: 'POST',
-                    //     headers: { 'Content-Type': 'application/json' },
-                    //     body: JSON.stringify({
-                    //         q: [newsItem.title, newsItem.summary],
-                    //         target: 'zh-TW',
-                    //         source: 'en'
-                    //     })
-                    // });
-                    // const result = await response.json();
-                    // if (result.data && result.data.translations) {
-                    //     const translations = result.data.translations;
-                    //     if (transTitleElement) transTitleElement.textContent = translations[0].translatedText;
-                    //     if (transSummaryElement) transSummaryElement.textContent = translations[1].translatedText;
-                    // }
-                }
+                // 翻譯標題
+                const translatedTitle = await translateText(originalTitle, 'zh');
+                titleElement.textContent = translatedTitle;
+                
+                // 翻譯摘要
+                const translatedSummary = await translateText(originalSummary, 'zh');
+                summaryElement.textContent = translatedSummary;
+                
+                // 顯示成功訊息
+                showToast(currentLanguage === 'zh' ? '✅ 翻譯完成' : '✅ Translation completed', 'success');
             } catch (error) {
-                console.error('翻譯失敗:', error);
-                if (transTitleElement) transTitleElement.textContent = '翻譯失敗';
-                if (transSummaryElement) transSummaryElement.textContent = '翻譯失敗，請稍後再試';
+                console.error('詳細內容翻譯失敗:', error);
+                titleElement.textContent = originalTitle;
+                summaryElement.textContent = originalSummary;
+                showToast(currentLanguage === 'zh' ? '❌ 翻譯失敗' : '❌ Translation failed', 'error');
             }
         }
         
-        // 切換翻譯模式
-        function toggleTranslation() {
-            autoTranslateEnabled = !autoTranslateEnabled;
-            const btn = document.querySelector('[onclick="toggleTranslation()"]');
-            const icon = btn.querySelector('i');
+        // 分享新聞
+        function shareNews(newsId) {
+            const newsItem = allNews.find(n => n.id === newsId);
+            if (!newsItem) return;
             
-            if (autoTranslateEnabled) {
-                icon.className = 'fas fa-check-circle';
-                btn.style.background = '#34a853';
-                btn.style.color = 'white';
-                btn.style.borderColor = '#34a853';
-                
-                // 自動翻譯所有英文新聞
-                allNews.forEach(item => {
-                    if (item.language === 'en' && currentLanguage === 'zh') {
-                        translateNewsItem(item.id);
-                    }
+            const shareText = `${newsItem.title}\n\n${newsItem.summary}\n\n來源: ${newsItem.source}`;
+            
+            if (navigator.share) {
+                // 使用Web Share API
+                navigator.share({
+                    title: newsItem.title,
+                    text: newsItem.summary,
+                    url: window.location.href
                 });
-                
-                alert(currentLanguage === 'zh' ? '已啟用自動翻譯模式' : 'Auto-translation enabled');
             } else {
-                icon.className = 'fas fa-language';
-                btn.style.background = '';
-                btn.style.color = '';
-                btn.style.borderColor = '';
-                alert(currentLanguage === 'zh' ? '已關閉自動翻譯模式' : 'Auto-translation disabled');
+                // 複製到剪貼簿
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showToast(currentLanguage === 'zh' ? '✅ 已複製到剪貼簿' : '✅ Copied to clipboard', 'success');
+                }).catch(() => {
+                    // 備用方案
+                    const textArea = document.createElement('textarea');
+                    textArea.value = shareText;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showToast(currentLanguage === 'zh' ? '✅ 已複製到剪貼簿' : '✅ Copied to clipboard', 'success');
+                });
             }
+        }
+        
+        // 顯示提示訊息
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                background: ${type === 'success' ? '#34a853' : type === 'error' ? '#ea4335' : '#4285f4'};
+                color: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 3000;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
+        
+        // 關閉彈窗
+        function closeModal() {
+            document.getElementById('newsModal').style.display = 'none';
         }
         
         // 設定語言
@@ -1178,29 +1578,77 @@
                 icon.className = 'fas fa-check-circle';
                 btn.style.background = '#34a853';
                 btn.style.color = 'white';
-                alert(currentLanguage === 'zh' ? '已啟用自動翻譯' : 'Auto-translation enabled');
+                
+                // 自動翻譯所有英文新聞
+                setTimeout(() => {
+                    allNews.forEach(item => {
+                        if (item.language === 'en' && currentLanguage === 'zh') {
+                            translateNewsItem(item.id);
+                        }
+                    });
+                }, 1000);
+                
+                showToast(currentLanguage === 'zh' ? '✅ 已啟用自動翻譯' : '✅ Auto-translation enabled', 'success');
             } else {
                 icon.className = 'fas fa-language';
                 btn.style.background = '';
                 btn.style.color = '';
-                alert(currentLanguage === 'zh' ? '已關閉自動翻譯' : 'Auto-translation disabled');
+                showToast(currentLanguage === 'zh' ? '✅ 已關閉自動翻譯' : '✅ Auto-translation disabled', 'info');
+            }
+        }
+        
+        // 切換翻譯模式
+        function toggleTranslation() {
+            autoTranslateEnabled = !autoTranslateEnabled;
+            const btn = document.querySelector('[onclick="toggleTranslation()"]');
+            const icon = btn.querySelector('i');
+            
+            if (autoTranslateEnabled) {
+                icon.className = 'fas fa-check-circle';
+                btn.style.background = '#34a853';
+                btn.style.color = 'white';
+                btn.style.borderColor = '#34a853';
+                
+                // 自動翻譯所有英文新聞
+                setTimeout(() => {
+                    allNews.forEach(item => {
+                        if (item.language === 'en' && currentLanguage === 'zh') {
+                            translateNewsItem(item.id);
+                        }
+                    });
+                }, 1000);
+                
+                showToast(currentLanguage === 'zh' ? '✅ 已啟用自動翻譯模式' : '✅ Auto-translation enabled', 'success');
+            } else {
+                icon.className = 'fas fa-language';
+                btn.style.background = '';
+                btn.style.color = '';
+                btn.style.borderColor = '';
+                showToast(currentLanguage === 'zh' ? '✅ 已關閉自動翻譯模式' : '✅ Auto-translation disabled', 'info');
             }
         }
         
         // 更新統計
         function updateStats(systemInfo) {
-            document.getElementById('totalNews').textContent = systemInfo.totalNews || 0;
-            document.getElementById('aiNews').textContent = systemInfo.aiNews || 0;
-            document.getElementById('techNews').textContent = systemInfo.techNews || 0;
-            document.getElementById('financeNews').textContent = systemInfo.financeNews || 0;
+            if (!systemInfo) return;
+            
+            const total = allNews.length;
+            const aiCount = allNews.filter(n => n.mainCategory === 'AI應用').length;
+            const techCount = allNews.filter(n => n.mainCategory === '科技發展').length;
+            const financeCount = allNews.filter(n => n.mainCategory === '財經市場').length;
+            
+            document.getElementById('totalNews').textContent = total || 0;
+            document.getElementById('aiNews').textContent = aiCount || 0;
+            document.getElementById('techNews').textContent = techCount || 0;
+            document.getElementById('financeNews').textContent = financeCount || 0;
         }
         
         function updateCategoryStats(news, category) {
-            const aiCount = news.filter(n => n.mainCategory === 'AI資訊').length;
+            const aiCount = news.filter(n => n.mainCategory === 'AI應用').length;
             const techCount = news.filter(n => n.mainCategory === '科技發展').length;
             const financeCount = news.filter(n => n.mainCategory === '財經市場').length;
             
-            if (category === 'all' || category === 'AI資訊') {
+            if (category === 'all' || category === 'AI應用') {
                 document.getElementById('aiNews').textContent = aiCount;
             }
             if (category === 'all' || category === '科技發展') {
@@ -1218,21 +1666,21 @@
                 const result = await response.json();
                 
                 if (result.success) {
-                    alert(currentLanguage === 'zh' ? 
-                        `✅ 連線成功！\n版本: ${result.version}\n新聞源: ${result.config.totalSources}個\n目標新聞: ${result.config.targetNews}則\n分類數量: ${result.config.categories.length}種` :
-                        `✅ Connection Successful!\nVersion: ${result.version}\nSources: ${result.config.totalSources}\nTarget News: ${result.config.targetNews}\nCategories: ${result.config.categories.length}`);
+                    showToast(currentLanguage === 'zh' ? 
+                        `✅ 連線成功！版本: ${result.version}` :
+                        `✅ Connection Successful! Version: ${result.version}`, 'success');
                 } else {
-                    alert(currentLanguage === 'zh' ? '❌ 連線測試失敗' : '❌ Connection Test Failed');
+                    showToast(currentLanguage === 'zh' ? '❌ 連線測試失敗' : '❌ Connection Test Failed', 'error');
                 }
             } catch (error) {
-                alert(currentLanguage === 'zh' ? '❌ 連線失敗，請檢查API URL' : '❌ Connection Failed, Please Check API URL');
+                showToast(currentLanguage === 'zh' ? '❌ 連線失敗，請檢查API URL' : '❌ Connection Failed, Please Check API URL', 'error');
             }
         }
         
         // 顯示詳細統計
         function showStats() {
             if (allNews.length === 0) {
-                alert(currentLanguage === 'zh' ? '尚未載入新聞資料' : 'No news data loaded');
+                showToast(currentLanguage === 'zh' ? '尚未載入新聞資料' : 'No news data loaded', 'info');
                 return;
             }
             
@@ -1260,10 +1708,6 @@
                 const catName = currentLanguage === 'zh' ? cat : (CONFIG.CATEGORIES[cat]?.en || cat);
                 message += `  ${catName}: ${count} (${percentage}%)\n`;
             });
-            message += currentLanguage === 'zh' ? `\n🌍 國家分布:\n` : `\n🌍 Country Distribution:\n`;
-            Object.entries(countries).forEach(([country, count]) => {
-                message += `  ${country}: ${count}\n`;
-            });
             
             alert(message);
         }
@@ -1279,13 +1723,13 @@
                 
                 if (result.success) {
                     allNews = result.data.news;
-                    // 確保軟體應用類新聞歸入AI資訊
+                    // 確保軟體應用和AI資訊類新聞歸入AI應用
                     allNews = allNews.map(news => {
-                        if (news.mainCategory === '軟體應用') {
+                        if (news.mainCategory === '軟體應用' || news.mainCategory === 'AI資訊') {
                             return {
                                 ...news,
-                                mainCategory: 'AI資訊',
-                                categories: ['AI資訊']
+                                mainCategory: 'AI應用',
+                                categories: ['AI應用']
                             };
                         }
                         return news;
@@ -1297,14 +1741,15 @@
                     updateSystemInfo(currentLanguage === 'zh' ? 
                         `強制更新完成，共 ${allNews.length} 則新聞` : 
                         `Force update completed, ${allNews.length} items`);
-                    alert(currentLanguage === 'zh' ? 
+                    
+                    showToast(currentLanguage === 'zh' ? 
                         `✅ 強制更新完成\n共 ${allNews.length} 則新聞` : 
-                        `✅ Force update completed\nTotal: ${allNews.length} items`);
+                        `✅ Force update completed\nTotal: ${allNews.length} items`, 'success');
                 } else {
                     throw new Error(result.error || '更新失敗');
                 }
             } catch (error) {
-                alert(currentLanguage === 'zh' ? '❌ 更新失敗: ' + error.message : '❌ Update failed: ' + error.message);
+                showToast(currentLanguage === 'zh' ? '❌ 更新失敗: ' + error.message : '❌ Update failed: ' + error.message, 'error');
             } finally {
                 showLoading(false);
             }
@@ -1320,15 +1765,6 @@
             sources.forEach((source, index) => {
                 const count = allNews.filter(item => item.source === source).length;
                 message += `${index + 1}. ${source}: ${count}\n`;
-            });
-            
-            message += currentLanguage === 'zh' ? `\n📊 來源類型:\n` : `\n📊 Source Types:\n`;
-            const sourceTypes = {};
-            allNews.forEach(item => {
-                sourceTypes[item.sourceType] = (sourceTypes[item.sourceType] || 0) + 1;
-            });
-            Object.entries(sourceTypes).forEach(([type, count]) => {
-                message += `  ${type}: ${count}\n`;
             });
             
             alert(message);
@@ -1391,9 +1827,36 @@
             return div.innerHTML;
         }
         
+        // 動畫CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
         // 自動更新功能
         let autoUpdateInterval;
-        function startAutoUpdate(interval = 300000) {
+        function startAutoUpdate(interval = 300000) { // 5分鐘
             if (autoUpdateInterval) {
                 clearInterval(autoUpdateInterval);
             }
