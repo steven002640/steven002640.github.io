@@ -2,144 +2,150 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <base target="_top">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>社區大會掃描通訊測試</title>
+
   <style>
-    body { font-family: "Microsoft JhengHei", sans-serif; background: linear-gradient(135deg, #485563 0%, #29323c 100%); margin: 0; padding: 0.4rem; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #fff; }
-    .container { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 0.4rem; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.5); text-align: center; width: 100%; max-width: 450px; border: 1px solid rgba(255,255,255,0.1); }
-    h1 { margin-bottom: 3.5rem; font-size: 1.6rem; letter-spacing: 0.5px; }
-    .menu-btn { display: flex; align-items: center; justify-content: center; width: 70%; padding: 0.5rem; min-height: 55px; margin: 1rem auto; font-size: 1.3rem; color: #2c3e50; border: none; border-radius: 15px; cursor: pointer; text-decoration: none; transition: all 0.3s ease; font-weight: bold; box-sizing: border-box; white-space: nowrap; }
-
-    /* QR Code 圖示 */
-    .scan-icon {
-      display: inline-block;
-      width: 24px;
-      height: 24px;
-      margin-right: 8px;
-      vertical-align: middle;
-      flex-shrink: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 21 21'%3E%3Crect width='21' height='21' fill='white'/%3E%3Cpath fill='%23000' d='M0 0h7v7H0z M14 0h7v7h-7z M0 14h7v7H0z'/%3E%3Cpath fill='white' d='M1 1h5v5H1z M15 1h5v5h-5z M1 15h5v5H1z'/%3E%3Cpath fill='%23000' d='M2 2h3v3H2z M16 2h3v3h-3z M2 16h3v3H2z M8 0h2v2H8z M11 1h2v2h-2z M8 4h3v2H8z M12 5h2v2h-2z M8 8h2v3H8z M11 8h3v2h-3z M15 8h2v3h-2z M18 8h3v2h-3z M4 8h2v3H4z M0 11h3v2H0z M5 12h3v2H5z M9 12h2v2H9z M12 11h2v3h-2z M16 12h2v2h-2z M19 11h2v3h-2z M8 15h3v2H8z M12 15h2v3h-2z M15 16h2v2h-2z M18 19h3v2h-3z M8 19h2v2H8z M11 19h2v2h-2z'/%3E%3C/svg%3E");
-      background-size: contain;
-      background-repeat: no-repeat;
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background: #2c3e50;
+      color: #ecf0f1;
+      margin: 0;
+      padding: 25px 15px;
+      text-align: center;
     }
 
-    /* 統計分析/即時資訊看板圖示 */
-    .chart-icon {
-      display: inline-block;
-      width: 26.4px;
-      height: 26.4px;
-      margin-right: 8px;
-      vertical-align: middle;
-      flex-shrink: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath fill='%23e74c3c' d='M3 13h4v8H3z'/%3E%3Cpath fill='%232ecc71' d='M10 8h4v13h-4z'/%3E%3Cpath fill='%23f1c40f' d='M17 3h4v18h-4z'/%3E%3Cpath fill='%23ffffff' d='M2 22h20v1H2z'/%3E%3C/svg%3E");
-      background-size: contain;
-      background-repeat: no-repeat;
+    h2 {
+      margin-top: 25px;
+      font-size: 1.4rem;
     }
 
-    .btn-scan { background: #2ecc71; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4); }
-    .btn-query { background: #3498db; box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4); }
-    .btn-maintain { background: #f1c40f; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4); }
-    .btn-password { background: #e67e22; box-shadow: 0 4px 15px rgba(230, 126, 34, 0.4); }
-    .btn-sim { background: #8e44ad; box-shadow: 0 4px 15px rgba(142, 68, 173, 0.4); }
+    button {
+      width: 90%;
+      max-width: 320px;
+      height: 52px;
+      margin-top: 30px;
+      border: none;
+      border-radius: 7px;
+      background: #3498db;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-    /* 新增：手動輸入作業按鈕 */
-    .btn-manual { background: #9b59b6; box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4); }
-
-    .menu-btn:hover { transform: translateY(-5px); filter: brightness(1.1); }
-    .btn-sim-running { background: #8e44ad !important; border: 2px solid #f1c40f !important; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-    .tip-text { margin: 25px 0px 25px 0px; font-size: 0.8rem; opacity: 0.8; }
-
-    /* 手機版響應式調整 */
-    @media screen and (max-width: 600px) {
-      .menu-btn {
-        width: 85%;
-      }
+    #status {
+      margin: 30px auto 0;
+      max-width: 500px;
+      padding: 18px 12px;
+      border-radius: 7px;
+      background: #34495e;
+      line-height: 1.8;
+      overflow-wrap: anywhere;
+      white-space: pre-line;
     }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>區權會報到與投票計票系統</h1>
-    <a href="https://steven002640.github.io/scanner.html" id="scannerLaunchBtn" class="menu-btn btn-scan"><span class="scan-icon"></span>手機掃描作業</a>
 
-    <!-- 手動輸入作業按鈕：由後端設定決定是否顯示 -->
-    <? if (manualEntryEnabled) { ?>
-    <a href="<?= ScriptApp.getService().getUrl() ?>?mode=manual" class="menu-btn btn-manual">⌨️ 手動輸入作業</a>
-    <? } ?>
+  <h2>GAS 與外部掃描頁面通訊測試</h2>
 
-    <a href="<?= ScriptApp.getService().getUrl() ?>?mode=query" class="menu-btn btn-query"><span class="chart-icon"></span>即時資訊看板</a>
-    <a href="<?= ScriptApp.getService().getUrl() ?>?mode=maintain" class="menu-btn btn-maintain">🔧 系統維護作業</a>
-    <a href="<?= ScriptApp.getService().getUrl() ?>?mode=password" class="menu-btn btn-password">🔒 密碼變更作業</a>
-<? if (devMode === 'test') { ?>
-    <a href="<?= ScriptApp.getService().getUrl() ?>?mode=testing" class="menu-btn btn-sim">🚀 模擬測試作業</a>
-<? } ?>
-    <div class="tip-text">系統運作中，請使用 Chrome 瀏覽器</div>
-  </div>
+  <p>請按下方按鈕，測試是否能與 GAS 主頁面互相傳送訊息。</p>
+
+  <button id="testBtn">測試 GAS 通訊</button>
+
+  <div id="status">尚未開始測試</div>
 
   <script>
-    // ========== GitHub Pages 外部掃描頁通訊測試 ==========
+    const GAS_CHANNEL = 'COMMUNITY_SCANNER';
 
-    const SCANNER_URL = 'https://steven002640.github.io/scanner.html';
-    const SCANNER_ORIGIN = 'https://steven002640.github.io';
+    let currentRequestId = null;
+    let responseReceived = false;
 
-    let scannerWindow = null;
+    const statusBox = document.getElementById('status');
+    const testBtn = document.getElementById('testBtn');
 
-    // 使用者點擊掃描按鈕時，開啟外部掃描頁
-    document.getElementById('scannerLaunchBtn').addEventListener('click', function(event) {
-      event.preventDefault();
+    function showStatus(message) {
+      statusBox.textContent = message;
+    }
 
-      // 必須在使用者直接點擊時開啟，避免瀏覽器阻擋彈出視窗
-      scannerWindow = window.open(SCANNER_URL, 'communityScanner');
-
-      if (!scannerWindow) {
-        alert('瀏覽器阻擋了新視窗，請允許此網站開啟彈出式視窗後再試一次。');
-        return;
-      }
-
-      try {
-        scannerWindow.focus();
-      } catch (error) {
-        // 部分瀏覽器可能不允許程式控制新視窗焦點
-      }
-    });
-
-    // 接收 GitHub Pages 傳回的訊息
     window.addEventListener('message', function(event) {
 
-      // 只接受指定 GitHub Pages 網域
-      if (event.origin !== SCANNER_ORIGIN) {
-        return;
-      }
-
-      // 只接受由本頁面實際開啟的掃描視窗傳來的訊息
-      if (!scannerWindow || event.source !== scannerWindow) {
+      // 確認訊息確實來自開啟本頁面的 GAS 視窗
+      if (!window.opener || event.source !== window.opener) {
         return;
       }
 
       const data = event.data;
 
-      // 驗證訊息格式
       if (
         !data ||
         typeof data !== 'object' ||
-        data.channel !== 'COMMUNITY_SCANNER' ||
-        data.action !== 'PING' ||
+        data.channel !== GAS_CHANNEL ||
+        data.action !== 'PONG' ||
         typeof data.requestId !== 'string' ||
-        data.requestId.length > 100
+        data.requestId !== currentRequestId
       ) {
         return;
       }
 
-      // 回傳 PONG，不呼叫後端，也不寫入試算表
-      event.source.postMessage({
-        channel: 'COMMUNITY_SCANNER',
-        action: 'PONG',
-        requestId: data.requestId,
-        message: 'GAS 已收到 PING'
-      }, event.origin);
+      responseReceived = true;
 
+      showStatus(
+        '通訊成功！\n\n' +
+        '已收到 GAS 主頁面的回覆：\n' +
+        data.message
+      );
+
+      testBtn.disabled = false;
+      testBtn.textContent = '再次測試 GAS 通訊';
     });
 
+    testBtn.addEventListener('click', function() {
+
+      if (!window.opener || window.opener.closed) {
+        showStatus(
+          '通訊失敗：\n\n' +
+          '找不到開啟本頁面的 GAS 主視窗。\n' +
+          '請回到 GAS 主頁面，重新點選「手機掃描作業」開啟本頁。'
+        );
+        return;
+      }
+
+      currentRequestId = 'REQ_' + Date.now();
+      responseReceived = false;
+
+      testBtn.disabled = true;
+
+      showStatus('正在向 GAS 主頁面傳送測試訊息……');
+
+      window.opener.postMessage({
+        channel: GAS_CHANNEL,
+        action: 'PING',
+        requestId: currentRequestId
+      }, '*');
+
+      setTimeout(function() {
+
+        if (!responseReceived) {
+          showStatus(
+            '尚未收到 GAS 回覆。\n\n' +
+            '可能原因：\n' +
+            '1. GAS 主頁面沒有正確接收訊息。\n' +
+            '2. 瀏覽器沒有保留視窗之間的通訊關係。\n' +
+            '3. GAS 主頁面部署版本尚未更新。'
+          );
+
+          testBtn.disabled = false;
+          testBtn.textContent = '重新測試 GAS 通訊';
+        }
+
+      }, 5000);
+
+    });
   </script>
+
 </body>
 </html>
