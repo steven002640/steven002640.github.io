@@ -661,16 +661,9 @@
         requestFinished = true;
         clearTimeout(requestTimeout);
 
-        // 暫時診斷：記錄並顯示真正的通訊失敗原因
-        console.error('iPhone GAS 通訊失敗:', error);
-
-        const errorMessage = error && error.message
-          ? error.message
-          : String(error || '未知錯誤');
-
         // 錯誤處理也要釋放 isProcessing
         resDiv.className = "error";
-        resDiv.innerText = "連線錯誤：" + errorMessage;
+        resDiv.innerText = "連線錯誤，請重試";
         speak("錯誤");
 
         setTimeout(() => {
