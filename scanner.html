@@ -291,8 +291,267 @@
   let scannerRequestSequence = 0;
   const scannerPendingRequests = new Map();
 
+  // Android 專用 MessageChannel
+  let androidMessagePort = null;
+  let androidChannelInitRequestId = null;
+  let androidChannelRetryTimer = null;
+  let androidChannelInitAttempts = 0;
+
+  // Android 專用：要求 GAS Index 建立 MessageChannel
+  function requestAndroidMessageChannel() {
+    if (!window.isAndroid || androidMessagePort) {
+      return;
+    }
+
+    if (!window.opener || window.opener.closed) {
+      console.warn('Android 尚未取得 GAS 主頁視窗，稍後重試');
+      return;
+    }
+
+    if (androidChannelInitAttempts >= 20) {
+      if (androidChannelRetryTimer !== null) {
+        clearInterval(androidChannelRetryTimer);
+        androidChannelRetryTimer = null;
+      }
+      console.error('Android MessageChannel 初始化失敗，已達重試上限');
+      return;
+    }
+
+    androidChannelInitAttempts++;
+
+    androidChannelInitRequestId =
+      'android-channel-' + Date.now() + '-' + androidChannelInitAttempts;
+
+    try {
+      window.opener.postMessage({
+        channel: GAS_SCANNER_CHANNEL,
+        action: 'INIT_MESSAGE_CHANNEL',
+        transport: 'messagechannel',
+        requestId: androidChannelInitRequestId
+      }, '*');
+
+      console.log(
+        'Android MessageChannel 初始化要求已送出，第',
+        androidChannelInitAttempts,
+        '次'
+      );
+
+    } catch (error) {
+      console.error('Android MessageChannel 初始化要求傳送失敗:', error);
+    }
+  }
+
+  // Android 專用：接收 GAS Index 傳來的 MessagePort
+  function handleAndroidMessageChannelReady(event) {
+    if (!window.isAndroid) {
+      return false;
+    }
+
+    if (!window.opener || event.source !== window.opener) {
+      return false;
+    }
+
+    const data = event.data;
+
+    if (
+      !data ||
+      typeof data !== 'object' ||
+      data.channel !== GAS_SCANNER_CHANNEL ||
+      data.action !== 'MESSAGE_CHANNEL_READY' ||
+      data.requestId !== androidChannelInitRequestId ||
+      !event.ports ||
+      event.ports.length !== 1
+    ) {
+      return false;
+    }
+
+    // 保存 GAS Index 傳來的專屬 MessagePort
+    androidMessagePort = event.ports[0];
+
+    // 接收 GAS Index 經由 MessagePort 傳回的訊息
+    androidMessagePort.onmessage = function(portEvent) {
+      const portData = portEvent.data;
+
+      if (
+        !portData ||
+        typeof portData !== 'object' ||
+        portData.channel !== GAS_SCANNER_CHANNEL ||
+        typeof portData.action !== 'string' ||
+        typeof portData.requestId !== 'string'
+      ) {
+        return;
+      }
+
+      const pending = scannerPendingRequests.get(portData.requestId);
+
+      if (!pending) {
+        // 已逾時或已取消的舊請求，不再處理
+        return;
+      }
+
+      const expectedAction =
+        pending.action === 'PING' ? 'PONG' :
+        pending.action === 'GET_STATUS' ? 'STATUS_RESULT' :
+        pending.action === 'PROCESS_CHECKIN' ? 'CHECKIN_RESULT' : '';
+
+      if (portData.action !== expectedAction) {
+        console.warn('Android MessageChannel 收到不符合請求類型的回覆:', portData.action);
+        return;
+      }
+
+      scannerPendingRequests.delete(portData.requestId);
+
+      if (portData.error !== undefined) {
+        if (pending.failureCallback) {
+          pending.failureCallback(new Error(String(portData.error)));
+        }
+      } else {
+        if (pending.successCallback) {
+          pending.successCallback(portData.result);
+        }
+      }
+    };
+
+    androidMessagePort.onmessageerror = function(error) {
+      console.error('Android MessageChannel 訊息讀取錯誤:', error);
+    };
+
+    androidMessagePort.start();
+
+    // 初始化成功，停止重試
+    if (androidChannelRetryTimer !== null) {
+      clearInterval(androidChannelRetryTimer);
+      androidChannelRetryTimer = null;
+    }
+
+    console.log('Android MessageChannel 已成功建立');
+
+    return true;
+  }
+
+  // 接收 GAS 主頁的回覆及 Android 通道初始化訊息
+  window.addEventListener('message', function(event) {
+
+    // Android 專用：接收 MessageChannel 初始化結果
+    if (handleAndroidMessageChannelReady(event)) {
+      return;
+    }
+
+    // Android 初始化後，後續回覆只接受 MessagePort，
+    // 不再使用原本的 window.postMessage 回覆流程。
+    if (window.isAndroid) {
+      return;
+    }
+
+    // 以下保留 iPhone 原有回覆處理方式
+    if (!window.opener || event.source !== window.opener) {
+      return;
+    }
+
+    const data = event.data;
+
+    if (
+      !data ||
+      typeof data !== 'object' ||
+      data.channel !== GAS_SCANNER_CHANNEL ||
+      typeof data.action !== 'string' ||
+      typeof data.requestId !== 'string'
+    ) {
+      return;
+    }
+
+    const pending = scannerPendingRequests.get(data.requestId);
+
+    if (!pending) {
+      // 已逾時或已取消的舊請求，不再處理
+      return;
+    }
+
+    const expectedAction =
+      pending.action === 'GET_STATUS' ? 'STATUS_RESULT' :
+      pending.action === 'PROCESS_CHECKIN' ? 'CHECKIN_RESULT' : '';
+
+    if (data.action !== expectedAction) {
+      console.warn('收到不符合請求類型的回覆:', data.action);
+      return;
+    }
+
+    scannerPendingRequests.delete(data.requestId);
+
+    if (data.error !== undefined) {
+      if (pending.failureCallback) {
+        pending.failureCallback(new Error(String(data.error)));
+      }
+    } else {
+      if (pending.successCallback) {
+        pending.successCallback(data.result);
+      }
+    }
+  });
+
+  // Android 專用：頁面載入後開始建立通訊通道
+  if (window.isAndroid) {
+    requestAndroidMessageChannel();
+
+    androidChannelRetryTimer = setInterval(function() {
+      if (androidMessagePort) {
+        clearInterval(androidChannelRetryTimer);
+        androidChannelRetryTimer = null;
+        return;
+      }
+
+      requestAndroidMessageChannel();
+    }, 500);
+  }
+
   // 建立唯一請求編號並傳送至 GAS 主頁
   function sendGasRequest(action, payload, successCallback, failureCallback) {
+
+    // Android 使用已建立的 MessagePort
+    if (window.isAndroid) {
+
+      if (!androidMessagePort) {
+        if (failureCallback) {
+          failureCallback(new Error('Android 與 GAS 主頁的 MessageChannel 尚未建立，請稍後再試'));
+        }
+        return null;
+      }
+
+      scannerRequestSequence++;
+
+      const androidRequestId =
+        'scanner-' + Date.now() + '-' + scannerRequestSequence;
+
+      scannerPendingRequests.set(androidRequestId, {
+        action: action,
+        successCallback: successCallback,
+        failureCallback: failureCallback
+      });
+
+      try {
+        const androidMessage = Object.assign({
+          channel: GAS_SCANNER_CHANNEL,
+          action: action,
+          requestId: androidRequestId
+        }, payload || {});
+
+        // 後續所有 Android 請求均使用同一條 MessagePort
+        androidMessagePort.postMessage(androidMessage);
+
+        return androidRequestId;
+
+      } catch (error) {
+        scannerPendingRequests.delete(androidRequestId);
+
+        if (failureCallback) {
+          failureCallback(error);
+        }
+
+        return null;
+      }
+    }
+
+    // 以下保留 iPhone 原有 window.postMessage 傳送流程
     if (!window.opener || window.opener.closed) {
       if (failureCallback) {
         failureCallback(new Error('無法連接 GAS 主頁，請從系統主選單重新開啟掃描頁面'));
@@ -339,53 +598,6 @@
     if (!requestId) return;
     scannerPendingRequests.delete(requestId);
   }
-
-  // 接收 GAS 主頁的回覆，只接受 opener 傳回的配對訊息
-  window.addEventListener('message', function(event) {
-    if (!window.opener || event.source !== window.opener) {
-      return;
-    }
-
-    const data = event.data;
-
-    if (
-      !data ||
-      typeof data !== 'object' ||
-      data.channel !== GAS_SCANNER_CHANNEL ||
-      typeof data.action !== 'string' ||
-      typeof data.requestId !== 'string'
-    ) {
-      return;
-    }
-
-    const pending = scannerPendingRequests.get(data.requestId);
-
-    if (!pending) {
-      // 已逾時或已取消的舊請求，不再處理
-      return;
-    }
-
-    const expectedAction =
-      pending.action === 'GET_STATUS' ? 'STATUS_RESULT' :
-      pending.action === 'PROCESS_CHECKIN' ? 'CHECKIN_RESULT' : '';
-
-    if (data.action !== expectedAction) {
-      console.warn('收到不符合請求類型的回覆:', data.action);
-      return;
-    }
-
-    scannerPendingRequests.delete(data.requestId);
-
-    if (data.error !== undefined) {
-      if (pending.failureCallback) {
-        pending.failureCallback(new Error(String(data.error)));
-      }
-    } else {
-      if (pending.successCallback) {
-        pending.successCallback(data.result);
-      }
-    }
-  });
 
 
   // ========== 報到及投票結束狀態 ==========
