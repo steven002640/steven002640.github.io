@@ -145,6 +145,10 @@
     var message = event.data;
 
     if (!message || message.channel !== CHANNEL) return;
+    if (message.action === 'BRIDGE_DIAGNOSTIC') {
+  log('收到 GAS Bridge 診斷訊息');
+  return;
+}
 
     if (message.action === 'BRIDGE_READY') {
       bridgeReady = true;
