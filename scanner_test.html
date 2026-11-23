@@ -1,1 +1,205 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Android GAS Bridge Test</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      color: #222;
+    }
+
+    h2 {
+      font-size: 20px;
+    }
+
+    .status {
+      margin: 12px 0;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .log {
+      margin-top: 15px;
+      padding: 10px;
+      height: 300px;
+      overflow-y: auto;
+      background: #f4f4f4;
+      border: 1px solid #ddd;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    iframe {
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      border: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Android GAS 隱藏 iframe 通訊測試</h2>
+
+<div class="status">
+  <div>Bridge 狀態：<span id="bridgeStatus">等待載入</span></div>
+  <div>成功次數：<span id="successCount">0</span></div>
+  <div>失敗次數：<span id="failureCount">0</span></div>
+  <div>最後成功時間：<span id="lastSuccess">尚無</span></div>
+  <div>目前測試狀態：<span id="testStatus">準備中</span></div>
+</div>
+
+<div class="log" id="log"></div>
+
+<!-- GAS 隱藏 iframe -->
+<iframe id="gasBridge"></iframe>
+
+<script>
+(function() {
+  'use strict';
+
+  // 請填入目前正式使用的 GAS Web App 部署網址
+  var GAS_WEB_APP_URL = '請填入你的GAS_WEB_APP部署網址';
+
+  var CHANNEL = 'COMMUNITY_BRIDGE_TEST';
+  var bridgeFrame = document.getElementById('gasBridge');
+
+  var successCount = 0;
+  var failureCount = 0;
+  var requestSequence = 0;
+  var pendingRequest = null;
+  var bridgeReady = false;
+
+  var successElement = document.getElementById('successCount');
+  var failureElement = document.getElementById('failureCount');
+  var lastSuccessElement = document.getElementById('lastSuccess');
+  var bridgeStatusElement = document.getElementById('bridgeStatus');
+  var testStatusElement = document.getElementById('testStatus');
+  var logElement = document.getElementById('log');
+
+  function log(message) {
+    var time = new Date().toLocaleTimeString();
+
+    logElement.textContent += '[' + time + '] ' + message + '\n';
+    logElement.scrollTop = logElement.scrollHeight;
+  }
+
+  function updateCounts() {
+    successElement.textContent = successCount;
+    failureElement.textContent = failureCount;
+  }
+
+  function sendRequest() {
+    if (!bridgeReady) {
+      log('Bridge 尚未準備完成');
+      return;
+    }
+
+    if (pendingRequest) {
+      log('上一筆請求尚未完成，略過本次測試');
+      return;
+    }
+
+    var requestId = 'REQ_' + (++requestSequence);
+
+    pendingRequest = requestId;
+    testStatusElement.textContent = '通訊中';
+
+    bridgeFrame.contentWindow.postMessage({
+      channel: CHANNEL,
+      action: 'GET_STATUS',
+      requestId: requestId
+    }, '*');
+
+    log('送出請求：' + requestId);
+
+    // 12 秒未收到回覆，記錄為 timeout
+    setTimeout(function() {
+      if (pendingRequest !== requestId) return;
+
+      pendingRequest = null;
+      failureCount++;
+      updateCounts();
+
+      testStatusElement.textContent = 'TIMEOUT';
+      log('TIMEOUT：' + requestId + '，12 秒內未收到回覆');
+    }, 12000);
+  }
+
+  window.addEventListener('message', function(event) {
+    if (event.source !== bridgeFrame.contentWindow) return;
+
+    var message = event.data;
+
+    if (!message || message.channel !== CHANNEL) return;
+
+    if (message.action === 'BRIDGE_READY') {
+      bridgeReady = true;
+      bridgeStatusElement.textContent = '已連線';
+      testStatusElement.textContent = '測試中';
+
+      log('Bridge 已載入，開始定時測試');
+      sendRequest();
+      return;
+    }
+
+    if (!message.requestId) return;
+    if (message.requestId !== pendingRequest) return;
+
+    pendingRequest = null;
+
+    if (message.success) {
+      successCount++;
+      updateCounts();
+
+      lastSuccessElement.textContent = new Date().toLocaleTimeString();
+      testStatusElement.textContent = '正常';
+
+      log('成功：' + message.requestId);
+    } else {
+      failureCount++;
+      updateCounts();
+
+      testStatusElement.textContent = '呼叫失敗';
+
+      log('失敗：' + message.requestId + '，' + message.error);
+    }
+  });
+
+  bridgeFrame.addEventListener('load', function() {
+    log('GAS iframe 已觸發 load');
+  });
+
+  if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.indexOf('https://') !== 0) {
+    bridgeStatusElement.textContent = '尚未設定 GAS 網址';
+    testStatusElement.textContent = '請先設定網址';
+    log('請先修改 GAS_WEB_APP_URL');
+    return;
+  }
+
+  bridgeFrame.src = GAS_WEB_APP_URL + '?mode=bridge_test';
+
+  // 每 15 秒測試一次
+  setInterval(function() {
+    sendRequest();
+  }, 15000);
+
+})();
+</script>
+
+</body>
+</html>
+
