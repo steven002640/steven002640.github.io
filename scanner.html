@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -215,6 +214,38 @@
     font-size: 1.1rem;
     display: none !important;
   }
+
+  /* ========== 新增：通訊診斷區域 ========== */
+  .diagnostic-panel {
+    width: 95%;
+    max-width: 600px;
+    box-sizing: border-box;
+    margin: 10px auto;
+    padding: 9px 10px;
+    border: 1px solid rgba(149, 165, 166, 0.45);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    text-align: left;
+  }
+
+  .diagnostic-log {
+    color: #bdc3c7;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+
+  .diagnostic-btn {
+    margin-top: 7px;
+    padding: 6px 12px;
+    border: 1px solid #7f8c8d;
+    border-radius: 6px;
+    background: #34495e;
+    color: white;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -242,6 +273,12 @@
 
     <div id="reader"></div>
     <div id="result">掃描QR-Code</div>
+
+    <!-- 新增：通訊診斷 -->
+    <div class="diagnostic-panel">
+      <div id="iphone-diagnostic-log" class="diagnostic-log">通訊診斷：等待掃描</div>
+      <button type="button" class="diagnostic-btn" onclick="runConnectionPing()">測試 GAS 通訊</button>
+    </div>
   </div>
 </div>
 
@@ -257,6 +294,13 @@
   <hr class="android-setup-line">
   <div id="android-reader" style="display:none;"></div>
   <div id="android-result">準備就緒</div>
+
+  <!-- 新增：通訊診斷 -->
+  <div class="diagnostic-panel">
+    <div id="android-diagnostic-log" class="diagnostic-log">通訊診斷：等待掃描</div>
+    <button type="button" class="diagnostic-btn" onclick="runConnectionPing()">測試 GAS 通訊</button>
+  </div>
+
   <div>
     <button id="startBtn" class="action-button">開始掃描</button>
     <button id="nextBtn" class="action-button">✅  繼續掃描 ...</button>
@@ -291,6 +335,49 @@
   let scannerRequestSequence = 0;
   const scannerPendingRequests = new Map();
 
+  // ========== 新增：通訊診斷資料 ==========
+  const scannerRequestDiagnostics = new Map();
+  const scannerDiagnosticOrder = [];
+  const SCANNER_DIAGNOSTIC_LIMIT = 20;
+
+  function recordScannerDiagnostic(requestId, message) {
+    if (!requestId) return;
+
+    let record = scannerRequestDiagnostics.get(requestId);
+
+    if (!record) {
+      record = [];
+      scannerRequestDiagnostics.set(requestId, record);
+      scannerDiagnosticOrder.push(requestId);
+
+      // 只保留最近 20 筆，避免診斷資料持續累積
+      while (scannerDiagnosticOrder.length > SCANNER_DIAGNOSTIC_LIMIT) {
+        const oldRequestId = scannerDiagnosticOrder.shift();
+        scannerRequestDiagnostics.delete(oldRequestId);
+      }
+    }
+
+    const timeText = new Date().toLocaleTimeString();
+    record.push(timeText + ' ' + message);
+
+    // 每筆請求最多保留最近 8 個階段
+    if (record.length > 8) {
+      record.shift();
+    }
+
+    const logId = window.isAndroid
+      ? 'android-diagnostic-log'
+      : 'iphone-diagnostic-log';
+
+    const logElement = document.getElementById(logId);
+
+    if (logElement) {
+      logElement.textContent = record.join('\n');
+    }
+
+    console.log('[通訊診斷]', requestId, message);
+  }
+
   // 建立唯一請求編號並傳送至 GAS 主頁
   function sendGasRequest(action, payload, successCallback, failureCallback) {
     if (!window.opener || window.opener.closed) {
@@ -310,6 +397,11 @@
       failureCallback: failureCallback
     });
 
+    // 只針對報到／計票請求建立診斷紀錄
+    if (action === 'PROCESS_CHECKIN') {
+      recordScannerDiagnostic(requestId, 'Scanner 已送出 PROCESS_CHECKIN');
+    }
+
     try {
       const message = Object.assign({
         channel: GAS_SCANNER_CHANNEL,
@@ -325,6 +417,10 @@
 
     } catch (error) {
       scannerPendingRequests.delete(requestId);
+
+      if (action === 'PROCESS_CHECKIN') {
+        recordScannerDiagnostic(requestId, 'Scanner 傳送 postMessage 發生錯誤');
+      }
 
       if (failureCallback) {
         failureCallback(error);
@@ -358,16 +454,47 @@
       return;
     }
 
+    // ========== 接收 Index 的中途診斷訊息 ==========
+    if (data.action === 'TRACE') {
+      if (scannerRequestDiagnostics.has(data.requestId)) {
+        recordScannerDiagnostic(
+          data.requestId,
+          data.stage || '收到 Index 診斷訊息'
+        );
+      }
+      return;
+    }
+
     const pending = scannerPendingRequests.get(data.requestId);
 
     if (!pending) {
-      // 已逾時或已取消的舊請求，不再處理
+      // 逾時後 pending 已取消，但仍保留診斷紀錄。
+      // 如果此時收到後端遲到的結果，只記錄，不執行原本 callback。
+      if (
+        data.action === 'CHECKIN_RESULT' &&
+        scannerRequestDiagnostics.has(data.requestId)
+      ) {
+        if (data.error !== undefined) {
+          recordScannerDiagnostic(
+            data.requestId,
+            'Scanner 收到逾時後的遲到錯誤回覆（未執行原 callback）'
+          );
+        } else {
+          recordScannerDiagnostic(
+            data.requestId,
+            'Scanner 收到逾時後的遲到結果回覆（未執行原 callback）'
+          );
+        }
+      }
+
+      // 已逾時或已取消的其他舊請求，不再處理
       return;
     }
 
     const expectedAction =
       pending.action === 'GET_STATUS' ? 'STATUS_RESULT' :
-      pending.action === 'PROCESS_CHECKIN' ? 'CHECKIN_RESULT' : '';
+      pending.action === 'PROCESS_CHECKIN' ? 'CHECKIN_RESULT' :
+      pending.action === 'PING' ? 'PONG' : '';
 
     if (data.action !== expectedAction) {
       console.warn('收到不符合請求類型的回覆:', data.action);
@@ -375,6 +502,27 @@
     }
 
     scannerPendingRequests.delete(data.requestId);
+
+    if (pending.action === 'PROCESS_CHECKIN') {
+      if (data.error !== undefined) {
+        recordScannerDiagnostic(
+          data.requestId,
+          'Scanner 已收到 CHECKIN_RESULT 錯誤回覆'
+        );
+      } else {
+        recordScannerDiagnostic(
+          data.requestId,
+          'Scanner 已收到 CHECKIN_RESULT 結果'
+        );
+      }
+    }
+
+    if (pending.action === 'PING') {
+      if (pending.successCallback) {
+        pending.successCallback(data);
+      }
+      return;
+    }
 
     if (data.error !== undefined) {
       if (pending.failureCallback) {
@@ -386,6 +534,78 @@
       }
     }
   });
+
+
+  // ========== 新增：獨立 PING / PONG 通訊測試 ==========
+  function runConnectionPing() {
+    const pingId = sendGasRequest(
+      'PING',
+      {},
+      function(res) {
+        if (pingTimeout !== null) {
+          clearTimeout(pingTimeout);
+          pingTimeout = null;
+        }
+
+        const logId = window.isAndroid
+          ? 'android-diagnostic-log'
+          : 'iphone-diagnostic-log';
+
+        const logElement = document.getElementById(logId);
+
+        if (logElement) {
+          const timeText = new Date().toLocaleTimeString();
+          logElement.textContent +=
+            '\n' + timeText + ' PING / PONG 正常：GAS 主頁有收到測試訊息';
+        }
+
+        console.log('PING / PONG 正常:', res);
+      },
+      function(error) {
+        if (pingTimeout !== null) {
+          clearTimeout(pingTimeout);
+          pingTimeout = null;
+        }
+
+        const logId = window.isAndroid
+          ? 'android-diagnostic-log'
+          : 'iphone-diagnostic-log';
+
+        const logElement = document.getElementById(logId);
+
+        if (logElement) {
+          const timeText = new Date().toLocaleTimeString();
+          logElement.textContent +=
+            '\n' + timeText + ' PING 失敗：' + String(error);
+        }
+
+        console.warn('PING 失敗:', error);
+      }
+    );
+
+    let pingTimeout = null;
+
+    if (pingId !== null) {
+      pingTimeout = setTimeout(function() {
+        cancelGasRequest(pingId);
+        pingTimeout = null;
+
+        const logId = window.isAndroid
+          ? 'android-diagnostic-log'
+          : 'iphone-diagnostic-log';
+
+        const logElement = document.getElementById(logId);
+
+        if (logElement) {
+          const timeText = new Date().toLocaleTimeString();
+          logElement.textContent +=
+            '\n' + timeText + ' PING 等待 3 秒仍未收到 PONG';
+        }
+
+        console.warn('PING 等待逾時');
+      }, 3000);
+    }
+  }
 
 
   // ========== 報到及投票結束狀態 ==========
@@ -582,6 +802,12 @@
     const requestTimeout = setTimeout(() => {
       if (requestFinished) return;
       requestFinished = true;
+
+      // 新增：記錄逾時階段
+      recordScannerDiagnostic(
+        checkinRequestId,
+        'Scanner 等待 10 秒逾時，準備取消本地請求'
+      );
 
       // 取消這筆逾時請求，避免遲到回覆影響後續掃描
       cancelGasRequest(checkinRequestId);
@@ -896,6 +1122,12 @@ let checkinRequestId = null;
 const requestTimeout = setTimeout(() => {
   if (requestFinished) return;
   requestFinished = true;
+
+  // 新增：記錄逾時階段
+  recordScannerDiagnostic(
+    checkinRequestId,
+    'Scanner 等待 10 秒逾時，準備取消本地請求'
+  );
 
   // 取消這筆逾時請求，避免遲到回覆影響後續掃描
   cancelGasRequest(checkinRequestId);
