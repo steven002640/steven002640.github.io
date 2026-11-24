@@ -340,8 +340,17 @@
 </div>
 
 <script>
+  // ========== 從 Index 傳入的啟動設定 ==========
+  const scannerParams = new URLSearchParams(window.location.search);
+
+  const API_TOKEN = scannerParams.get('token') || '';
+  const GAS_EXEC_URL = scannerParams.get('url') || '';
+
+  console.log('Scanner 啟動設定:');
+  console.log('  GAS URL 是否取得:', !!GAS_EXEC_URL);
+  console.log('  TOKEN 是否取得:', !!API_TOKEN);
+
   // ========== 共用直接 POST 通訊 ==========
-  const GAS_EXEC_URL = 'https://script.google.com/macros/s/AKfycbybUTYyqhXgNB7Z_IugzEFIbhcBRey2mcE1a1tW2bsMCdo6630IP1r4qixdb1aSQUW3/exec';
 
   // 工作人員密碼只保留在目前頁面的記憶體
   let staffPassword = '';
@@ -363,6 +372,7 @@
     const requestPayload = Object.assign({}, payload || {}, {
       action: action,
       password: staffPassword,
+      token: API_TOKEN,
       requestId: requestId
     });
 
@@ -1042,6 +1052,7 @@
         body: JSON.stringify({
           action: 'PROCESS_CHECKIN',
           password: staffPassword,
+          token: API_TOKEN,
           code: String(codeText || '').trim(),
           requestId: requestId
         }),
