@@ -8,8 +8,6 @@
   // ========== 裝置檢測與版本選擇 ==========
   (function() {
     var ua = navigator.userAgent || navigator.vendor || window.opera;
-
-    // 精確檢測 Android 裝置（不分大小寫）
     window.isAndroid = /Android/i.test(ua);
 
     console.log('裝置檢測:');
@@ -18,10 +16,11 @@
     console.log('  最終使用版本:', window.isAndroid ? 'Android 版本' : 'iPhone 版本');
   })();
 </script>
+
 <style>
   /* ========== iPhone 版本樣式（保持原樣） ========== */
   .iphone-version {
-    display: block; /* 預設顯示，由 JavaScript 控制 */
+    display: block;
   }
 
   body.iphone {
@@ -33,9 +32,10 @@
     color: white;
   }
 
-  .iphone-version #main h1{
+  .iphone-version #main h1 {
     margin-bottom: 45px;
   }
+
   .iphone-version #reader {
     width: 295px;
     max-width: 100%;
@@ -66,7 +66,6 @@
     border-radius: 20px;
   }
 
-
   .iphone-version #result,
   .iphone-version #setup-result {
     font-size: 1.85rem;
@@ -83,14 +82,12 @@
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
   }
 
-  /* iPhone 初始畫面狀態文字 */
   .iphone-version #setup-status {
     margin-top: 15px;
     color: #95a5a6;
     font-size: 1.1rem;
   }
 
-  /* iPhone 初始畫面藍色橫線 */
   .iphone-version .setup-line {
     width: 95%;
     max-width: 600px;
@@ -129,9 +126,40 @@
     font-size: 1.2rem;
   }
 
+  /* ========== 密碼輸入與確認按鈕同一列 ========== */
+  .password-confirm-row {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    width: 90%;
+    max-width: 400px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  .password-confirm-row input {
+    flex: 1;
+    min-width: 0;
+    width: auto !important;
+  }
+
+  .password-confirm-button {
+    flex-shrink: 0;
+    padding: 0 16px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    background: #3498db;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    touch-action: manipulation;
+  }
+
   /* ========== Android 版本樣式 ========== */
   .android-version {
-    display: none; /* 預設隱藏，由 JavaScript 控制 */
+    display: none;
   }
 
   body.android {
@@ -154,7 +182,6 @@
     background: #000;
   }
 
-  /* Android 初始畫面藍色橫線 */
   .android-version .android-setup-line {
     width: 95%;
     max-width: 600px;
@@ -164,7 +191,6 @@
     border: none;
   }
 
-  /* Android 結果區域樣式 */
   .android-version #android-result {
     font-size: 1.85rem;
     margin: 15px -10px;
@@ -181,7 +207,6 @@
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
   }
 
-  /* Android 狀態類別樣式 */
   .android-version .success { background: #2ecc71; color: white; }
   .android-version .repeat { background: #f1c40f; color: #333; }
   .android-version .error { background: #e74c3c; color: white; }
@@ -217,27 +242,51 @@
   }
 </style>
 </head>
+
 <body>
+
 <div id="iphone-container" class="iphone-version">
   <div id="setup">
     <h1>iPhone手機掃描作業</h1>
 
-    <div id="setup-status">請點擊「開始掃描」按鈕</div>
+    <div id="setup-status">請輸入工作人員密碼後開始掃描</div>
+
     <hr class="setup-line">
+
+    <!-- iPhone 工作人員密碼 -->
+    <div class="password-confirm-row">
+      <input
+        id="iphone-staff-password"
+        type="password"
+        placeholder="請輸入工作人員密碼"
+        autocomplete="current-password"
+        style="box-sizing:border-box; padding:15px; font-size:1.2rem; border-radius:10px; border:2px solid #3498db; text-align:center;"
+      >
+
+      <button
+        class="password-confirm-button"
+        onclick="verifyIPhonePassword()"
+      >確認</button>
+    </div>
+
+    <div id="iphone-password-error"
+      style="color:#ff6b6b; margin-top:10px; min-height:24px;">
+    </div>
+
     <div id="setup-result">準備就緒</div>
-    <button class="init-btn" onclick="initIPhoneSystem()">開始掃描</button>
+
     <p></p>
     <p></p>
     <p class="tip">點擊後將啟動相機與語音通知</p>
   </div>
 
-
   <div id="main" style="display:none;">
     <h1>iPhone手機掃描作業</h1>
 
-    <!-- 新增：iPhone 報到及投票成功計數 -->
-    <div id="iphone-scan-stats" style="display:none; font-size:18px; color:#F3E6C8; width:95%; box-sizing:border-box; margin:-30px auto 14px; justify-content:center; align-items:center;">
-      <span>報到成功：<span id="iphone-checkin-count">0</span></span>　　<span>投票成功：<span id="iphone-vote-count">0</span></span>
+    <div id="iphone-scan-stats"
+      style="display:none; font-size:18px; color:#F3E6C8; width:95%; box-sizing:border-box; margin:-30px auto 14px; justify-content:center; align-items:center;">
+      <span>報到成功：<span id="iphone-checkin-count">0</span></span>
+      　　<span>投票成功：<span id="iphone-vote-count">0</span></span>
     </div>
 
     <div id="reader"></div>
@@ -248,30 +297,41 @@
 <div id="android-container" class="android-version">
   <h1>安卓手機掃描作業</h1>
 
-  <!-- 新增：Android 報到及投票成功計數 -->
-  <div id="android-scan-stats" style="display:none; font-size:18px; color:#F3E6C8; width:95%; box-sizing:border-box; margin:5px auto 14px; justify-content:center; align-items:center;">
-    <span>報到成功：<span id="android-checkin-count">0</span></span>　　<span>投票成功：<span id="android-vote-count">0</span></span>
+  <div id="android-scan-stats"
+    style="display:none; font-size:18px; color:#F3E6C8; width:95%; box-sizing:border-box; margin:5px auto 14px; justify-content:center; align-items:center;">
+    <span>報到成功：<span id="android-checkin-count">0</span></span>
+    　　<span>投票成功：<span id="android-vote-count">0</span></span>
   </div>
 
   <div id="status">請點擊「開始掃描」按鈕</div>
 
-  <!-- Android 工作人員密碼 -->
   <div id="staff-login" style="margin:20px auto; max-width:400px;">
-    <input
-      id="staff-password"
-      type="password"
-      placeholder="請輸入工作人員密碼"
-      autocomplete="current-password"
-      style="width:90%; box-sizing:border-box; padding:15px; font-size:1.2rem; border-radius:10px; border:2px solid #3498db; text-align:center;"
-    >
-    <div id="staff-password-error" style="color:#ff6b6b; margin-top:10px; min-height:24px;"></div>
+
+    <div class="password-confirm-row">
+      <input
+        id="staff-password"
+        type="password"
+        placeholder="請輸入工作人員密碼"
+        autocomplete="current-password"
+        style="box-sizing:border-box; padding:15px; font-size:1.2rem; border-radius:10px; border:2px solid #3498db; text-align:center;"
+      >
+
+      <button
+        id="startBtn"
+        class="password-confirm-button"
+      >確認</button>
+    </div>
+
+    <div id="staff-password-error"
+      style="color:#ff6b6b; margin-top:10px; min-height:24px;">
+    </div>
   </div>
 
   <hr class="android-setup-line">
   <div id="android-reader" style="display:none;"></div>
   <div id="android-result">準備就緒</div>
+
   <div>
-    <button id="startBtn" class="action-button">開始掃描</button>
     <button id="nextBtn" class="action-button">✅  繼續掃描 ...</button>
     <p></p>
     <p></p>
@@ -279,127 +339,101 @@
   </div>
 </div>
 
-
 <script>
-  // ========== 裝置版本選擇 ==========
-  document.addEventListener('DOMContentLoaded', function() {
-    if (window.isAndroid) {
-      // Android 裝置：顯示 Android 版本，隱藏 iPhone 版本
-      document.body.className = 'android';
-      document.getElementById('android-container').style.display = 'block';
-      document.getElementById('iphone-container').style.display = 'none';
-      console.log('載入 Android 版本');
-    } else {
-      // 非 Android 裝置：顯示 iPhone 版本，隱藏 Android 版本
-      document.body.className = 'iphone';
-      document.getElementById('iphone-container').style.display = 'block';
-      document.getElementById('android-container').style.display = 'none';
-      console.log('載入 iPhone 版本');
-    }
-  });
+  // ========== 共用直接 POST 通訊 ==========
+  const GAS_EXEC_URL = 'https://script.google.com/macros/s/AKfycbybUTYyqhXgNB7Z_IugzEFIbhcBRey2mcE1a1tW2bsMCdo6630IP1r4qixdb1aSQUW3/exec';
 
+  // 工作人員密碼只保留在目前頁面的記憶體
+  let staffPassword = '';
 
-  // ========== GitHub Pages 與 GAS 主頁通訊 ==========
-  const GAS_SCANNER_CHANNEL = 'COMMUNITY_SCANNER';
   let scannerRequestSequence = 0;
   const scannerPendingRequests = new Map();
 
-  // 建立唯一請求編號並傳送至 GAS 主頁
+  // 直接向 GAS Web App 發送 POST
   function sendGasRequest(action, payload, successCallback, failureCallback) {
-    if (!window.opener || window.opener.closed) {
-      if (failureCallback) {
-        failureCallback(new Error('無法連接 GAS 主頁，請從系統主選單重新開啟掃描頁面'));
-      }
-      return null;
-    }
-
     scannerRequestSequence++;
 
     const requestId = 'scanner-' + Date.now() + '-' + scannerRequestSequence;
+    const controller = new AbortController();
 
     scannerPendingRequests.set(requestId, {
-      action: action,
-      successCallback: successCallback,
-      failureCallback: failureCallback
+      controller: controller
     });
 
-    try {
-      const message = Object.assign({
-        channel: GAS_SCANNER_CHANNEL,
-        action: action,
-        requestId: requestId
-      }, payload || {});
+    const requestPayload = Object.assign({}, payload || {}, {
+      action: action,
+      password: staffPassword,
+      requestId: requestId
+    });
 
-      // GAS HtmlService 的實際來源網域會因執行環境而異，
-      // 因此傳送時使用 *；GAS 主頁會驗證來源網域及視窗來源。
-      window.opener.postMessage(message, '*');
+    // iPhone 原本使用 codeText，轉成後端要求的 code
+    if (action === 'PROCESS_CHECKIN') {
+      requestPayload.code = String(
+        requestPayload.codeText || requestPayload.code || ''
+      ).trim();
 
-      return requestId;
+      delete requestPayload.codeText;
+    }
 
-    } catch (error) {
+    fetch(GAS_EXEC_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(requestPayload),
+      redirect: 'follow',
+      signal: controller.signal
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('HTTP ' + response.status);
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (!scannerPendingRequests.has(requestId)) return;
+
+      if (!data || data.status !== 'ok') {
+        scannerPendingRequests.delete(requestId);
+
+        if (failureCallback) {
+          failureCallback(new Error(
+            data && data.msg ? String(data.msg) : '後端驗證失敗'
+          ));
+        }
+        return;
+      }
+
+      scannerPendingRequests.delete(requestId);
+
+      if (successCallback) {
+        successCallback(data.result);
+      }
+    })
+    .catch(error => {
+      if (!scannerPendingRequests.has(requestId)) return;
+
       scannerPendingRequests.delete(requestId);
 
       if (failureCallback) {
         failureCallback(error);
       }
+    });
 
-      return null;
-    }
+    return requestId;
   }
 
   // 取消已逾時或不再需要的請求
   function cancelGasRequest(requestId) {
     if (!requestId) return;
-    scannerPendingRequests.delete(requestId);
+
+    const pending = scannerPendingRequests.get(requestId);
+
+    if (pending) {
+      scannerPendingRequests.delete(requestId);
+      pending.controller.abort();
+    }
   }
-
-  // 接收 GAS 主頁的回覆，只接受 opener 傳回的配對訊息
-  window.addEventListener('message', function(event) {
-    if (!window.opener || event.source !== window.opener) {
-      return;
-    }
-
-    const data = event.data;
-
-    if (
-      !data ||
-      typeof data !== 'object' ||
-      data.channel !== GAS_SCANNER_CHANNEL ||
-      typeof data.action !== 'string' ||
-      typeof data.requestId !== 'string'
-    ) {
-      return;
-    }
-
-    const pending = scannerPendingRequests.get(data.requestId);
-
-    if (!pending) {
-      // 已逾時或已取消的舊請求，不再處理
-      return;
-    }
-
-    const expectedAction =
-      pending.action === 'GET_STATUS' ? 'STATUS_RESULT' :
-      pending.action === 'PROCESS_CHECKIN' ? 'CHECKIN_RESULT' : '';
-
-    if (data.action !== expectedAction) {
-      console.warn('收到不符合請求類型的回覆:', data.action);
-      return;
-    }
-
-    scannerPendingRequests.delete(data.requestId);
-
-    if (data.error !== undefined) {
-      if (pending.failureCallback) {
-        pending.failureCallback(new Error(String(data.error)));
-      }
-    } else {
-      if (pending.successCallback) {
-        pending.successCallback(data.result);
-      }
-    }
-  });
-
 
   // ========== 報到及投票結束狀態 ==========
   let CHECK_IN_END = 'NO';
@@ -438,7 +472,6 @@
       }
     );
 
-    // 狀態查詢最多等待 5 秒；不影響掃描本身的 10 秒逾時機制
     if (statusRequestId !== null) {
       statusTimeout = setTimeout(function() {
         cancelGasRequest(statusRequestId);
@@ -481,16 +514,12 @@
     return '';
   }
 
-
-  // ========== iPhone 版本 JavaScript（保持原樣） ==========
+  // ========== iPhone 版本 JavaScript ==========
   let html5QrCode;
-  let isProcessing = false;  // ⭐ 功能2：防重複處理
+  let isProcessing = false;
 
-  // 新增：iPhone 成功計數
   let iphoneCheckInCount = 0;
   let iphoneVoteCount = 0;
-
-  // 新增：iPhone 最近一次網路逾時的 QR Code
   let iphoneTimedOutCode = null;
 
   function speak(text) {
@@ -500,20 +529,85 @@
     window.speechSynthesis.speak(msg);
   }
 
+  // iPhone 工作人員密碼確認
+  function verifyIPhonePassword() {
+    const passwordInput = document.getElementById('iphone-staff-password');
+    const passwordError = document.getElementById('iphone-password-error');
+    const enteredPassword = String(passwordInput.value || '');
+
+    if (!enteredPassword) {
+      passwordError.innerText = '請先輸入工作人員密碼';
+      passwordInput.focus();
+      return;
+    }
+
+    staffPassword = enteredPassword;
+    passwordError.innerText = '正在確認密碼...';
+
+    sendGasRequest(
+      'GET_STATUS',
+      {},
+      function(res) {
+        passwordError.innerText = '';
+        initIPhoneSystem();
+      },
+      function(error) {
+        staffPassword = '';
+        passwordInput.value = '';
+        passwordError.innerText = '工作人員密碼錯誤，請重新輸入';
+        document.getElementById('setup-result').innerText = '工作人員密碼錯誤';
+
+        console.log('iPhone 密碼確認失敗:', error);
+      }
+    );
+  }
+
+  // iPhone 工作人員密碼錯誤時，返回初始畫面
+  function returnIPhoneToSetup(errorMessage) {
+    staffPassword = '';
+
+    document.getElementById('iphone-staff-password').value = '';
+    document.getElementById('iphone-password-error').innerText =
+      errorMessage || '工作人員密碼錯誤，請重新輸入';
+
+    document.getElementById('setup-status').innerText =
+      '請重新輸入工作人員密碼';
+
+    document.getElementById('setup-result').innerText =
+      '工作人員密碼錯誤';
+
+    document.getElementById('setup').style.display = 'block';
+    document.getElementById('main').style.display = 'none';
+
+    isProcessing = false;
+
+    if (html5QrCode) {
+      html5QrCode.stop().then(function() {
+        html5QrCode.clear();
+        html5QrCode = null;
+      }).catch(function(error) {
+        console.warn('停止 iPhone 掃描器時發生錯誤:', error);
+        html5QrCode = null;
+      });
+    }
+
+    speak('工作人員密碼錯誤，請重新輸入');
+  }
 
   function initIPhoneSystem() {
-    // 取得報到及投票結束狀態，啟動 60 秒輪詢
+    // 密碼已經確認成功，現在才開始輪詢
     startScanStatusPolling();
 
-    // 新增：重新啟動時歸零並顯示計數
     iphoneCheckInCount = 0;
     iphoneVoteCount = 0;
     iphoneTimedOutCode = null;
+
     document.getElementById('iphone-checkin-count').innerText = '0';
     document.getElementById('iphone-vote-count').innerText = '0';
     document.getElementById('iphone-scan-stats').style.display = 'flex';
 
     speak("掃描系統啟動");
+
     document.getElementById('setup').style.display = 'none';
     document.getElementById('main').style.display = 'block';
 
@@ -524,13 +618,12 @@
     const config = {
       fps: 20,
       qrbox: function(viewfinderWidth, viewfinderHeight) {
-          let minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-          let boxSize = Math.floor(minEdge * 0.7);
-          return { width: boxSize, height: boxSize };
+        let minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+        let boxSize = Math.floor(minEdge * 0.7);
+        return { width: boxSize, height: boxSize };
       },
       aspectRatio: 1.0
     };
-
 
     html5QrCode.start(
       { facingMode: "environment" },
@@ -542,30 +635,26 @@
     });
   }
 
-
   function onScan(text) {
-    // ⭐ 功能2：防重複處理
     if (isProcessing) {
       console.log('已有掃描處理中，忽略新的掃描');
       return;
     }
+
     isProcessing = true;
 
-    // 比對並消耗上一筆網路逾時紀錄；只對緊接著的下一次掃描有效
     const normalizedCode = String(text || '').trim();
     const matchedTimedOutCode = iphoneTimedOutCode !== null &&
       iphoneTimedOutCode === normalizedCode;
+
     iphoneTimedOutCode = null;
 
-    // 1. 立即暫停相機，避免重複讀取
     html5QrCode.pause();
 
     const resDiv = document.getElementById('result');
-    // 2. 核心修正：發送請求前立即清空上一筆資訊的樣式與文字
     resDiv.className = "";
     resDiv.innerText = "驗證中...";
 
-    // ========== 檢查報到或投票是否已結束 ==========
     const endMessage = checkScanEndStatus(text);
 
     if (endMessage) {
@@ -588,7 +677,6 @@
       return;
     }
 
-    // 連線逾時保護：10 秒內未收到後端回應，就提示並恢復掃描
     let requestFinished = false;
     let checkinRequestId = null;
 
@@ -596,10 +684,8 @@
       if (requestFinished) return;
       requestFinished = true;
 
-      // 取消這筆逾時請求，避免遲到回覆影響後續掃描
       cancelGasRequest(checkinRequestId);
 
-      // 記錄本次逾時 QR Code，供下一次掃描比對
       iphoneTimedOutCode = normalizedCode;
 
       resDiv.className = "error";
@@ -615,6 +701,7 @@
           isProcessing = false;
         }, 700);
       }, 1000);
+
     }, 10000);
 
     checkinRequestId = sendGasRequest(
@@ -622,10 +709,10 @@
       { codeText: text },
       (res) => {
         if (requestFinished) return;
+
         requestFinished = true;
         clearTimeout(requestTimeout);
 
-        // 新增：投票回覆要求重新掃描時，投票統計減 1
         const isVoteCode = /Q\d{2}[YN]$/i.test(String(text || '').trim());
 
         if (isVoteCode) {
@@ -637,32 +724,29 @@
                      /已投票/.test(String(res.msg || ''))) {
             iphoneVoteCount++;
           }
+
           document.getElementById('iphone-vote-count').innerText = iphoneVoteCount;
+
         } else if (res && res.status === 'success') {
           iphoneCheckInCount++;
           document.getElementById('iphone-checkin-count').innerText = iphoneCheckInCount;
+
         } else if (matchedTimedOutCode && res && res.status === 'repeat' &&
                    /已完成報到/.test(String(res.msg || ''))) {
           iphoneCheckInCount++;
           document.getElementById('iphone-checkin-count').innerText = iphoneCheckInCount;
         }
 
-        // 3. 顯示目前掃描的正確結果
         resDiv.className = res.status;
         resDiv.innerText = (res.info || "") + " " + res.msg;
         speak(res.msg);
 
-
-        // 4. 核心修正：稍微延長等待時間至 1 秒，確保作業人員移開手機
         setTimeout(() => {
-          // 5. 恢復前再次清空顯示區域，確保進入乾淨的等待狀態
           resDiv.className = "";
           resDiv.innerText = "掃描QR-Code";
 
-          // ⭐ 恢復相機
           html5QrCode.resume();
 
-          // ⭐ 延遲 500ms 才允許新掃描，避免同一個 QR Code 還在畫面中
           setTimeout(() => {
             isProcessing = false;
           }, 700);
@@ -671,10 +755,16 @@
       },
       (error) => {
         if (requestFinished) return;
+
         requestFinished = true;
         clearTimeout(requestTimeout);
 
-        // 錯誤處理也要釋放 isProcessing
+        // 工作人員密碼錯誤：返回密碼輸入畫面
+        if (String(error).indexOf('工作人員密碼錯誤') !== -1) {
+          returnIPhoneToSetup('工作人員密碼錯誤，請重新輸入');
+          return;
+        }
+
         resDiv.className = "error";
         resDiv.innerText = "連線錯誤，請重試";
         speak("錯誤");
@@ -684,7 +774,6 @@
           resDiv.innerText = "掃描QR-Code";
           html5QrCode.resume();
 
-          // ⭐ 錯誤時也延遲
           setTimeout(() => {
             isProcessing = false;
           }, 500);
@@ -694,40 +783,28 @@
     );
   }
 
-
   // ========== Android 版本 JavaScript ==========
   if (window.isAndroid) {
     let androidHtml5QrCode = null;
-    let isAndroidProcessing = false;  // ⭐ Android 專屬防重複處理鎖
+    let isAndroidProcessing = false;
+
     const resultDiv = document.getElementById('android-result');
     const statusDiv = document.getElementById('status');
     const startBtn = document.getElementById('startBtn');
     const nextBtn = document.getElementById('nextBtn');
 
-    // Android GAS POST 網址
-    const GAS_EXEC_URL = 'https://script.google.com/macros/s/AKfycbybUTYyqhXgNB7Z_IugzEFIbhcBRey2mcE1a1tW2bsMCdo6630IP1r4qixdb1aSQUW3/exec';
-
-    // 工作人員密碼只保留在目前頁面的記憶體
-    let staffPassword = '';
-
-    // 新增：Android 成功計數
     let androidCheckInCount = 0;
     let androidVoteCount = 0;
-
-    // 新增：Android 最近一次網路逾時的 QR Code
     let androidTimedOutCode = null;
 
-    // 新增：Android 掃描器狀態及恢復鎖
     let androidScanSessionReady = false;
     let androidRecoveryInProgress = false;
-
 
     function clearResultStyles() {
       resultDiv.className = '';
       resultDiv.style.backgroundColor = '';
       resultDiv.style.color = '';
     }
-
 
     window.addEventListener('load', function() {
       statusDiv.textContent = '請輸入工作人員密碼後開始掃描';
@@ -744,51 +821,69 @@
         }
 
         staffPassword = enteredPassword;
-        passwordError.textContent = '';
+        passwordError.textContent = '正在確認密碼...';
 
-        // Android 修正：在使用者點擊時播放實際語音，協助啟動語音合成環境
-        if ('speechSynthesis' in window) {
-          speakWithFallback('啟動相機');
-        }
+        sendGasRequest(
+          'GET_STATUS',
+          {},
+          function(res) {
+            passwordError.textContent = '';
 
-        document.getElementById('staff-login').style.display = 'none';
+            // 密碼驗證成功後才啟動輪詢
+            startScanStatusPolling();
 
-        clearResultStyles();
-        resultDiv.textContent = '正在啟動相機...';
-        startNewScanSession();
+            if ('speechSynthesis' in window) {
+              speakWithFallback('啟動相機');
+            }
+
+            document.getElementById('staff-login').style.display = 'none';
+
+            clearResultStyles();
+            resultDiv.textContent = '正在啟動相機...';
+
+            startNewScanSession();
+          },
+          function(error) {
+            staffPassword = '';
+            passwordInput.value = '';
+
+            if (String(error).indexOf('工作人員密碼錯誤') !== -1) {
+              passwordError.textContent =
+                '工作人員密碼錯誤，請重新輸入';
+            } else {
+              passwordError.textContent =
+                '連線錯誤，請確認網路後重新確認';
+            }
+
+            console.log('Android 密碼確認失敗:', error);
+          }
+        );
       };
     });
 
-
     async function startNewScanSession(isRecovery = false) {
-      // 顯示 Android 相機掃描區域（初始畫面時隱藏）
       document.getElementById('android-reader').style.display = 'block';
       document.querySelector('.android-setup-line').style.display = 'none';
       document.getElementById('android-tip').style.display = 'none';
 
-      // 新增：重新啟動時歸零並顯示計數
-      // 自動恢復時保留原有計數
       if (!isRecovery) {
         androidCheckInCount = 0;
         androidVoteCount = 0;
         androidTimedOutCode = null;
+
         document.getElementById('android-checkin-count').innerText = '0';
         document.getElementById('android-vote-count').innerText = '0';
       }
+
       document.getElementById('android-scan-stats').style.display = 'flex';
       statusDiv.style.display = 'block';
 
-      // 取得報到及投票結束狀態，啟動 60 秒輪詢
-      if (!isRecovery) {
-        startScanStatusPolling();
-      }
-
       androidScanSessionReady = false;
-      isAndroidProcessing = false;  // 每次重新開始掃描時解鎖
+      isAndroidProcessing = false;
+
       startBtn.style.display = 'none';
       nextBtn.style.display = 'none';
       statusDiv.textContent = '正在初始化...';
-
 
       if (androidHtml5QrCode) {
         try {
@@ -797,11 +892,12 @@
         } catch(e) {
           console.warn('清理舊實例時發生錯誤:', e);
         }
+
         androidHtml5QrCode = null;
       }
 
-
       androidHtml5QrCode = new Html5Qrcode("android-reader");
+
       const config = {
         fps: 2,
         qrbox: { width: 180, height: 180 },
@@ -809,22 +905,20 @@
         disableFlip: false
       };
 
-
       const onScanSuccess = (decodedText) => {
-        // 防重複機制：處理中時忽略新的掃描，避免重複送出
         if (isAndroidProcessing) {
           console.log('已有掃描處理中，忽略新的掃描');
           return;
         }
+
         isAndroidProcessing = true;
 
-        // 比對並消耗上一筆網路逾時紀錄；只對緊接著的下一次掃描有效
         const normalizedCode = String(decodedText || '').trim();
         const matchedTimedOutCode = androidTimedOutCode !== null &&
           androidTimedOutCode === normalizedCode;
+
         androidTimedOutCode = null;
 
-        // 與 iPhone 相同：掃描成功後立即暫停掃描
         try {
           androidHtml5QrCode.pause();
         } catch(e) {
@@ -836,9 +930,9 @@
         clearResultStyles();
         resultDiv.textContent = '驗證中...';
         statusDiv.textContent = '正在驗證...';
+
         processScannedCode(decodedText, matchedTimedOutCode);
       };
-
 
       try {
         await androidHtml5QrCode.start(
@@ -849,24 +943,26 @@
             console.debug('掃描錯誤:', errorMessage);
           }
         );
+
         clearResultStyles();
         resultDiv.textContent = '掃描QR-Code';
         statusDiv.textContent = '相機就緒，請慢慢對準';
 
-        // 新增：確認掃描器已成功啟動
         androidScanSessionReady = true;
 
       } catch (startError) {
         clearResultStyles();
         resultDiv.className = 'error';
         resultDiv.textContent = '無法啟動相機';
-        statusDiv.textContent = '請檢查相機權限並重試';
-        startBtn.style.display = 'inline-block';
+        statusDiv.textContent = '請關閉視窗後重新開啟 Scanner';
+
         androidHtml5QrCode = null;
         androidScanSessionReady = false;
+
+        alert('相機啟動失敗，請關閉此視窗後重新開啟 Scanner。');
+        console.error('Android 相機啟動失敗:', startError);
       }
     }
-
 
     // Android 解鎖或切回分頁後，檢查並嘗試恢復 video 播放
     document.addEventListener('visibilitychange', function() {
@@ -901,145 +997,135 @@
       }, 1000);
     });
 
+    function processScannedCode(codeText, matchedTimedOutCode) {
+      clearResultStyles();
 
+      const endMessage = checkScanEndStatus(codeText);
 
-function processScannedCode(codeText, matchedTimedOutCode) {
-  clearResultStyles();
-
-  // ========== 檢查報到或投票是否已結束 ==========
-  const endMessage = checkScanEndStatus(codeText);
-
-  if (endMessage) {
-    resultDiv.className = 'error';
-    resultDiv.textContent = endMessage;
-    statusDiv.textContent = '處理完成，準備掃描下一個QR-Code';
-    speakWithFallback(endMessage);
-
-    // 顯示紅色錯誤訊息 1 秒後自動恢復掃描
-    resumeAndroidScanning();
-    return;
-  }
-
-  resultDiv.textContent = '驗證中...';
-  statusDiv.textContent = '正在驗證...';
-
-  // 連線逾時保護：10 秒內未收到後端回應，就提示並恢復掃描
-  let requestFinished = false;
-
-  const requestId = 'android-' + Date.now() + '-' +
-    Math.random().toString(36).slice(2);
-
-  const requestTimeout = setTimeout(() => {
-    if (requestFinished) return;
-    requestFinished = true;
-
-    // 記錄本次逾時 QR Code，供下一次掃描比對
-    androidTimedOutCode = String(codeText || '').trim();
-
-    resultDiv.className = 'error';
-    resultDiv.textContent = '驗證逾時請重新掃描';
-    statusDiv.textContent = '驗證逾時，準備重新掃描';
-    speakWithFallback('驗證逾時請重新掃描');
-
-    resumeAndroidScanning();
-  }, 10000);
-
-  fetch(GAS_EXEC_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'text/plain;charset=utf-8'
-    },
-    body: JSON.stringify({
-      action: 'PROCESS_CHECKIN',
-      password: staffPassword,
-      code: String(codeText || '').trim(),
-      requestId: requestId
-    }),
-    redirect: 'follow'
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('HTTP ' + response.status);
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (requestFinished) return;
-
-    requestFinished = true;
-    clearTimeout(requestTimeout);
-
-    if (!data || data.status !== 'ok') {
-      const errorMessage = data && data.msg
-        ? String(data.msg)
-        : '後端驗證失敗';
-
-      // 工作人員密碼錯誤：停止掃描並要求重新輸入
-      if (errorMessage.indexOf('工作人員密碼錯誤') !== -1) {
-        staffPassword = '';
-
-        document.getElementById('staff-password').value = '';
-        document.getElementById('staff-password-error').textContent =
-          '工作人員密碼錯誤，請重新輸入';
-
-        document.getElementById('staff-login').style.display = 'block';
-        document.getElementById('android-reader').style.display = 'none';
-        document.querySelector('.android-setup-line').style.display = 'block';
-        document.getElementById('android-tip').style.display = 'block';
-
+      if (endMessage) {
         resultDiv.className = 'error';
-        resultDiv.textContent = '工作人員密碼錯誤';
-        statusDiv.textContent = '請重新輸入工作人員密碼';
+        resultDiv.textContent = endMessage;
+        statusDiv.textContent = '處理完成，準備掃描下一個QR-Code';
+        speakWithFallback(endMessage);
 
-        speakWithFallback('工作人員密碼錯誤，請重新輸入');
-
-        androidScanSessionReady = false;
-        isAndroidProcessing = false;
-        startBtn.style.display = 'inline-block';
-
-        if (androidHtml5QrCode) {
-          androidHtml5QrCode.stop().then(function() {
-            androidHtml5QrCode.clear();
-            androidHtml5QrCode = null;
-          }).catch(function(error) {
-            console.warn('停止 Android 掃描器時發生錯誤:', error);
-            androidHtml5QrCode = null;
-          });
-        }
-
+        resumeAndroidScanning();
         return;
       }
 
-      // 其他 GAS 回傳錯誤
-      resultDiv.className = 'error';
-      resultDiv.textContent = errorMessage;
-      statusDiv.textContent = '伺服器處理失敗';
-      speakWithFallback(errorMessage);
-      resumeAndroidScanning();
-      return;
+      resultDiv.textContent = '驗證中...';
+      statusDiv.textContent = '正在驗證...';
+
+      let requestFinished = false;
+
+      const requestId = 'android-' + Date.now() + '-' +
+        Math.random().toString(36).slice(2);
+
+      const requestTimeout = setTimeout(() => {
+        if (requestFinished) return;
+        requestFinished = true;
+
+        androidTimedOutCode = String(codeText || '').trim();
+
+        resultDiv.className = 'error';
+        resultDiv.textContent = '驗證逾時請重新掃描';
+        statusDiv.textContent = '驗證逾時，準備重新掃描';
+        speakWithFallback('驗證逾時請重新掃描');
+
+        resumeAndroidScanning();
+      }, 10000);
+
+      fetch(GAS_EXEC_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify({
+          action: 'PROCESS_CHECKIN',
+          password: staffPassword,
+          code: String(codeText || '').trim(),
+          requestId: requestId
+        }),
+        redirect: 'follow'
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('HTTP ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (requestFinished) return;
+
+        requestFinished = true;
+        clearTimeout(requestTimeout);
+
+        if (!data || data.status !== 'ok') {
+          const errorMessage = data && data.msg
+            ? String(data.msg)
+            : '後端驗證失敗';
+
+          if (errorMessage.indexOf('工作人員密碼錯誤') !== -1) {
+            staffPassword = '';
+
+            document.getElementById('staff-password').value = '';
+            document.getElementById('staff-password-error').textContent =
+              '工作人員密碼錯誤，請重新輸入';
+
+            document.getElementById('staff-login').style.display = 'block';
+            document.getElementById('android-reader').style.display = 'none';
+            document.querySelector('.android-setup-line').style.display = 'block';
+            document.getElementById('android-tip').style.display = 'block';
+
+            resultDiv.className = 'error';
+            resultDiv.textContent = '工作人員密碼錯誤';
+            statusDiv.textContent = '請重新輸入工作人員密碼';
+
+            speakWithFallback('工作人員密碼錯誤，請重新輸入');
+
+            androidScanSessionReady = false;
+            isAndroidProcessing = false;
+            startBtn.style.display = 'inline-block';
+
+            if (androidHtml5QrCode) {
+              androidHtml5QrCode.stop().then(function() {
+                androidHtml5QrCode.clear();
+                androidHtml5QrCode = null;
+              }).catch(function(error) {
+                console.warn('停止 Android 掃描器時發生錯誤:', error);
+                androidHtml5QrCode = null;
+              });
+            }
+
+            return;
+          }
+
+          resultDiv.className = 'error';
+          resultDiv.textContent = errorMessage;
+          statusDiv.textContent = '伺服器處理失敗';
+          speakWithFallback(errorMessage);
+          resumeAndroidScanning();
+          return;
+        }
+
+        handleServerResponse(
+          data.result,
+          codeText,
+          matchedTimedOutCode
+        );
+      })
+      .catch(error => {
+        if (requestFinished) return;
+
+        requestFinished = true;
+        clearTimeout(requestTimeout);
+
+        console.error('Android POST 通訊錯誤:', error);
+        handleServerError(error);
+      });
     }
-
-    handleServerResponse(
-      data.result,
-      codeText,
-      matchedTimedOutCode
-    );
-  })
-  .catch(error => {
-    if (requestFinished) return;
-
-    requestFinished = true;
-    clearTimeout(requestTimeout);
-
-    console.error('Android POST 通訊錯誤:', error);
-    handleServerError(error);
-  });
-}
-
 
     function resumeAndroidScanning() {
       setTimeout(() => {
-        // 與 iPhone 相同：顯示乾淨的等待狀態後恢復掃描
         clearResultStyles();
         resultDiv.textContent = '掃描QR-Code';
         statusDiv.textContent = '相機就緒，請慢慢對準';
@@ -1047,10 +1133,10 @@ function processScannedCode(codeText, matchedTimedOutCode) {
         try {
           androidHtml5QrCode.resume();
 
-          // 與 iPhone 相同：恢復掃描後延遲 700ms 才解除防重複鎖
           setTimeout(() => {
             isAndroidProcessing = false;
           }, 800);
+
         } catch(e) {
           console.warn('恢復 Android 掃描器時發生錯誤:', e);
           statusDiv.textContent = '掃描恢復失敗，請重新啟動相機';
@@ -1059,14 +1145,13 @@ function processScannedCode(codeText, matchedTimedOutCode) {
       }, 1000);
     }
 
-
     function handleServerResponse(res, codeText, matchedTimedOutCode) {
       clearResultStyles();
+
       resultDiv.className = res.status || 'success';
       resultDiv.textContent = (res.info || '') + ' ' + (res.msg || '');
       statusDiv.textContent = '處理完成，準備掃描下一個QR-Code';
 
-      // 新增：投票回覆要求重新掃描時，投票統計減 1
       const isVoteCode = /Q\d{2}[YN]$/i.test(String(codeText || '').trim());
 
       if (isVoteCode) {
@@ -1078,86 +1163,71 @@ function processScannedCode(codeText, matchedTimedOutCode) {
                    /已投票/.test(String(res.msg || ''))) {
           androidVoteCount++;
         }
+
         document.getElementById('android-vote-count').innerText = androidVoteCount;
+
       } else if (res && res.status === 'success') {
         androidCheckInCount++;
         document.getElementById('android-checkin-count').innerText = androidCheckInCount;
+
       } else if (matchedTimedOutCode && res && res.status === 'repeat' &&
                  /已完成報到/.test(String(res.msg || ''))) {
         androidCheckInCount++;
         document.getElementById('android-checkin-count').innerText = androidCheckInCount;
       }
 
-      // Android 修正：播放伺服器回傳的結果語音
       speakWithFallback(res.msg);
-
-      // 與 iPhone 相同：顯示結果 1 秒後自動恢復掃描
       resumeAndroidScanning();
     }
-
 
     function handleServerError(error) {
       clearResultStyles();
+
       resultDiv.className = 'error';
       resultDiv.textContent = '連線錯誤，請重試';
       statusDiv.textContent = '伺服器連接錯誤';
-      speakWithFallback('錯誤');
 
-      // 連線錯誤時也自動恢復掃描
+      speakWithFallback('錯誤');
       resumeAndroidScanning();
     }
 
-
     function speakWithFallback(text) {
       if (!text) return;
-
 
       if (!('speechSynthesis' in window)) {
         console.warn('瀏覽器不支援語音合成');
         return;
       }
 
-
       const synth = window.speechSynthesis;
 
-
       try {
-        // 先清除舊語音佇列，避免先前的語音卡住後續播放
         synth.cancel();
-
 
         if (synth.paused) {
           synth.resume();
         }
 
-
         let hasSpoken = false;
-
 
         function speakNow() {
           if (hasSpoken) return;
           hasSpoken = true;
 
-
           try {
             const voices = synth.getVoices();
             const msg = new SpeechSynthesisUtterance(String(text));
 
-
-            // 設定語音基本參數
             msg.lang = 'zh-TW';
             msg.rate = 1.0;
             msg.volume = 1.0;
             msg.pitch = 1.0;
 
-
-            // 優先選擇繁體中文語音；若沒有則依序使用其他中文語音
             const voice =
               voices.find(v => /^zh[-_]TW$/i.test(v.lang)) ||
               voices.find(v => /^zh[-_]HK$/i.test(v.lang)) ||
               voices.find(v => /^zh[-_]CN$/i.test(v.lang)) ||
               voices.find(v => /^zh/i.test(v.lang));
-
 
             if (voice) {
               msg.voice = voice;
@@ -1167,67 +1237,71 @@ function processScannedCode(codeText, matchedTimedOutCode) {
               console.warn('尚未找到中文語音，使用瀏覽器預設語音');
             }
 
-
             msg.onstart = function() {
               console.log('Android 語音開始播放:', text);
             };
-
 
             msg.onend = function() {
               console.log('Android 語音播放完成');
             };
 
-
             msg.onerror = function(event) {
               console.warn('Android 語音播放錯誤:', event.error);
             };
 
-
             synth.speak(msg);
+
           } catch (error) {
             console.warn('Android 語音初始化失敗:', error);
           }
         }
 
-
-        // Android Chrome 的語音清單有時要等到 voiceschanged 才載入
         const availableVoices = synth.getVoices();
 
-
         if (availableVoices.length > 0) {
-          // cancel 後稍微延遲再 speak，降低 Android 語音佇列未重置的問題
           setTimeout(speakNow, 100);
-          //speakNow();
         } else {
           let voicesChangedHandler;
-
 
           const voiceTimeout = setTimeout(function() {
             if (voicesChangedHandler) {
               synth.removeEventListener('voiceschanged', voicesChangedHandler);
             }
             setTimeout(speakNow, 100);
-            //speakNow();
           }, 500);
-
 
           voicesChangedHandler = function() {
             if (synth.getVoices().length > 0) {
               clearTimeout(voiceTimeout);
               synth.removeEventListener('voiceschanged', voicesChangedHandler);
               setTimeout(speakNow, 100);
-              //speakNow();
             }
           };
 
-
           synth.addEventListener('voiceschanged', voicesChangedHandler);
         }
+
       } catch (error) {
         console.warn('Android 語音播放處理失敗:', error);
       }
     }
   }
+
+  // ========== 裝置版本選擇 ==========
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.isAndroid) {
+      document.body.className = 'android';
+      document.getElementById('android-container').style.display = 'block';
+      document.getElementById('iphone-container').style.display = 'none';
+      console.log('載入 Android 版本');
+    } else {
+      document.body.className = 'iphone';
+      document.getElementById('iphone-container').style.display = 'block';
+      document.getElementById('android-container').style.display = 'none';
+      console.log('載入 iPhone 版本');
+    }
+  });
+
 </script>
 </body>
 </html>
