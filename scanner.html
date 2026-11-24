@@ -254,6 +254,19 @@
   </div>
 
   <div id="status">請點擊「開始掃描」按鈕</div>
+
+  <!-- Android 工作人員密碼 -->
+  <div id="staff-login" style="margin:20px auto; max-width:400px;">
+    <input
+      id="staff-password"
+      type="password"
+      placeholder="請輸入工作人員密碼"
+      autocomplete="current-password"
+      style="width:90%; box-sizing:border-box; padding:15px; font-size:1.2rem; border-radius:10px; border:2px solid #3498db; text-align:center;"
+    >
+    <div id="staff-password-error" style="color:#ff6b6b; margin-top:10px; min-height:24px;"></div>
+  </div>
+
   <hr class="android-setup-line">
   <div id="android-reader" style="display:none;"></div>
   <div id="android-result">準備就緒</div>
@@ -691,6 +704,12 @@
     const startBtn = document.getElementById('startBtn');
     const nextBtn = document.getElementById('nextBtn');
 
+    // Android GAS POST 網址
+    const GAS_EXEC_URL = 'https://script.google.com/macros/s/AKfycbybUTYyqhXgNB7Z_IugzEFIbhcBRey2mcE1a1tW2bsMCdo6630IP1r4qixdb1aSQUW3/exec';
+
+    // 工作人員密碼只保留在目前頁面的記憶體
+    let staffPassword = '';
+
     // 新增：Android 成功計數
     let androidCheckInCount = 0;
     let androidVoteCount = 0;
@@ -711,13 +730,28 @@
 
 
     window.addEventListener('load', function() {
-      statusDiv.textContent = '請點擊「開始掃描」按鈕';
+      statusDiv.textContent = '請輸入工作人員密碼後開始掃描';
+
       startBtn.onclick = function() {
+        const passwordInput = document.getElementById('staff-password');
+        const passwordError = document.getElementById('staff-password-error');
+        const enteredPassword = String(passwordInput.value || '');
+
+        if (!enteredPassword) {
+          passwordError.textContent = '請先輸入工作人員密碼';
+          passwordInput.focus();
+          return;
+        }
+
+        staffPassword = enteredPassword;
+        passwordError.textContent = '';
+
         // Android 修正：在使用者點擊時播放實際語音，協助啟動語音合成環境
         if ('speechSynthesis' in window) {
           speakWithFallback('啟動相機');
         }
 
+        document.getElementById('staff-login').style.display = 'none';
 
         clearResultStyles();
         resultDiv.textContent = '正在啟動相機...';
@@ -870,65 +904,136 @@
 
 
 function processScannedCode(codeText, matchedTimedOutCode) {
-clearResultStyles();
+  clearResultStyles();
 
-// ========== 檢查報到或投票是否已結束 ==========
-const endMessage = checkScanEndStatus(codeText);
+  // ========== 檢查報到或投票是否已結束 ==========
+  const endMessage = checkScanEndStatus(codeText);
 
-if (endMessage) {
-  resultDiv.className = 'error';
-  resultDiv.textContent = endMessage;
-  statusDiv.textContent = '處理完成，準備掃描下一個QR-Code';
-  speakWithFallback(endMessage);
+  if (endMessage) {
+    resultDiv.className = 'error';
+    resultDiv.textContent = endMessage;
+    statusDiv.textContent = '處理完成，準備掃描下一個QR-Code';
+    speakWithFallback(endMessage);
 
-  // 顯示紅色錯誤訊息 1 秒後自動恢復掃描
-  resumeAndroidScanning();
-  return;
-}
-
-resultDiv.textContent = '驗證中...';
-statusDiv.textContent = '正在驗證...';
-
-// 連線逾時保護：10 秒內未收到後端回應，就提示並恢復掃描
-let requestFinished = false;
-let checkinRequestId = null;
-
-const requestTimeout = setTimeout(() => {
-  if (requestFinished) return;
-  requestFinished = true;
-
-  // 取消這筆逾時請求，避免遲到回覆影響後續掃描
-  cancelGasRequest(checkinRequestId);
-
-  // 記錄本次逾時 QR Code，供下一次掃描比對
-  androidTimedOutCode = String(codeText || '').trim();
-
-  resultDiv.className = 'error';
-  resultDiv.textContent = '驗證逾時請重新掃描';
-  statusDiv.textContent = '驗證逾時，準備重新掃描';
-  speakWithFallback('驗證逾時請重新掃描');
-
-  resumeAndroidScanning();
-}, 10000);
-
-checkinRequestId = sendGasRequest(
-  'PROCESS_CHECKIN',
-  { codeText: codeText },
-  function(res) {
-    if (requestFinished) return;
-    requestFinished = true;
-    clearTimeout(requestTimeout);
-
-    handleServerResponse(res, codeText, matchedTimedOutCode);
-  },
-  function(error) {
-    if (requestFinished) return;
-    requestFinished = true;
-    clearTimeout(requestTimeout);
-
-    handleServerError(error);
+    // 顯示紅色錯誤訊息 1 秒後自動恢復掃描
+    resumeAndroidScanning();
+    return;
   }
-);
+
+  resultDiv.textContent = '驗證中...';
+  statusDiv.textContent = '正在驗證...';
+
+  // 連線逾時保護：10 秒內未收到後端回應，就提示並恢復掃描
+  let requestFinished = false;
+
+  const requestId = 'android-' + Date.now() + '-' +
+    Math.random().toString(36).slice(2);
+
+  const requestTimeout = setTimeout(() => {
+    if (requestFinished) return;
+    requestFinished = true;
+
+    // 記錄本次逾時 QR Code，供下一次掃描比對
+    androidTimedOutCode = String(codeText || '').trim();
+
+    resultDiv.className = 'error';
+    resultDiv.textContent = '驗證逾時請重新掃描';
+    statusDiv.textContent = '驗證逾時，準備重新掃描';
+    speakWithFallback('驗證逾時請重新掃描');
+
+    resumeAndroidScanning();
+  }, 10000);
+
+  fetch(GAS_EXEC_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8'
+    },
+    body: JSON.stringify({
+      action: 'PROCESS_CHECKIN',
+      password: staffPassword,
+      code: String(codeText || '').trim(),
+      requestId: requestId
+    }),
+    redirect: 'follow'
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('HTTP ' + response.status);
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (requestFinished) return;
+
+    requestFinished = true;
+    clearTimeout(requestTimeout);
+
+    if (!data || data.status !== 'ok') {
+      const errorMessage = data && data.msg
+        ? String(data.msg)
+        : '後端驗證失敗';
+
+      // 工作人員密碼錯誤：停止掃描並要求重新輸入
+      if (errorMessage.indexOf('工作人員密碼錯誤') !== -1) {
+        staffPassword = '';
+
+        document.getElementById('staff-password').value = '';
+        document.getElementById('staff-password-error').textContent =
+          '工作人員密碼錯誤，請重新輸入';
+
+        document.getElementById('staff-login').style.display = 'block';
+        document.getElementById('android-reader').style.display = 'none';
+        document.querySelector('.android-setup-line').style.display = 'block';
+        document.getElementById('android-tip').style.display = 'block';
+
+        resultDiv.className = 'error';
+        resultDiv.textContent = '工作人員密碼錯誤';
+        statusDiv.textContent = '請重新輸入工作人員密碼';
+
+        speakWithFallback('工作人員密碼錯誤，請重新輸入');
+
+        androidScanSessionReady = false;
+        isAndroidProcessing = false;
+        startBtn.style.display = 'inline-block';
+
+        if (androidHtml5QrCode) {
+          androidHtml5QrCode.stop().then(function() {
+            androidHtml5QrCode.clear();
+            androidHtml5QrCode = null;
+          }).catch(function(error) {
+            console.warn('停止 Android 掃描器時發生錯誤:', error);
+            androidHtml5QrCode = null;
+          });
+        }
+
+        return;
+      }
+
+      // 其他 GAS 回傳錯誤
+      resultDiv.className = 'error';
+      resultDiv.textContent = errorMessage;
+      statusDiv.textContent = '伺服器處理失敗';
+      speakWithFallback(errorMessage);
+      resumeAndroidScanning();
+      return;
+    }
+
+    handleServerResponse(
+      data.result,
+      codeText,
+      matchedTimedOutCode
+    );
+  })
+  .catch(error => {
+    if (requestFinished) return;
+
+    requestFinished = true;
+    clearTimeout(requestTimeout);
+
+    console.error('Android POST 通訊錯誤:', error);
+    handleServerError(error);
+  });
 }
 
 
