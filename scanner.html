@@ -344,7 +344,7 @@
   const scannerParams = new URLSearchParams(window.location.search);
 
   const API_TOKEN = scannerParams.get('token') || '';
-  const GAS_EXEC_URL = scannerParams.get('gasurl') || '';
+  const GAS_EXEC_URL = scannerParams.get('url') || '';
 
   console.log('Scanner 啟動設定:');
   console.log('  GAS URL 是否取得:', !!GAS_EXEC_URL);
@@ -385,7 +385,7 @@
       delete requestPayload.codeText;
     }
 
-    fetch(GAS_EXEC_URL, {
+    fetch(API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'text/plain;charset=utf-8'
@@ -1044,7 +1044,7 @@
         resumeAndroidScanning();
       }, 10000);
 
-      fetch(GAS_EXEC_URL, {
+      fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'text/plain;charset=utf-8'
