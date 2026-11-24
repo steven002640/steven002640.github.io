@@ -344,7 +344,7 @@
   const scannerParams = new URLSearchParams(window.location.search);
 
   const API_TOKEN = scannerParams.get('token') || '';
-  const GAS_EXEC_URL = scannerParams.get('url') || '';
+  const GAS_EXEC_URL = scannerParams.get('gasurl') || '';
 
   console.log('Scanner 啟動設定:');
   console.log('  GAS URL 是否取得:', !!GAS_EXEC_URL);
