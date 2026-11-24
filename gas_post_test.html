@@ -102,7 +102,7 @@
   <h2>GAS POST 直接通訊測試</h2>
 
   <button id="startBtn" onclick="startTest()">
-    開始測試 001～100
+    開始測試 001～300
   </button>
 
   <div id="summary">
@@ -112,8 +112,8 @@
   <div id="log"></div>
 
   <div class="note">
-    測試方式：逐筆 POST，收到回覆後等待 2 秒，再送下一筆。<br>
-    測試範圍：001～100，共 100 筆。<br>
+    測試方式：逐筆 POST，收到回覆後等待 5 秒，再送下一筆。<br>
+    測試範圍：001～300，共 300 筆。<br>
     單筆等待上限：20 秒。<br>
     遇到錯誤或逾時立即停止，避免重複報到。
   </div>
@@ -132,12 +132,12 @@ const GAS_TOKEN = '666666';
 // ======================================
 
 const TEST_CODES = Array.from(
-  { length: 100 },
+  { length: 300 },
   (_, i) => String(i + 1).padStart(3, '0')
 );
 
 const REQUEST_TIMEOUT = 20000;
-const INTERVAL_DELAY = 2000;
+const INTERVAL_DELAY = 5000;
 
 let testing = false;
 
@@ -292,7 +292,7 @@ async function startTest() {
   let successCount = 0;
   let failCount = 0;
 
-  updateSummary('開始測試，共 100 筆');
+  updateSummary('開始測試，共 300 筆');
 
   try {
 
@@ -302,7 +302,7 @@ async function startTest() {
 
       updateSummary(
         '正在送出 ' + code +
-        '（' + (i + 1) + '/100）\n' +
+        '（' + (i + 1) + '/300）\n' +
         '已成功收到回覆：' + successCount + ' 筆'
       );
 
@@ -369,11 +369,11 @@ async function startTest() {
 
       updateSummary(
         '測試進行中\n' +
-        '已成功收到回覆：' + successCount + ' / 100\n' +
+        '已成功收到回覆：' + successCount + ' / 300\n' +
         '目前完成：' + code
       );
 
-      // 每筆收到回覆後，等待 2 秒再送下一筆
+      // 每筆收到回覆後，等待 5 秒再送下一筆
       if (i < TEST_CODES.length - 1) {
         await delay(INTERVAL_DELAY);
       }
@@ -381,8 +381,8 @@ async function startTest() {
 
     updateSummary(
       '測試完成\n' +
-      '成功收到回覆：' + successCount + ' / 100\n' +
-      '失敗：' + failCount + ' / 100'
+      '成功收到回覆：' + successCount + ' / 300\n' +
+      '失敗：' + failCount + ' / 300'
     );
 
   } finally {
