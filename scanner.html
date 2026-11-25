@@ -385,7 +385,7 @@
       delete requestPayload.codeText;
     }
 
-    fetch(API_URL, {
+    fetch(GAS_EXEC_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'text/plain;charset=utf-8'
@@ -1044,7 +1044,7 @@
         resumeAndroidScanning();
       }, 10000);
 
-      fetch(API_URL, {
+      fetch(GAS_EXEC_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'text/plain;charset=utf-8'
