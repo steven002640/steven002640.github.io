@@ -31,13 +31,8 @@
     color: white;
   }
 
-  /* iPhone 主要掃描區域背景 */
-  .iphone-version #main {
-    background: #1a1a1a;
-  }
-
   .iphone-version #main h1 {
-    margin-bottom: 35px;
+    margin-bottom: 45px;
   }
 
   .iphone-version #reader {
@@ -48,7 +43,7 @@
     border-radius: 20px;
     overflow: hidden;
     border: 3px solid #3498db;
-    background: #000;
+    background: #lalala;
     padding-bottom: env(safe-area-inset-bottom, 10px);
     display: flex;
     align-items: center;
@@ -73,7 +68,7 @@
   .iphone-version #result,
   .iphone-version #setup-result {
     font-size: 1.85rem;
-    margin: 10px auto;
+    margin: 15px auto;
     padding: 15px 20px;
     width: 90%;
     max-width: 550px;
@@ -84,11 +79,6 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-  }
-
-  /* iPhone 掃描提示列預設背景 */
-  .iphone-version #result {
-    background: #1a1a1a;
   }
 
   .iphone-version #setup-status {
@@ -133,11 +123,6 @@
     color: #f08080;
     margin-top: 10px;
     font-size: 1.2rem;
-  }
-
-  /* iPhone 紅色錯誤文字放大 30% */
-  .iphone-version #iphone-password-error {
-    font-size: 130%;
   }
 
   /* ========== 密碼輸入與確認按鈕同一列 ========== */
@@ -185,11 +170,6 @@
     color: white;
   }
 
-  /* Android 主要掃描區域背景 */
-  .android-version {
-    background: #1a1a1a;
-  }
-
   .android-version #android-reader {
     width: 300px;
     max-width: 100%;
@@ -198,7 +178,7 @@
     border-radius: 20px;
     overflow: hidden;
     border: 3px solid #3498db;
-    background: #000;
+    background: #lalala;
   }
 
   .android-version .android-setup-line {
@@ -233,20 +213,10 @@
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
   }
 
-  /* Android 掃描提示列預設背景 */
-  .android-version #android-result {
-    background: #1a1a1a;
-  }
-
   .android-version .success { background: #2ecc71; color: white; }
   .android-version .repeat { background: #f1c40f; color: #333; }
   .android-version .error { background: #e74c3c; color: white; }
   .android-version .info { background: #3498db; color: white; }
-
-  /* Android 紅色錯誤文字放大 30% */
-  .android-version #staff-password-error {
-    font-size: 130%;
-  }
 
   .android-version .action-button {
     padding: 20px 40px;
@@ -316,7 +286,7 @@
     <h1>iPhone手機掃描作業</h1>
 
     <div id="iphone-scan-stats"
-      style="display:none; font-size:18px; color:#F3E6C8; width:95%; box-sizing:border-box; margin:-24px auto 8px; justify-content:center; align-items:center;">
+      style="display:none; font-size:18px; color:#F3E6C8; width:95%; box-sizing:border-box; margin:-24px auto 14px; justify-content:center; align-items:center;">
       <span>報到成功：<span id="iphone-checkin-count">0</span></span>
       　　<span>投票成功：<span id="iphone-vote-count">0</span></span>
     </div>
