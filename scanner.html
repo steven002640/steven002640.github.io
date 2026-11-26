@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -276,7 +277,7 @@
     </div>
 
     <div id="iphone-password-error"
-      style="color:#ff6b6b; margin-top:10px; min-height:24px; font-size:1.35em;">
+      style="color:#ff6b6b; margin-top:10px; min-height:24px;">
     </div>
 
     <div id="setup-result">準備就緒</div>
@@ -290,7 +291,7 @@
     <h1>iPhone手機掃描作業</h1>
 
     <div id="iphone-scan-stats"
-      style="display:none; font-size:18px; color:#F3E6C8; width:95%; box-sizing:border-box; margin:-24px auto 14px; justify-content:center; align-items:center;">
+      style="display:none; font-size:18px; color:#F3E6C8; width:95%; box-sizing:border-box; margin:-30px auto 14px; justify-content:center; align-items:center;">
       <span>報到成功：<span id="iphone-checkin-count">0</span></span>
       　　<span>投票成功：<span id="iphone-vote-count">0</span></span>
     </div>
@@ -304,7 +305,7 @@
   <h1>安卓手機掃描作業</h1>
 
   <div id="android-scan-stats"
-    style="display:none; font-size:18px; color:#F3E6C8; width:95%; box-sizing:border-box; margin:11px auto 14px; justify-content:center; align-items:center;">
+    style="display:none; font-size:18px; color:#F3E6C8; width:95%; box-sizing:border-box; margin:5px auto 14px; justify-content:center; align-items:center;">
     <span>報到成功：<span id="android-checkin-count">0</span></span>
     　　<span>投票成功：<span id="android-vote-count">0</span></span>
   </div>
@@ -334,7 +335,7 @@
     </div>
 
     <div id="staff-password-error"
-      style="color:#ff6b6b; margin-top:10px; min-height:24px; font-size:1.3em;">
+      style="color:#ff6b6b; margin-top:10px; min-height:24px;">
     </div>
   </div>
 
@@ -441,26 +442,6 @@
     });
 
     return requestId;
-  }
-
-  // ========== 密碼驗證錯誤訊息判斷 ==========
-  function getPasswordVerificationErrorMessage(error) {
-    const message = String(
-      error && error.message ? error.message : error || ''
-    );
-
-    if (message.indexOf('工作人員密碼錯誤') !== -1) {
-      return '工作人員密碼錯誤，請重新輸入';
-    }
-
-    if (
-      error instanceof TypeError ||
-      /Failed to fetch|NetworkError|network error|Load failed|fetch failed|ERR_INTERNET_DISCONNECTED|ERR_NETWORK_CHANGED|ERR_NAME_NOT_RESOLVED|ERR_CONNECTION/i.test(message)
-    ) {
-      return '網路連線失敗，請檢查網路後重試';
-    }
-
-    return '伺服器驗證失敗，請稍後重試';
   }
 
   // 取消已逾時或不再需要的請求
@@ -594,12 +575,8 @@
       function(error) {
         staffPassword = '';
         passwordInput.value = '';
-        passwordError.innerText =
-          getPasswordVerificationErrorMessage(error);
-
-        // 清空紅底訊息區，不顯示工作人員密碼錯誤
-        document.getElementById('setup-result').innerText = '';
-        document.getElementById('setup-result').className = '';
+        passwordError.innerText = '工作人員密碼錯誤，請重新輸入';
+        document.getElementById('setup-result').innerText = '工作人員密碼錯誤';
 
         console.log('iPhone 密碼確認失敗:', error);
       }
@@ -617,9 +594,8 @@
     document.getElementById('setup-status').innerText =
       '請重新輸入工作人員密碼';
 
-    // 清空紅底訊息區，不顯示工作人員密碼錯誤
-    document.getElementById('setup-result').innerText = '';
-    document.getElementById('setup-result').className = '';
+    document.getElementById('setup-result').innerText =
+      '工作人員密碼錯誤';
 
     document.getElementById('setup').style.display = 'block';
     document.getElementById('main').style.display = 'none';
@@ -894,14 +870,13 @@
             passwordInput.value = '';
 
             passwordError.textContent =
-              getPasswordVerificationErrorMessage(error);
+              '工作人員密碼錯誤，請重新輸入';
 
             document.getElementById('android-setup-status').textContent =
-              '請輸入工作人員密碼後開始掃描';
+              '請重新輸入工作人員密碼';
 
-            // 清空紅底訊息區，不顯示工作人員密碼錯誤
-            clearResultStyles();
-            resultDiv.textContent = '';
+            resultDiv.className = 'error';
+            resultDiv.textContent = '工作人員密碼錯誤';
 
             console.log('Android 密碼確認失敗:', error);
           }
@@ -1131,9 +1106,8 @@
             document.getElementById('android-tip').style.display = 'block';
             document.getElementById('android-scan-stats').style.display = 'none';
 
-            // 清空紅底訊息區，不顯示工作人員密碼錯誤
-            clearResultStyles();
-            resultDiv.textContent = '';
+            resultDiv.className = 'error';
+            resultDiv.textContent = '工作人員密碼錯誤';
             statusDiv.textContent = '請重新輸入工作人員密碼';
 
             speakWithFallback('工作人員密碼錯誤，請重新輸入');
