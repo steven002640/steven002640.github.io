@@ -279,11 +279,7 @@
       style="color:#ff6b6b; margin-top:10px; min-height:24px;">
     </div>
 
-    <div id="setup-result">準備就緒</div>
-
-    <p></p>
-    <p></p>
-    <p class="tip">點擊後將啟動相機與語音通知</p>
+    <div id="setup-result" style="display:none;">準備就緒</div>
   </div>
 
   <div id="main" style="display:none;">
@@ -339,13 +335,10 @@
   </div>
 
   <div id="android-reader" style="display:none;"></div>
-  <div id="android-result">準備就緒</div>
+  <div id="android-result" style="display:none;">準備就緒</div>
 
   <div>
     <button id="nextBtn" class="action-button">✅  繼續掃描 ...</button>
-    <p></p>
-    <p></p>
-    <p class="tip" id="android-tip">點擊後將啟動相機與語音通知</p>
   </div>
 </div>
 
@@ -911,8 +904,8 @@
 
     async function startNewScanSession(isRecovery = false) {
       document.getElementById('android-reader').style.display = 'block';
+      resultDiv.style.display = 'flex';
       document.querySelector('.android-setup-line').style.display = 'none';
-      document.getElementById('android-tip').style.display = 'none';
       document.getElementById('android-setup-status').style.display = 'none';
 
       if (!isRecovery) {
@@ -1128,12 +1121,12 @@
 
             document.getElementById('android-reader').style.display = 'none';
             document.querySelector('.android-setup-line').style.display = 'block';
-            document.getElementById('android-tip').style.display = 'block';
             document.getElementById('android-scan-stats').style.display = 'none';
 
             // 清空紅底訊息區，不顯示工作人員密碼錯誤
             clearResultStyles();
             resultDiv.textContent = '';
+            resultDiv.style.display = 'none';
             statusDiv.textContent = '請重新輸入工作人員密碼';
 
             speakWithFallback('工作人員密碼錯誤，請重新輸入');
